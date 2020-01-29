@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "679409514485",
+    "firebase_url": "https://grabon-706c1.firebaseio.com",
+    "project_id": "grabon-706c1",
+    "storage_bucket": "grabon-706c1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:679409514485:android:3e650cfeb35504166ed2bc",
+        "android_client_info": {
+          "package_name": "com.spartans.grabon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "679409514485-fjljlv5h9h8ingek6ij1u6v11qa2bub6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.spartans.grabon",
+            "certificate_hash": "0cc195e0f64a3f853b18f8ec58997d332dd53a04"
+          }
+        },
+        {
+          "client_id": "679409514485-du31em4ojjdm13ao7raa26jh7b0hjbmk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4gua6xEdaY_Rli_qeTr9CQJAP7lHnyEQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "679409514485-du31em4ojjdm13ao7raa26jh7b0hjbmk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
