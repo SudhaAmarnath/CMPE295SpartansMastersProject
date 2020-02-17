@@ -1,26 +1,21 @@
 package com.spartans.grabon;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.spartans.grabon.payment.PaypalPaymentClient;
 
 import javax.annotation.Nullable;
 
@@ -32,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         final EditText mainName, mainEmail;
-        Button mainLogout;
+        Button mainLogout, mainProceedForPayment;
 
         final FirebaseAuth firebaseAuth;
         TextView loginCreateUser;
@@ -42,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         mainName = findViewById(R.id.MainName);
         mainEmail = findViewById(R.id.MainEmail);
         mainLogout = findViewById(R.id.MainLogout);
-
+        mainProceedForPayment = findViewById(R.id.MainProceedForPayment);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
@@ -58,6 +53,15 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        mainProceedForPayment.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View view) {
+                 startActivity(new Intent(getApplicationContext(), PaypalPaymentClient.class));
+                 finish();
+             }
+         }
+        );
 
         mainLogout.setOnClickListener(new View.OnClickListener() {
             @Override
