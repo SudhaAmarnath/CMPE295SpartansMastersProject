@@ -2,10 +2,10 @@ package com.spartans.grabon;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,11 +15,16 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.spartans.grabon.payment.PaypalPaymentClient;
 
 import javax.annotation.Nullable;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static final String TAG = "TAG";
+    private ListenerRegistration documentRefRegistration;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
         Button mainLogout, mainProceedForPayment;
 
         final FirebaseAuth firebaseAuth;
-        TextView loginCreateUser;
         FirebaseFirestore firebaseFirestore;
         String uID;
 
@@ -45,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         uID = firebaseAuth.getCurrentUser().getUid();
 
         DocumentReference documentReference = firebaseFirestore.collection("users").document(uID);
-        documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+        documentRefRegistration = documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 mainName.setText(documentSnapshot.getString("fullName"));
@@ -66,7 +70,12 @@ public class MainActivity extends AppCompatActivity {
         mainLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();//logout
+                try {
+                    documentRefRegistration.remove();
+                    FirebaseAuth.getInstance().signOut();//logout
+                } catch (Exception logoutException) {
+                    Log.d(TAG, "logoutException: " + logoutException.toString());
+                }
                 startActivity(new Intent(getApplicationContext(),Login.class));
                 finish();
             }
