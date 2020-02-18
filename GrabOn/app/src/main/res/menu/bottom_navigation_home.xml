@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/map_button"
+        android:icon="@drawable/ic_location_pin"
+        android:title="Map" />
+    <item
+        android:id="@+id/navigation_cart"
+        android:icon="@drawable/ic_shopping_cart"
+        android:title="Cart" />
+    <item
+        android:id="@+id/profile_button"
+        android:icon="@drawable/ic_user"
+        android:title="Profile" />
+
+</menu>
