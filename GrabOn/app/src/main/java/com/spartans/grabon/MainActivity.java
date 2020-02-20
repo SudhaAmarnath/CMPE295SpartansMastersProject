@@ -2,23 +2,22 @@ package com.spartans.grabon;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.spartans.grabon.payment.PaypalPaymentClient;
-
-import javax.annotation.Nullable;
+import com.spartans.grabon.cart.Cart;
+import com.spartans.grabon.maps.Maps;
+import com.spartans.grabon.user.Profile;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,48 +37,34 @@ public class MainActivity extends AppCompatActivity {
         FirebaseFirestore firebaseFirestore;
         String uID;
 
-        mainName = findViewById(R.id.MainName);
-        mainEmail = findViewById(R.id.MainEmail);
-        mainLogout = findViewById(R.id.MainLogout);
-        mainProceedForPayment = findViewById(R.id.MainProceedForPayment);
+        FirebaseApp.initializeApp(this);
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseFirestore = FirebaseFirestore.getInstance();
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        uID = firebaseAuth.getCurrentUser().getUid();
 
-        DocumentReference documentReference = firebaseFirestore.collection("users").document(uID);
-        documentRefRegistration = documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+        BottomNavigationView mBottomNav = findViewById(R.id.MainBottomNavigation);
+        mBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                mainName.setText(documentSnapshot.getString("fullName"));
-                mainEmail.setText(documentSnapshot.getString("email"));
-
-            }
-        });
-
-        mainProceedForPayment.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View view) {
-                 startActivity(new Intent(getApplicationContext(), PaypalPaymentClient.class));
-                 finish();
-             }
-         }
-        );
-
-        mainLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    documentRefRegistration.remove();
-                    FirebaseAuth.getInstance().signOut();//logout
-                } catch (Exception logoutException) {
-                    Log.d(TAG, "logoutException: " + logoutException.toString());
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.map_button:
+                        Intent home = new Intent(getApplicationContext(), Maps.class);
+                        startActivity(home);
+                        break;
+                    case R.id.navigation_cart:
+                        Intent cart = new Intent(getApplicationContext(), Cart.class);
+                        startActivity(cart);
+                        break;
+                    case R.id.profile_button:
+                        Intent profile = new Intent(getApplicationContext(), Profile.class);
+                        startActivity(profile);
+                        break;
                 }
-                startActivity(new Intent(getApplicationContext(),Login.class));
-                finish();
+                return true;
             }
         });
+
 
     }
 }
