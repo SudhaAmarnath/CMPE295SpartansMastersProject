@@ -1,18 +1,18 @@
 package com.spartans.grabon;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -22,8 +22,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import org.w3c.dom.Document;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -111,7 +109,9 @@ public class Register extends AppCompatActivity {
                             uID = firebaseAuth.getCurrentUser().getUid();
                             DocumentReference documentReference = firebaseFirestore.collection("users").document(uID);
                             Map<String,Object> user = new HashMap<>();
-                            user.put("fullName", firstName + lastName);
+                            //user.put("fullName", firstName + " " + lastName);
+                            user.put("firstname", firstName);
+                            user.put("lastname", lastName);
                             user.put("email", email);
                             user.put("password", password);
                             documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
