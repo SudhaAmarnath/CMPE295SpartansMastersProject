@@ -9,7 +9,7 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
@@ -27,77 +27,14 @@
             android:fontFamily="@font/old_standard_tt"
             android:text="@string/grab_on"
             android:textAlignment="center"
+            android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.appcompat.widget.Toolbar>
-
-    <TextView
-        android:id="@+id/mainEmailField"
-        android:layout_width="100dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="20dp"
-        android:text="@string/email_id"
-        android:textAlignment="textEnd"
-        android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/MainNameField" />
-
-
-
-    <TextView
-        android:id="@+id/MainNameField"
-        android:layout_width="100dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="20dp"
-        android:text="@string/name"
-        android:textAlignment="textEnd"
-        android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
-
-
-    <EditText
-        android:id="@+id/MainName"
-        android:layout_width="200dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="48dp"
-        android:autofillHints=""
-        android:ems="10"
-        android:inputType="textEmailAddress"
-        android:textAlignment="textStart"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="@android:color/darker_gray"
-        android:textSize="18sp"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/MainNameField"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
-
-    <EditText
-        android:id="@+id/MainEmail"
-        android:layout_width="200dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="48dp"
-        android:autofillHints=""
-        android:ems="10"
-        android:inputType="textEmailAddress"
-        android:textAlignment="textStart"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="@android:color/darker_gray"
-        android:textSize="18sp"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/MainName" />
 
     <Button
         android:id="@+id/MainProceedForPayment"
@@ -113,7 +50,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/MainEmail" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <Button
         android:id="@+id/MainLogout"

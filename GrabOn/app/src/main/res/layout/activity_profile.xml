@@ -214,7 +214,7 @@
                         android:textSize="13sp" />
 
                     <EditText
-                        android:id="@+id/firstname"
+                        android:id="@+id/Firstname"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:fontFamily="sans-serif-light"
@@ -237,7 +237,7 @@
                         android:textSize="13sp" />
 
                     <EditText
-                        android:id="@+id/lastname"
+                        android:id="@+id/Lastname"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:fontFamily="sans-serif-light"
@@ -270,7 +270,7 @@
                     android:textSize="13sp" />
 
                 <EditText
-                    android:id="@+id/email"
+                    android:id="@+id/Email"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:fontFamily="sans-serif-light"
@@ -301,7 +301,7 @@
                     android:textSize="13sp" />
 
                 <EditText
-                    android:id="@+id/phone"
+                    android:id="@+id/Phone"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:fontFamily="sans-serif-light"
