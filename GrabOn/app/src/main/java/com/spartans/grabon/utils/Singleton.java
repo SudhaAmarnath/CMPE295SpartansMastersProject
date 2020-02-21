@@ -10,8 +10,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class Singleton {
 
     // Using Singleton class for FirebaseFirestore and is the entry point for all the user and db operations.
+    private static final FirebaseAuth auth = FirebaseAuth.getInstance();
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+    public static FirebaseAuth getAuth() {
+        return auth;
+    }
 
     public static FirebaseFirestore getDb() {
         return db;
