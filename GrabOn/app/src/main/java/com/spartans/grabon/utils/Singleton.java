@@ -4,6 +4,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * Author : Sudha Amarnath on 2020-02-20
+ */
 public class Singleton {
 
     // Using Singleton class for FirebaseFirestore and is the entry point for all the user and db operations.

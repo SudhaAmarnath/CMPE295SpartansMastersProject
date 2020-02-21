@@ -19,6 +19,9 @@ import com.spartans.grabon.cart.Cart;
 import com.spartans.grabon.maps.Maps;
 import com.spartans.grabon.user.Profile;
 
+/**
+ * Author : Sudha Amarnath on 2020-01-29
+ */
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "TAG";

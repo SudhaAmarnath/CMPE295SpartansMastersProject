@@ -1,5 +1,6 @@
 package com.spartans.grabon;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -26,6 +27,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Author : Sudha Amarnath on 2020-01-29
+ */
 public class Register extends AppCompatActivity {
 
     EditText registerFirstName, registerLastName, registerEmail, registerPassword;
