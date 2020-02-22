@@ -18,26 +18,25 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.spartans.grabon.utils.Singleton;
 
 /**
  * Author : Sudha Amarnath on 2020-01-29
  */
 public class Login extends AppCompatActivity {
 
+    private EditText loginEmail, loginPassword;
+    private Button loginButton, loginGmailButton, loginFacebookButton;
+    private ProgressBar loginProgressBar;
+    private FirebaseAuth auth;
+    private TextView loginCreateUser;
+    private FirebaseFirestore db;
+    private String uID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        final EditText loginEmail, loginPassword;
-        Button loginButton, loginGmailButton, loginFacebookButton;
-        final ProgressBar loginProgressBar;
-        final FirebaseAuth firebaseAuth;
-        TextView loginCreateUser;
-        FirebaseFirestore firebaseFirestore;
-        String uID;
-        //public static final String TAG = "TAG";
-
 
         loginEmail = findViewById(R.id.LoginEmail);
         loginPassword = findViewById(R.id.LoginPassword);
@@ -45,9 +44,8 @@ public class Login extends AppCompatActivity {
         loginProgressBar = findViewById(R.id.LoginProgressBar);
         loginCreateUser = findViewById(R.id.LoginCreateUser);
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseFirestore = FirebaseFirestore.getInstance();
-
+        auth = Singleton.getAuth();
+        db = Singleton.getDb();
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,7 +53,6 @@ public class Login extends AppCompatActivity {
 
                 String email = loginEmail.getText().toString().trim();
                 String password = loginPassword.getText().toString().trim();
-
 
                 if(TextUtils.isEmpty(email)) {
                     loginEmail.setError("Enter Email ID");
@@ -69,7 +66,7 @@ public class Login extends AppCompatActivity {
 
                 loginProgressBar.setVisibility(View.VISIBLE);
 
-                firebaseAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                auth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){

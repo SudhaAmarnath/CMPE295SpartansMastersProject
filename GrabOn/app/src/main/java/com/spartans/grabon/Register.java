@@ -23,6 +23,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.spartans.grabon.utils.Singleton;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,13 +33,13 @@ import java.util.Map;
  */
 public class Register extends AppCompatActivity {
 
-    EditText registerFirstName, registerLastName, registerEmail, registerPassword;
-    Button registerSignUp;
-    TextView registerAlreadyLogin;
-    ProgressBar registerProgressBar;
-    FirebaseAuth firebaseAuth;
-    FirebaseFirestore firebaseFirestore;
-    String uID;
+    private EditText registerFirstName, registerLastName, registerEmail, registerPassword;
+    private Button registerSignUp;
+    private TextView registerAlreadyLogin;
+    private ProgressBar registerProgressBar;
+    private FirebaseAuth auth;
+    private FirebaseFirestore db;
+    private String uID;
     public static final String TAG = "TAG";
 
 
@@ -55,18 +56,15 @@ public class Register extends AppCompatActivity {
         registerAlreadyLogin = findViewById(R.id.RegisterAlreadyLogin);
         registerProgressBar = findViewById(R.id.RegisterProgressBar);
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseFirestore = FirebaseFirestore.getInstance();
+        auth = Singleton.getAuth();
+        db = Singleton.getDb();
 
         /*
-        if(firebaseAuth.getCurrentUser() != null) {
+        if(auth.getCurrentUser() != null) {
             startActivity(new Intent(getApplicationContext(),MainActivity.class));
             finish();
         }
-         */
-
-        Log.d(TAG, "sudebug: Before button press");
-
+        */
 
         registerSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,16 +102,13 @@ public class Register extends AppCompatActivity {
 
                 registerProgressBar.setVisibility(View.VISIBLE);
 
-                Log.d(TAG, "sudebug: To start now");
-
-                firebaseAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()) {
-                            uID = firebaseAuth.getCurrentUser().getUid();
-                            DocumentReference documentReference = firebaseFirestore.collection("users").document(uID);
+                            uID = auth.getCurrentUser().getUid();
+                            DocumentReference documentReference = db.collection("users").document(uID);
                             Map<String,Object> user = new HashMap<>();
-                            //user.put("fullName", firstName + " " + lastName);
                             user.put("firstname", firstName);
                             user.put("lastname", lastName);
                             user.put("email", email);

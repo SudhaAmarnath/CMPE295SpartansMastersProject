@@ -3,8 +3,6 @@ package com.spartans.grabon;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,8 +10,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.spartans.grabon.cart.Cart;
 import com.spartans.grabon.maps.Maps;
@@ -33,12 +29,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final EditText mainName, mainEmail;
-        Button mainLogout, mainProceedForPayment;
-
-        final FirebaseAuth firebaseAuth;
-        FirebaseFirestore firebaseFirestore;
-        String uID;
 
         FirebaseApp.initializeApp(this);
 
