@@ -7,10 +7,10 @@ import java.util.ArrayList;
  */
 public class Item {
 
-    private String itemID;
+    private long itemID;
     private String itemName;
     private String itemDescription;
-    private String itemSellerID;
+    private long itemSellerID;
     private float  itemPrice;
     private String itemImage;
     private ArrayList itemImageList;
@@ -19,19 +19,54 @@ public class Item {
 
     }
 
-    public Item(String itemID, String itemName, String itemDescription, String itemSellerID, float itemPrice, String itemImage) {
+    public Item(long itemID, String itemName, String itemDescription, long itemSellerID, float itemPrice, String itemImage) {
+
+        this.itemID = itemID;
+        this.itemName = itemName;
+        this.itemDescription = itemDescription;
+        this.itemSellerID = itemSellerID;
+        this.itemPrice = itemPrice;
+        this.itemImage = itemImage;
 
     }
 
-    public Item(String itemID, String itemName, String itemDescription, String itemSellerID, float itemPrice, ArrayList itemImageList) {
+    public Item(long itemID, String itemName, String itemDescription, long itemSellerID, float itemPrice, ArrayList itemImageList) {
+
+        this.itemID = itemID;
+        this.itemName = itemName;
+        this.itemDescription = itemDescription;
+        this.itemSellerID = itemSellerID;
+        this.itemPrice = itemPrice;
+        this.itemImageList = itemImageList;
 
     }
 
-    public String getItemID() {
+    public Item(long itemID, String itemName, String itemDescription, float itemPrice, String itemImage) {
+
+        this.itemID = itemID;
+        this.itemName = itemName;
+        this.itemDescription = itemDescription;
+        this.itemSellerID = itemSellerID;
+        this.itemPrice = itemPrice;
+        this.itemImage = itemImage;
+
+    }
+
+    public Item(long itemID, String itemName, String itemDescription, float itemPrice, ArrayList itemImageList) {
+
+        this.itemID = itemID;
+        this.itemName = itemName;
+        this.itemDescription = itemDescription;
+        this.itemPrice = itemPrice;
+        this.itemImageList = itemImageList;
+
+    }
+
+    public long getItemID() {
         return itemID;
     }
 
-    public void setItemID(String itemID) {
+    public void setItemID(long itemID) {
         this.itemID = itemID;
     }
 
@@ -51,11 +86,11 @@ public class Item {
         this.itemDescription = itemDescription;
     }
 
-    public String getItemSellerID() {
+    public long getItemSellerID() {
         return itemSellerID;
     }
 
-    public void setItemSellerID(String itemSellerID) {
+    public void setItemSellerID(long itemSellerID) {
         this.itemSellerID = itemSellerID;
     }
 
