@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 public class ExampleInstrumentedTest {
     @Test
     public void useAppContext() {
-        // Context of the app under test.
+        // Context of the app under layout_items_image.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         assertEquals("com.spartans.grabon", appContext.getPackageName());
