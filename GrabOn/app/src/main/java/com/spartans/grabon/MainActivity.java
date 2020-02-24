@@ -12,6 +12,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.spartans.grabon.cart.Cart;
+import com.spartans.grabon.item.AddItem;
 import com.spartans.grabon.maps.Maps;
 import com.spartans.grabon.user.Profile;
 
@@ -35,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
         BottomNavigationView mBottomNav = findViewById(R.id.MainBottomNavigation);
         mBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -44,6 +44,10 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.map_button:
                         Intent home = new Intent(getApplicationContext(), Maps.class);
                         startActivity(home);
+                        break;
+                    case R.id.add_item:
+                        Intent additem = new Intent(getApplicationContext(), AddItem.class);
+                        startActivity(additem);
                         break;
                     case R.id.navigation_cart:
                         Intent cart = new Intent(getApplicationContext(), Cart.class);

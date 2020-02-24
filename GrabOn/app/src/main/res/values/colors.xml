@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--
 
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#BAA4EA</color>
-
-    -->
-
+    <!--primary colors -->
+    <color name="colorPrimaryLight">#CABBEB</color>
     <color name="colorPrimary">#BAA4EA</color>
     <color name="colorPrimaryDark">#7848E2</color>
     <color name="colorAccent">#8253E9</color>
-
 
     <!--reds-->
     <color name="md_red_50">#FFEBEE</color>

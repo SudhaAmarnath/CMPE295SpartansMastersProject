@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    tools:context=".item.AddItem">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/addItemImageLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Item Image"
+            android:textColor="@color/md_black_1000"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/addItemImage"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/background_drawable_edit"
+            android:src="@drawable/ic_add_circle_outline" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/addItemNameLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/addItemImageLabel"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Item Name"
+                android:textColor="@color/md_black_1000"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/addItemName"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginBottom="15dp"
+                android:layout_weight="1"
+                android:background="@drawable/background_drawable_edit"
+                android:padding="10dp"
+                android:singleLine="true"
+                android:textColor="@color/md_black_1000"
+                android:textColorHint="@color/md_purple_50" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/addItemDescLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/addItemNameLabel"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Description"
+                android:textColor="@color/md_black_1000"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/addItemDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:background="@drawable/background_drawable_edit"
+                android:gravity="top|start"
+                android:inputType="textMultiLine"
+                android:lines="8"
+                android:minLines="6"
+                android:padding="10dp"
+                android:scrollbars="vertical"
+                android:singleLine="true"
+                android:textColor="@color/md_black_1000"
+                android:textColorHint="@color/md_purple_50" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/addItemPriceLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/addItemDescLabel"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="Price"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/addItemPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:layout_weight="1"
+                android:background="@drawable/background_drawable_edit"
+                android:gravity="top|start"
+                android:inputType="numberDecimal"
+                android:padding="10dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/md_purple_50" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linear_img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/addItemPriceLabel"
+            android:orientation="horizontal">
+
+        </LinearLayout>
+
+        <mehdi.sakout.fancybuttons.FancyButton
+            android:id="@+id/addItemButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/linear_img"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:paddingLeft="90dp"
+            android:paddingTop="10dp"
+            android:paddingRight="90dp"
+            android:paddingBottom="10dp"
+            android:text="Add Product"
+            android:textStyle="bold"
+            fancy:fb_borderColor="@color/white"
+            fancy:fb_borderWidth="1dp"
+            fancy:fb_defaultColor="@color/colorPrimaryDark"
+            fancy:fb_radius="6dp"
+            fancy:fb_textColor="@color/white"
+            fancy:fb_textSize="18dp" />
+
+    </RelativeLayout>
+</ScrollView>

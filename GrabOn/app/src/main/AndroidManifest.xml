@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".cart.Cart"></activity>
+        <activity android:name=".item.AddItem"></activity>
+        <activity android:name=".cart.Cart" />
         <activity android:name=".maps.Maps" />
         <activity android:name=".user.Profile" />
         <activity android:name=".payment.PaypalPaymentClient" />
