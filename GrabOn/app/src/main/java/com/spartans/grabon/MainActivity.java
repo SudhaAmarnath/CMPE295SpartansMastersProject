@@ -13,7 +13,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.spartans.grabon.cart.Cart;
 import com.spartans.grabon.item.AddItem;
-import com.spartans.grabon.maps.Maps;
+import com.spartans.grabon.maps.MapsActivity;
 import com.spartans.grabon.user.Profile;
 
 /**
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.map_button:
-                        Intent home = new Intent(getApplicationContext(), Maps.class);
+                        Intent home = new Intent(getApplicationContext(), MapsActivity.class);
                         startActivity(home);
                         break;
                     case R.id.add_item:
