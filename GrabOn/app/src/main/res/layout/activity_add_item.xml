@@ -125,20 +125,11 @@
                 android:textColorHint="@color/md_purple_50" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/linear_img"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/addItemPriceLabel"
-            android:orientation="horizontal">
-
-        </LinearLayout>
-
         <mehdi.sakout.fancybuttons.FancyButton
             android:id="@+id/addItemButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/linear_img"
+            android:layout_below="@id/addItemPriceLabel"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="20dp"
