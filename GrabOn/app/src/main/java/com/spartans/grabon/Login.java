@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -20,13 +19,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.spartans.grabon.utils.Singleton;
 
+import mehdi.sakout.fancybuttons.FancyButton;
+
 /**
  * Author : Sudha Amarnath on 2020-01-29
  */
 public class Login extends AppCompatActivity {
 
     private EditText loginEmail, loginPassword;
-    private Button loginButton, loginGmailButton, loginFacebookButton;
+    private FancyButton loginButton, loginGmailButton, loginFacebookButton;
     private ProgressBar loginProgressBar;
     private FirebaseAuth auth;
     private TextView loginCreateUser;

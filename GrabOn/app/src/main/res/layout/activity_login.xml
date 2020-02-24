@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -73,7 +74,7 @@
         app:layout_constraintTop_toBottomOf="@+id/LoginEmail"
         tools:targetApi="o" />
 
-    <Button
+    <mehdi.sakout.fancybuttons.FancyButton
         android:id="@+id/LoginButton"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="175dp"
@@ -88,9 +89,15 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/LoginPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/LoginPassword"
+        fancy:fb_borderColor="@color/white"
+        fancy:fb_borderWidth="1dp"
+        fancy:fb_defaultColor="@color/colorPrimaryDark"
+        fancy:fb_radius="6dp"
+        fancy:fb_textColor="@color/white"
+        fancy:fb_textSize="18dp" />
 
-    <Button
+    <mehdi.sakout.fancybuttons.FancyButton
         android:id="@+id/LoginGmailButton"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="175dp"
@@ -103,9 +110,15 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/LoginButton" />
+        app:layout_constraintTop_toBottomOf="@+id/LoginButton"
+        fancy:fb_borderColor="@color/white"
+        fancy:fb_borderWidth="1dp"
+        fancy:fb_defaultColor="@color/colorPrimaryDark"
+        fancy:fb_radius="6dp"
+        fancy:fb_textColor="@color/white"
+        fancy:fb_textSize="18dp" />
 
-    <Button
+    <mehdi.sakout.fancybuttons.FancyButton
         android:id="@+id/LoginFacebookButton"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="175dp"
@@ -118,7 +131,13 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/LoginGmailButton" />
+        app:layout_constraintTop_toBottomOf="@+id/LoginGmailButton"
+        fancy:fb_borderColor="@color/white"
+        fancy:fb_borderWidth="1dp"
+        fancy:fb_defaultColor="@color/colorPrimaryDark"
+        fancy:fb_radius="6dp"
+        fancy:fb_textColor="@color/white"
+        fancy:fb_textSize="18dp" />
 
     <TextView
         android:id="@+id/LoginCreateUser"
@@ -127,7 +146,7 @@
         android:layout_marginTop="20dp"
         android:text="@string/user_signup"
         android:textAlignment="center"
-        android:textColor="@android:color/holo_purple"
+        android:textColor="@color/colorPrimaryDark"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

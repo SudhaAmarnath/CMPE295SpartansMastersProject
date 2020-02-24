@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -28,13 +27,15 @@ import com.spartans.grabon.utils.Singleton;
 import java.util.HashMap;
 import java.util.Map;
 
+import mehdi.sakout.fancybuttons.FancyButton;
+
 /**
  * Author : Sudha Amarnath on 2020-01-29
  */
 public class Register extends AppCompatActivity {
 
     private EditText registerFirstName, registerLastName, registerEmail, registerPassword;
-    private Button registerSignUp;
+    private FancyButton registerSignUp;
     private TextView registerAlreadyLogin;
     private ProgressBar registerProgressBar;
     private FirebaseAuth auth;

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -104,7 +105,7 @@
         app:layout_constraintTop_toBottomOf="@+id/RegisterEmail"
         android:autofillHints="" />
 
-    <Button
+    <mehdi.sakout.fancybuttons.FancyButton
         android:id="@+id/RegisterSignUp"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="146dp"
@@ -117,7 +118,13 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/RegisterPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/RegisterPassword"
+        fancy:fb_borderColor="@color/white"
+        fancy:fb_borderWidth="1dp"
+        fancy:fb_defaultColor="@color/colorPrimaryDark"
+        fancy:fb_radius="6dp"
+        fancy:fb_textColor="@color/white"
+        fancy:fb_textSize="18dp" />
 
     <TextView
         android:id="@+id/RegisterAlreadyLogin"
@@ -126,7 +133,7 @@
         android:layout_marginTop="20dp"
         android:text="@string/already_registered_login"
         android:textAlignment="center"
-        android:textColor="@android:color/holo_purple"
+        android:textColor="@color/colorPrimaryDark"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
