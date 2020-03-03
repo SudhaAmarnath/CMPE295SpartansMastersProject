@@ -76,16 +76,6 @@ public class Register extends AppCompatActivity {
                 final String firstName = registerFirstName.getText().toString().trim();
                 final String lastName = registerLastName.getText().toString().trim();
 
-                if(TextUtils.isEmpty(email)) {
-                    registerEmail.setError("Enter Email ID");
-                    return;
-                }
-
-                if(TextUtils.isEmpty(password)) {
-                    registerPassword.setError("Enter Password");
-                    return;
-                }
-
                 if(TextUtils.isEmpty(firstName)) {
                     registerFirstName.setError("Enter First Name");
                     return;
@@ -93,6 +83,16 @@ public class Register extends AppCompatActivity {
 
                 if(TextUtils.isEmpty(lastName)) {
                     registerLastName.setError("Enter Last Name");
+                    return;
+                }
+
+                if(TextUtils.isEmpty(email)) {
+                    registerEmail.setError("Enter Email ID");
+                    return;
+                }
+
+                if(TextUtils.isEmpty(password)) {
+                    registerPassword.setError("Enter Password");
                     return;
                 }
 
