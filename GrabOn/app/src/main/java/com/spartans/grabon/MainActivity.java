@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         FirebaseApp.initializeApp(this);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -42,20 +41,16 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.map_button:
-                        Intent home = new Intent(getApplicationContext(), MapsActivity.class);
-                        startActivity(home);
+                        startActivity(new Intent(getApplicationContext(),MapsActivity.class));
                         break;
                     case R.id.add_item:
-                        Intent additem = new Intent(getApplicationContext(), AddItem.class);
-                        startActivity(additem);
+                        startActivity(new Intent(getApplicationContext(),AddItem.class));
                         break;
                     case R.id.navigation_cart:
-                        Intent cart = new Intent(getApplicationContext(), Cart.class);
-                        startActivity(cart);
+                        startActivity(new Intent(getApplicationContext(),Cart.class));
                         break;
                     case R.id.profile_button:
-                        Intent profile = new Intent(getApplicationContext(), Profile.class);
-                        startActivity(profile);
+                        startActivity(new Intent(getApplicationContext(),Profile.class));
                         break;
                 }
                 return true;
