@@ -10,7 +10,7 @@ public class Item {
     private long itemID;
     private String itemName;
     private String itemDescription;
-    private long itemSellerID;
+    private String itemSellerUID;
     private float  itemPrice;
     private String itemImage;
     private ArrayList itemImageList;
@@ -19,23 +19,23 @@ public class Item {
 
     }
 
-    public Item(long itemID, String itemName, String itemDescription, long itemSellerID, float itemPrice, String itemImage) {
+    public Item(long itemID, String itemName, String itemDescription, String itemSellerUID, float itemPrice, String itemImage) {
 
         this.itemID = itemID;
         this.itemName = itemName;
         this.itemDescription = itemDescription;
-        this.itemSellerID = itemSellerID;
+        this.itemSellerUID = itemSellerUID;
         this.itemPrice = itemPrice;
         this.itemImage = itemImage;
 
     }
 
-    public Item(long itemID, String itemName, String itemDescription, long itemSellerID, float itemPrice, ArrayList itemImageList) {
+    public Item(long itemID, String itemName, String itemDescription, String itemSellerUID, float itemPrice, ArrayList itemImageList) {
 
         this.itemID = itemID;
         this.itemName = itemName;
         this.itemDescription = itemDescription;
-        this.itemSellerID = itemSellerID;
+        this.itemSellerUID = itemSellerUID;
         this.itemPrice = itemPrice;
         this.itemImageList = itemImageList;
 
@@ -46,7 +46,7 @@ public class Item {
         this.itemID = itemID;
         this.itemName = itemName;
         this.itemDescription = itemDescription;
-        this.itemSellerID = itemSellerID;
+        this.itemSellerUID = itemSellerUID;
         this.itemPrice = itemPrice;
         this.itemImage = itemImage;
 
@@ -86,12 +86,12 @@ public class Item {
         this.itemDescription = itemDescription;
     }
 
-    public long getItemSellerID() {
-        return itemSellerID;
+    public String getItemSellerUID() {
+        return itemSellerUID;
     }
 
-    public void setItemSellerID(long itemSellerID) {
-        this.itemSellerID = itemSellerID;
+    public void setItemSellerUID(String itemSellerUID) {
+        this.itemSellerUID = itemSellerUID;
     }
 
     public float getItemPrice() {
