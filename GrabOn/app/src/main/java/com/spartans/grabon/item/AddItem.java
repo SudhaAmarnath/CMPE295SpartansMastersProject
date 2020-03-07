@@ -74,7 +74,6 @@ public class AddItem extends AppCompatActivity {
         uID = auth.getCurrentUser().getUid();
         storage = Singleton.getStorage();
         storageReference = storage.getReference();
-        item = new Item();
 
         addItemImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,12 +114,18 @@ public class AddItem extends AppCompatActivity {
                                 TextUtils.isEmpty(itemDesc) == false &&
                                 TextUtils.isEmpty(itemPrice) == false) {
 
+                                item = new Item(itemName, itemDesc, uID,
+                                        Float.valueOf(itemPrice),
+                                        uri.toString(), image);
+
+                                /*
                                 item.setItemSellerUID(uID);
                                 item.setItemName(itemName);
                                 item.setItemDescription(itemDesc);
                                 item.setItemPrice(Float.valueOf(itemPrice));
                                 item.setItemImage(uri.toString());
                                 item.setItemImageList(image);
+                                */
 
                                 //Add item to the db
                                 Map<String, Object> dbitem = new HashMap<>();

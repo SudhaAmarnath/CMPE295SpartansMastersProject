@@ -30,13 +30,13 @@ public class Item {
 
     }
 
-    public Item(long itemID, String itemName, String itemDescription, String itemSellerUID, float itemPrice, ArrayList itemImageList) {
+    public Item(String itemName, String itemDescription, String itemSellerUID, float itemPrice, String itemImage, ArrayList itemImageList) {
 
-        this.itemID = itemID;
         this.itemName = itemName;
         this.itemDescription = itemDescription;
         this.itemSellerUID = itemSellerUID;
         this.itemPrice = itemPrice;
+        this.itemImage = itemImage;
         this.itemImageList = itemImageList;
 
     }

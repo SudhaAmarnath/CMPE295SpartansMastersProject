@@ -25,13 +25,14 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <ImageButton
-            android:id="@+id/addItemImage"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/background_drawable_edit"
-            android:src="@drawable/ic_add_circle_outline" />
+            <ImageButton
+                android:id="@+id/addItemImage"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:scaleType="centerInside"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/background_drawable_edit"
+                android:src="@drawable/ic_add_circle_outline" />
 
         </LinearLayout>
 
