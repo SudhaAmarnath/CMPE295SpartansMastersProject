@@ -26,7 +26,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     private ArrayList<Item> items;
     private ClickListenerItem itemClickListener;
 
-    public ItemAdapter(ArrayList<Item> products, Context context, ClickListenerItem itemClickListener) {
+    public ItemAdapter(ArrayList<Item> items, Context context, ClickListenerItem itemClickListener) {
         this.context = context;
         this.items = items;
         this.itemClickListener = itemClickListener;
@@ -44,7 +44,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         return items;
     }
 
-    @Override
+
     public int getItemCount() {
         return items.size();
     }
