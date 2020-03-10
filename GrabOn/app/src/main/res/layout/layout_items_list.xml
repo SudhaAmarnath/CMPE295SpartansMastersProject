@@ -25,8 +25,8 @@
 
             <ImageView
                 android:id="@+id/layout_items_image"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
+                android:layout_width="160dp"
+                android:layout_height="140dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/layout_items_image" />
 
@@ -36,16 +36,22 @@
             android:id="@+id/layout_items_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/old_standard_tt"
             android:text="Item test image"
+            android:textAlignment="center"
             android:textColor="@color/md_black_1000"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/layout_items_price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="1.00$"
+            android:fontFamily="@font/old_standard_tt"
+            android:text="$1.00"
+            android:textAlignment="center"
             android:textColor="@color/black"
+            android:textSize="16sp"
             android:textStyle="bold" />
     </LinearLayout>
 

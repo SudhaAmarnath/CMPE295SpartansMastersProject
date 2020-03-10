@@ -72,7 +72,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         void bindModel(Item items) {
             this.item = items;
             itemName.setText(item.getItemName());
-            itemPrice.setText(String.valueOf(item.getItemPrice()));
+            itemPrice.setText("$"+String.format("%.2f", item.getItemPrice()));
             Glide.with(context).load(item.getItemImageList().get(0)).into(itemImage);
         }
 
