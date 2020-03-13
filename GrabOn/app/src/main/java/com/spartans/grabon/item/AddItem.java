@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -31,8 +32,8 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.spartans.grabon.MainActivity;
 import com.spartans.grabon.R;
-import com.spartans.grabon.model.Item;
 import com.spartans.grabon.interfaces.FileDataImageStatus;
+import com.spartans.grabon.model.Item;
 import com.spartans.grabon.utils.Singleton;
 
 import java.util.ArrayList;
@@ -59,6 +60,7 @@ public class AddItem extends AppCompatActivity {
     private EditText addItemDesc;
     private EditText addItemPrice;
     private FancyButton addItemButton;
+    public static String docid=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,7 +143,9 @@ public class AddItem extends AppCompatActivity {
                                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                             @Override
                                             public void onSuccess(DocumentReference documentReference) {
-                                                Log.v("addItem", "Add Item Success, Document ID : " + documentReference.getId());
+                                                AddItem.docid = documentReference.getId();
+                                                documentReference.update("itemid", FieldValue.arrayUnion(AddItem.docid));
+                                                Log.v("addItem", "Add Item Success, Document ID : " + AddItem.docid);
                                             }
                                         }).addOnFailureListener(new OnFailureListener() {
                                             @Override

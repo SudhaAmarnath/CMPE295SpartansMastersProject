@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 Item item = new Item();
                                 Double price;
-
+                                item.setItemID(document.getId());
                                 item.setItemSellerUID((String) myMap.get("selleruid"));
                                 item.setItemName((String) myMap.get("itemname"));
                                 item.setItemDescription((String) myMap.get("itemdesc"));
@@ -144,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View view, Item item) {
                             Intent itemPage = new Intent(MainActivity.this, ItemActivity.class);
+                            itemPage.putExtra("itemid", item.getItemID());
                             itemPage.putExtra("selleruid",item.getItemSellerUID());
                             itemPage.putExtra("itemname",item.getItemName());
                             itemPage.putExtra("itemdesc", item.getItemDescription());
