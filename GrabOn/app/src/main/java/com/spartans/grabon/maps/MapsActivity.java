@@ -23,11 +23,14 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.clustering.ClusterManager;
 import com.spartans.grabon.R;
+import com.spartans.grabon.model.MapItem;
 
 import org.json.JSONObject;
 
@@ -52,6 +55,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     ArrayList<LatLng> markerPoints= new ArrayList<>();
+    private ClusterManager<MapItem> mClusterManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +111,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
         mMap.setMyLocationEnabled(true);
+        mMap.setBuildingsEnabled(true);
+        mMap.setIndoorEnabled(true);
+        mMap.setTrafficEnabled(true);
+        UiSettings mUiSettings = mMap.getUiSettings();
+        mUiSettings.setZoomControlsEnabled(true);
+        mUiSettings.setCompassEnabled(true);
+        mUiSettings.setMyLocationButtonEnabled(true);
+        mUiSettings.setScrollGesturesEnabled(true);
+        mUiSettings.setZoomGesturesEnabled(true);
+        mUiSettings.setTiltGesturesEnabled(true);
+        mUiSettings.setRotateGesturesEnabled(true);
 
+
+        mClusterManager = new ClusterManager<>(this, mMap);
+
+        googleMap.setOnCameraIdleListener(mClusterManager);
+        googleMap.setOnMarkerClickListener(mClusterManager);
+        googleMap.setOnInfoWindowClickListener(mClusterManager);
+        addItemsOnMap();
+        mClusterManager.cluster();
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -159,6 +182,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+    }
+
+    private void addItemsOnMap() {
+        for (int i = 0; i < 3; i++) {
+            mClusterManager.addItem(new MapItem(37.3594918, -122.0516074, "Item1", "snippet1"));
+            mClusterManager.addItem(new MapItem(37.3608915, -122.0566732, "Item2", "snippet2"));
+            mClusterManager.addItem(new MapItem(37.3636095, -122.0694625, "Item3", "snippet3"));
+        }
     }
 
     private class DownloadTask extends AsyncTask<String,Void,String> {
@@ -324,8 +355,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // When connected it will get your current location and display marker
             Location currentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(latLng).title("current location").draggable(true));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            MarkerOptions options = new MarkerOptions();
+            options.position(latLng);
+            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
+            options.title("Current Location");
+            options.draggable(true);
+            mMap.addMarker(options);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
         }
 
     }
@@ -340,5 +376,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Toast.makeText(this, "Please check internet", Toast.LENGTH_SHORT).show();
 
     }
+
 
 }
