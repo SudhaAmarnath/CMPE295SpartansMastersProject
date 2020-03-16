@@ -7,9 +7,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -21,6 +20,8 @@ import com.spartans.grabon.R;
 
 import javax.annotation.Nullable;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 /**
  * Author : Sudha Amarnath on 2020-02-19
  */
@@ -28,6 +29,8 @@ public class Profile extends AppCompatActivity {
 
     public static final String TAG = "TAG";
     private ListenerRegistration documentRefRegistration;
+    private FirebaseUser loggedinUser;
+    private String providerID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,26 +52,43 @@ public class Profile extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
+        loggedinUser = firebaseAuth.getCurrentUser();
 
-        uID = firebaseAuth.getCurrentUser().getUid();
+        if (loggedinUser != null) {
+            providerID = loggedinUser.getProviders().get(0);
+            uID = loggedinUser.getUid();
 
-        DocumentReference documentReference = firebaseFirestore.collection("users").document(uID);
-        documentRefRegistration = documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                firstname.setText(documentSnapshot.getString("firstname"));
-                lastname.setText(documentSnapshot.getString("lastname"));
-                email.setText(documentSnapshot.getString("email"));
-                phone.setText("+1123456789");
+            if (providerID.equals("google.com")) {
+                firstname.setText(loggedinUser.getDisplayName());
+                lastname.setText("");
+                email.setText(loggedinUser.getEmail());
+                phone.setText(loggedinUser.getPhoneNumber());
+            } else {
+                DocumentReference documentReference = firebaseFirestore.collection("users").document(uID);
+                documentRefRegistration = documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                        firstname.setText(documentSnapshot.getString("firstname"));
+                        lastname.setText(documentSnapshot.getString("lastname"));
+                        email.setText(documentSnapshot.getString("email"));
+                        phone.setText("+1123456789");
+                    }
+                });
             }
-        });
+        }
 
         userLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    documentRefRegistration.remove();
+                    if (documentRefRegistration!=null) {
+                        documentRefRegistration.remove();
+                    }
                     FirebaseAuth.getInstance().signOut();//logout
+
+                    if (providerID.equals("google.com")) {
+                        Login.mGoogleSignInClient.signOut();
+                    }
                 } catch (Exception logoutException) {
                     Log.d(TAG, "logoutException: " + logoutException.toString());
                 }
