@@ -108,7 +108,7 @@
     <mehdi.sakout.fancybuttons.FancyButton
         android:id="@+id/RegisterSignUp"
         style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="146dp"
+        android:layout_width="240dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="@string/sign_up"

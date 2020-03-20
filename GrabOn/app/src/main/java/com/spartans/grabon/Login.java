@@ -36,8 +36,8 @@ import mehdi.sakout.fancybuttons.FancyButton;
 public class Login extends AppCompatActivity {
 
     private EditText loginEmail, loginPassword;
-    private FancyButton loginButton, loginFacebookButton;
-    private com.google.android.gms.common.SignInButton loginGmailButton;
+    private FancyButton loginButton, loginGmailButton, loginFacebookButton;
+    //private com.google.android.gms.common.SignInButton loginGmailButton;
     private ProgressBar loginProgressBar;
     private FirebaseAuth auth;
     private TextView loginCreateUser;
