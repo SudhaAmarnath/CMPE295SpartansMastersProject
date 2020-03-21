@@ -1,27 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".cart.Cart">
 
-
-    <Button
-        android:id="@+id/CartProceedForPayment"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="200dp"
-        android:layout_height="51dp"
-        android:layout_marginTop="200dp"
-        android:text="@string/proceed_for_payment"
-        android:textAlignment="center"
-        android:textAllCaps="false"
-        android:textSize="18sp"
-        android:textStyle="bold"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/CartToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/CartTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/old_standard_tt"
+            android:text="Cart Items"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.appcompat.widget.Toolbar>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/CartItemsList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/CartToolbar"
+        android:layout_marginBottom="100dp"/>
+
+
+    <TextView
+        android:id="@+id/CartItemsTotal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/CartButtons"
+        android:background="@color/white"
+        android:fontFamily="@font/old_standard_tt"
+        android:gravity="end"
+        android:paddingTop="10dp"
+        android:paddingRight="50dp"
+        android:paddingBottom="10dp"
+        android:text="Total: $10"
+        android:textColor="@color/md_black_1000"
+        android:textSize="18sp" />
+
+
+    <LinearLayout
+        android:id="@+id/CartButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:gravity="center_vertical">
+
+
+    <mehdi.sakout.fancybuttons.FancyButton
+        android:id="@+id/CartBackToItems"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_weight="2"
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="10dp"
+        fancy:fb_borderColor="#FFFFFF"
+        fancy:fb_borderWidth="1dp"
+        fancy:fb_defaultColor="@color/colorPrimaryDark"
+        fancy:fb_radius="6dp"
+        fancy:fb_text="Back To Items"
+        fancy:fb_textColor="#FFFFFF"
+        fancy:fb_textSize="18dp" />
+
+    <mehdi.sakout.fancybuttons.FancyButton
+        android:id="@+id/CartProceedForPayment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:layout_margin="10dp"
+        android:paddingLeft="30dp"
+        android:paddingTop="10dp"
+        android:paddingRight="30dp"
+        android:paddingBottom="10dp"
+        android:text="Checkout Now"
+        fancy:fb_borderColor="#FFFFFF"
+        fancy:fb_borderWidth="1dp"
+        fancy:fb_defaultColor="@color/colorPrimaryDark"
+        fancy:fb_radius="6dp"
+        fancy:fb_textColor="#FFFFFF"
+        fancy:fb_textSize="18dp" />
+
+
+    </LinearLayout>
+
+</RelativeLayout>
