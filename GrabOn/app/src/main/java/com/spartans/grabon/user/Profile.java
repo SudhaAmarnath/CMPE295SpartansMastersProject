@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -55,10 +56,10 @@ public class Profile extends AppCompatActivity {
         loggedinUser = firebaseAuth.getCurrentUser();
 
         if (loggedinUser != null) {
-            providerID = loggedinUser.getProviders().get(0);
+            providerID = loggedinUser.getProviderData().get(1).getProviderId();
             uID = loggedinUser.getUid();
 
-            if (providerID.equals("google.com")) {
+            if (providerID.equals("google.com") || providerID.equals("facebook.com")) {
                 firstname.setText(loggedinUser.getDisplayName());
                 lastname.setText("");
                 email.setText(loggedinUser.getEmail());
@@ -88,6 +89,8 @@ public class Profile extends AppCompatActivity {
 
                     if (providerID.equals("google.com")) {
                         Login.mGoogleSignInClient.signOut();
+                    } else if (providerID.equals("facebook.com")) {
+                        LoginManager.getInstance().logOut();
                     }
                 } catch (Exception logoutException) {
                     Log.d(TAG, "logoutException: " + logoutException.toString());

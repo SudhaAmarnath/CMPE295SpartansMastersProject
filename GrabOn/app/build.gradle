@@ -49,4 +49,8 @@ dependencies {
 
     // Google Login API
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
+
+    // Facebook Login API
+    implementation 'com.facebook.android:facebook-login:[5,6)'
+    implementation 'com.google.firebase:firebase-auth:19.3.0'
 }
