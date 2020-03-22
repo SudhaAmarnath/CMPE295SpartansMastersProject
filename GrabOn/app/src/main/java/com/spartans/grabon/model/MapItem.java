@@ -15,7 +15,7 @@ public class MapItem implements ClusterItem {
     private String snippet;
 
     public MapItem (double latitude, double longitude, String title, String snippet) {
-        mPosition = new LatLng(latitude, longitude);
+        this.mPosition = new LatLng(latitude, longitude);
         this.title = title;
         this.snippet = snippet;
     }

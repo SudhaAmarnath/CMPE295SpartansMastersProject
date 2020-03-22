@@ -1,6 +1,7 @@
 package com.spartans.grabon.item;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,9 +20,13 @@ import com.spartans.grabon.model.Item;
 import com.spartans.grabon.utils.Singleton;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import mehdi.sakout.fancybuttons.FancyButton;
 
+/**
+ * Author : Sudha Amarnath on 2020-03-09
+ */
 public class ItemActivity extends AppCompatActivity {
 
     private String itemID;
@@ -113,20 +118,28 @@ public class ItemActivity extends AppCompatActivity {
 
     public void addItemToTinyDB(Item item, TinyDB tinyDB) {
 
-        ArrayList<Object> objects = new ArrayList<Object>();
-        objects.add((Object)item);
-        tinyDB = new TinyDB(getApplicationContext());
-        tinyDB.putListObject(user.getUid(), objects);
+        ArrayList<Object> savedObjects = tinyDB.getListObject(user.getUid(), Item.class);
+        // Add item as object to the tinyDB
+        savedObjects.add((Object) item);
+        tinyDB.putListObject(user.getUid(), savedObjects);
+        Log.v("TinDB Add", "Item:" + item.getItemID() + " is added");
 
     }
 
     public void removeItemFromTinyDB(Item item, TinyDB tinyDB) {
 
-        ArrayList<Object> objects = new ArrayList<Object>();
-        ArrayList<Object> savedObjects;
-        savedObjects = tinyDB.getListObject(user.getUid(), Item.class);
         if (itemInTinyDB(item.getItemID(), tinyDB)) {
-            savedObjects.remove(objects.add((Object)item));
+            ArrayList<Object> savedObjects;
+            savedObjects = tinyDB.getListObject(user.getUid(), Item.class);
+            Iterator itr = savedObjects.iterator();
+            while (itr.hasNext()) {
+                Item nextItem = (Item) itr.next();
+                if (item.getItemID().equals(nextItem.getItemID())) {
+                    itr.remove();
+                    Log.v("TinDB Remove", "Item:" + item.getItemID() + " is removed");
+                }
+            }
+            tinyDB.putListObject(user.getUid(), savedObjects);
         }
 
     }

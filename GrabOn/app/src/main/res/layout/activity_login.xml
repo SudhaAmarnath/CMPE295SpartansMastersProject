@@ -77,11 +77,11 @@
     <mehdi.sakout.fancybuttons.FancyButton
         android:id="@+id/LoginButton"
         style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="175dp"
+        android:layout_width="240dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:background="@color/colorAccent"
-        android:text="@string/log_in"
+        android:text=" Sign in with Email      "
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="@android:color/background_light"
@@ -93,13 +93,16 @@
         fancy:fb_borderColor="@color/white"
         fancy:fb_borderWidth="1dp"
         fancy:fb_defaultColor="@color/colorPrimaryDark"
-        fancy:fb_radius="6dp"
+        fancy:fb_fontIconResource="\uf0e0"
+        fancy:fb_fontIconSize="18dp"
+        fancy:fb_iconPosition="left"
+        fancy:fb_radius="8dp"
         fancy:fb_textColor="@color/white"
         fancy:fb_textSize="18dp" />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/LoginGmailButton"
-        android:layout_width="175dp"
+        android:layout_width="240dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"
@@ -110,7 +113,7 @@
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/LoginFacebookButton"
-        android:layout_width="175dp"
+        android:layout_width="240dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"

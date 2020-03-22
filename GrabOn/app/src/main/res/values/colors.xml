@@ -318,6 +318,9 @@
     <color name="grey_300">#E0E0E0</color>
     <color name="grey_500">#9E000000</color>
     <color name="transparent">#00000000</color>
+    <color name="gmail">#db4437</color>
+    <color name="facebook">#3b5998</color>
+
 
 
 </resources>

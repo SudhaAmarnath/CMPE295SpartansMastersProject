@@ -17,7 +17,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.spartans.grabon.adapters.ItemAdapter;
@@ -40,7 +39,6 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "TAG";
-    private ListenerRegistration documentRefRegistration;
     private Toolbar toolbar;
     private RecyclerView recyclerViewItems;
     private FirebaseFirestore db;
@@ -124,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
                                 itemsList.add(item);
                             }
                             fileDataStatus.onSuccess(itemsList);
-
                         } else {
                             fileDataStatus.onError("Error getting data");
                             Log.w(TAG, "Error getting data.", task.getException());
@@ -169,6 +166,5 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
 
 }

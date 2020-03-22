@@ -5,9 +5,12 @@
     <string name="user_login">User Login</string>
     <string name="email_id">Email ID</string>
     <string name="password">Password</string>
-    <string name="gmail_log_in">Gmail Log In</string>
-    <string name="log_in">Log In</string>
-    <string name="facebook_log_in">Facebook Log In</string>
+
+    <!--
+    <string name="gmail_log_in"> Sign in with Google  </string>
+    <string name="log_in"> Sign in with Email      </string>
+    <string name="facebook_log_in"> Sign in with Facebook</string>
+    -->
 
     <!-- activity_register -->
     <string name="new_user_signup">New User Signup</string>
