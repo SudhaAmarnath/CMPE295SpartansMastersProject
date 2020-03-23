@@ -2,16 +2,21 @@ package com.spartans.grabon.cart;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.mukesh.tinydb.TinyDB;
 import com.spartans.grabon.MainActivity;
@@ -23,6 +28,8 @@ import com.spartans.grabon.utils.Singleton;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import mehdi.sakout.fancybuttons.FancyButton;
 
@@ -72,6 +79,7 @@ public class Cart extends AppCompatActivity {
         cartProceedForPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                createOrderInDb();
                 startActivity(new Intent(getApplicationContext(), PaypalPaymentClient.class));
                 finish();
             }
@@ -127,6 +135,32 @@ public class Cart extends AppCompatActivity {
             cartItemAdapter.getItems().addAll(items);
             cartItemAdapter.notifyDataSetChanged();
         }
+    }
+
+
+    public void createOrderInDb() {
+
+        Map<String, Object> dborder = new HashMap<>();
+        dborder.put("user_id", user.getUid());
+        dborder.put("seller_id", itemsList.get(0).getItemSellerUID());
+        dborder.put("items", itemsList);
+
+        db.collection("orders")
+                .add(dborder)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.v("Order:", documentReference.getId() + " successfully added");
+                        tinyDB.remove(user.getUid());
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                        Log.v("Order:", "Create failed");
+                    }
+                });
+
     }
 
 
