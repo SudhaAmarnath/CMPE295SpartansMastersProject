@@ -25,6 +25,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -32,8 +34,12 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.spartans.grabon.utils.Singleton;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import mehdi.sakout.fancybuttons.FancyButton;
 
@@ -216,7 +222,7 @@ public class Login extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = auth.getCurrentUser();
-
+                            AddUserToFirebaseDB();
                             Toast.makeText(Login.this, "User Signed In", Toast.LENGTH_SHORT).show();
                         } else {
                             // If sign in fails, display a message to the user.
@@ -243,6 +249,7 @@ public class Login extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = auth.getCurrentUser();
+                            AddUserToFirebaseDB();
                             startActivity(new Intent(getApplicationContext(),MainActivity.class));
                             //updateUI(user);
                         } else {
@@ -256,5 +263,34 @@ public class Login extends AppCompatActivity {
                         // ...
                     }
                 });
+    }
+
+    private void AddUserToFirebaseDB() {
+        FirebaseUser loggedinUser = auth.getCurrentUser();
+        if(loggedinUser!=null) {
+            uID = loggedinUser.getUid();
+            if(uID != null) {
+                String emptyVal = "";
+                DocumentReference documentReference = db.collection("users").document(uID);
+                Map<String, Object> user = new HashMap<>();
+                user.put("firstname", loggedinUser.getDisplayName());
+                user.put("lastname", emptyVal);
+                user.put("email", loggedinUser.getEmail());
+                user.put("password", emptyVal);
+                documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "onSuccess: User Profile is created for " + uID);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "onFailure: " + e.toString());
+                    }
+                });
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                Toast.makeText(Login.this, "User Registered", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
