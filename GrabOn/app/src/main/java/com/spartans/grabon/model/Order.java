@@ -11,13 +11,15 @@ public class Order {
     private String userID;
     private String itemSellerUID;
     private ArrayList<Item> items;
+    private double orderTotal;
 
-    public Order (String orderID, String userID, String itemSellerUID,  ArrayList<Item> items) {
+    public Order (String orderID, String userID, String itemSellerUID,  ArrayList<Item> items, double orderTotal) {
 
         this.orderID = orderID;
         this.userID = userID;
         this.items = items;
         this.itemSellerUID = itemSellerUID;
+        this.orderTotal = orderTotal;
 
     }
 
@@ -52,5 +54,14 @@ public class Order {
     public void setItems(ArrayList<Item> items) {
         this.items = items;
     }
+
+    public double getOrderTotal() {
+        return orderTotal;
+    }
+
+    public void setOrderTotal(double orderTotal) {
+        this.orderTotal = orderTotal;
+    }
+
 
 }
