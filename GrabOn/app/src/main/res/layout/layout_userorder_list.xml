@@ -34,7 +34,7 @@
                     android:textStyle="bold"
                     android:fontFamily="@font/old_standard_tt"
                     android:textColor="@color/colorPrimaryDark"
-                    android:textSize="20dp" />
+                    android:textSize="18dp" />
                 <TextView
                     android:id="@+id/layout_userorder_id"
                     android:layout_width="match_parent"
@@ -42,9 +42,14 @@
                     android:fontFamily="@font/old_standard_tt"
                     android:text="123456"
                     android:textColor="@color/black"
-                    android:textSize="20dp" />
+                    android:textSize="18dp" />
 
             </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/layout_userorder_itemslist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -58,7 +63,7 @@
                     android:textStyle="bold"
                     android:fontFamily="@font/old_standard_tt"
                     android:textColor="@color/colorPrimaryDark"
-                    android:textSize="20dp" />
+                    android:textSize="18dp" />
 
                 <TextView
                     android:id="@+id/layout_userorder_totalitems"
@@ -67,7 +72,7 @@
                     android:text="10"
                     android:fontFamily="@font/old_standard_tt"
                     android:textColor="@color/black"
-                    android:textSize="20dp"/>
+                    android:textSize="18dp"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -75,7 +80,7 @@
                     android:fontFamily="@font/old_standard_tt"
                     android:text="      Total Price : "
                     android:textColor="@color/colorPrimaryDark"
-                    android:textSize="20dp"
+                    android:textSize="18dp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -85,14 +90,9 @@
                     android:text="$1.00"
                     android:fontFamily="@font/old_standard_tt"
                     android:textColor="@color/black"
-                    android:textSize="20dp"/>
+                    android:textSize="18dp"/>
 
             </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/layout_userorder_itemslist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
 
         </LinearLayout>
 
