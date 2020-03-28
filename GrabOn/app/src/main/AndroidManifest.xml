@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".item.ItemActivity"></activity>
+        <activity android:name=".order.OrdersActivity" />
+        <activity android:name=".item.ItemActivity" />
         <activity android:name=".item.AddItem" />
         <activity android:name=".cart.Cart" />
         <!--
@@ -46,11 +47,9 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id"/>
-
+            android:value="@string/facebook_app_id" />
     </application>
 
 </manifest>

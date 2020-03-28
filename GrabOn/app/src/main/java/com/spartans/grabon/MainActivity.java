@@ -73,7 +73,8 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(new Intent(getApplicationContext(),Cart.class));
                         break;
                     case R.id.profile_button:
-                        startActivity(new Intent(getApplicationContext(),Profile.class));
+                        //startActivity(new Intent(getApplicationContext(), OrdersActivity.class));
+                        startActivity(new Intent(getApplicationContext(), Profile.class));
                         break;
                 }
                 return true;
