@@ -51,6 +51,7 @@ public class Cart extends AppCompatActivity {
     private ArrayList<Item> itemsList = new ArrayList<>();
     private CartItemAdapter cartItemAdapter;
     private TinyDB tinyDB;
+    private static double totalPrice;
 
     private FirebaseUser user = Singleton.getUser();
 
@@ -80,6 +81,7 @@ public class Cart extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 createOrderInDb();
+                //startActivity(new Intent(getApplicationContext(), OrdersActivity.class));
                 startActivity(new Intent(getApplicationContext(), PaypalPaymentClient.class));
                 finish();
             }
@@ -122,11 +124,11 @@ public class Cart extends AppCompatActivity {
             cartItemAdapter = new CartItemAdapter(items, Cart.this);
             recyclerViewItems.setAdapter(cartItemAdapter);
             if (!items.isEmpty()) {
-                int totalPrice = 0;
+                 Cart.totalPrice= 0;
                 for (int i = 0; i < items.size(); i++) {
-                    totalPrice += items.get(i).getItemPrice();
+                    Cart.totalPrice += items.get(i).getItemPrice();
                 }
-                cartsItemsTotal.setText("Total Price: $" + totalPrice);
+                cartsItemsTotal.setText("Total Price: $" + Cart.totalPrice);
             } else {
                 cartsItemsTotal.setVisibility(View.GONE);
             }
@@ -144,6 +146,7 @@ public class Cart extends AppCompatActivity {
         dborder.put("user_id", user.getUid());
         dborder.put("seller_id", itemsList.get(0).getItemSellerUID());
         dborder.put("items", itemsList);
+        dborder.put("ordertotal", Cart.totalPrice);
 
         db.collection("orders")
                 .add(dborder)
