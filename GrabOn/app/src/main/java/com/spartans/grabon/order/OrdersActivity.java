@@ -10,11 +10,15 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.spartans.grabon.R;
+import com.spartans.grabon.fragments.SellerOrders;
 import com.spartans.grabon.fragments.UserOrders;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Author : Sudha Amarnath on 2020-03-26
+ */
 public class OrdersActivity extends AppCompatActivity {
 
     private TabLayout tabLayout;
@@ -26,8 +30,10 @@ public class OrdersActivity extends AppCompatActivity {
         setContentView(R.layout.activity_orders);
 
         viewPager = findViewById(R.id.OrdersViewPager);
+
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPagerAdapter.addFragment(new UserOrders(), "Placed Orders");
+        viewPagerAdapter.addFragment(new SellerOrders(), "Received Orders");
         viewPager.setAdapter(viewPagerAdapter);
 
         tabLayout = findViewById(R.id.OrdersTabs);
@@ -57,6 +63,10 @@ public class OrdersActivity extends AppCompatActivity {
         public void addFragment(Fragment fragment, String name) {
             fragmentArrayList.add(fragment);
             fragmentTitleArrayList.add(name);
+        }
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return fragmentTitleArrayList.get(position);
         }
 
     }

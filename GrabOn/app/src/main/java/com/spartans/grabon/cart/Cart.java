@@ -124,7 +124,7 @@ public class Cart extends AppCompatActivity {
             cartItemAdapter = new CartItemAdapter(items, Cart.this);
             recyclerViewItems.setAdapter(cartItemAdapter);
             if (!items.isEmpty()) {
-                 Cart.totalPrice= 0;
+                Cart.totalPrice= 0;
                 for (int i = 0; i < items.size(); i++) {
                     Cart.totalPrice += items.get(i).getItemPrice();
                 }
