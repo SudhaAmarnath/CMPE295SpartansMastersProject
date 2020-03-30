@@ -81,7 +81,6 @@ public class Cart extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 createOrderInDb();
-                //startActivity(new Intent(getApplicationContext(), OrdersActivity.class));
                 startActivity(new Intent(getApplicationContext(), PaypalPaymentClient.class));
                 finish();
             }

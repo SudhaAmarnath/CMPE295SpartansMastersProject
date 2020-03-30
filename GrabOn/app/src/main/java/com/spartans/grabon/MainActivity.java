@@ -1,6 +1,5 @@
 package com.spartans.grabon;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,7 +17,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.applozic.mobicomkit.api.account.register.RegistrationResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomappbar.BottomAppBar;
@@ -35,16 +33,17 @@ import com.spartans.grabon.fragments.BottomSheetNavigationFragment;
 import com.spartans.grabon.interfaces.ClickListenerItem;
 import com.spartans.grabon.interfaces.FileDataStatus;
 import com.spartans.grabon.item.ItemActivity;
+import com.spartans.grabon.item.UpdateItem;
 import com.spartans.grabon.model.Item;
 import com.spartans.grabon.utils.Singleton;
-import io.kommunicate.KmConversationBuilder;
-import io.kommunicate.Kommunicate;
-import io.kommunicate.callbacks.KMLoginHandler;
-import io.kommunicate.callbacks.KmCallback;
-import io.kommunicate.users.KMUser;
 
 import java.util.ArrayList;
 import java.util.Map;
+
+import io.kommunicate.KmConversationBuilder;
+import io.kommunicate.Kommunicate;
+import io.kommunicate.callbacks.KmCallback;
+import io.kommunicate.users.KMUser;
 
 /**
  * Author : Sudha Amarnath on 2020-01-29
@@ -116,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
 
                                     }
                                 }
-
                                 Item item = new Item();
                                 Double price;
                                 item.setItemID(document.getId());
@@ -147,15 +145,27 @@ public class MainActivity extends AppCompatActivity {
                     itemAdapter = new ItemAdapter(itemsList, MainActivity.this, new ClickListenerItem() {
                         @Override
                         public void onClick(View view, Item item) {
-                            Intent itemPage = new Intent(MainActivity.this, ItemActivity.class);
-                            itemPage.putExtra("itemid", item.getItemID());
-                            itemPage.putExtra("selleruid",item.getItemSellerUID());
-                            itemPage.putExtra("itemname",item.getItemName());
-                            itemPage.putExtra("itemdesc", item.getItemDescription());
-                            itemPage.putExtra("itemprice", item.getItemPrice());
-                            itemPage.putExtra("itemimage", item.getItemImage());
-                            itemPage.putExtra("itemimagelist", item.getItemImageList());
-                            startActivity(itemPage);
+                            if (loggedinUser.getUid().matches(item.getItemSellerUID())) {
+                                Intent updateItemPage = new Intent(MainActivity.this, UpdateItem.class);
+                                updateItemPage.putExtra("itemid", item.getItemID());
+                                updateItemPage.putExtra("selleruid",item.getItemSellerUID());
+                                updateItemPage.putExtra("itemname",item.getItemName());
+                                updateItemPage.putExtra("itemdesc", item.getItemDescription());
+                                updateItemPage.putExtra("itemprice", item.getItemPrice());
+                                updateItemPage.putExtra("itemimage", item.getItemImage());
+                                updateItemPage.putExtra("itemimagelist", item.getItemImageList());
+                                startActivity(updateItemPage);
+                            } else {
+                                Intent itemPage = new Intent(MainActivity.this, ItemActivity.class);
+                                itemPage.putExtra("itemid", item.getItemID());
+                                itemPage.putExtra("selleruid",item.getItemSellerUID());
+                                itemPage.putExtra("itemname",item.getItemName());
+                                itemPage.putExtra("itemdesc", item.getItemDescription());
+                                itemPage.putExtra("itemprice", item.getItemPrice());
+                                itemPage.putExtra("itemimage", item.getItemImage());
+                                itemPage.putExtra("itemimagelist", item.getItemImageList());
+                                startActivity(itemPage);
+                            }
                         }
                     });
                     recyclerViewItems.setAdapter(itemAdapter);

@@ -138,7 +138,7 @@
             android:paddingTop="10dp"
             android:paddingRight="90dp"
             android:paddingBottom="10dp"
-            android:text="Add Product"
+            android:text="Add Item"
             android:textStyle="bold"
             fancy:fb_borderColor="@color/white"
             fancy:fb_borderWidth="1dp"
