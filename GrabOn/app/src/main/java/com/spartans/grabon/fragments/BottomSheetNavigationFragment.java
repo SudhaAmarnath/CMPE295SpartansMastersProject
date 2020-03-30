@@ -17,7 +17,9 @@ import com.google.android.material.navigation.NavigationView;
 import com.spartans.grabon.R;
 import com.spartans.grabon.cart.Cart;
 import com.spartans.grabon.item.AddItem;
+import com.spartans.grabon.item.PostedItems;
 import com.spartans.grabon.maps.MapsActivity;
+import com.spartans.grabon.order.OrdersActivity;
 import com.spartans.grabon.user.Profile;
 
 public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
@@ -86,6 +88,14 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
                         break;
                     case R.id.nav04:
                         intent = new Intent(getActivity(), Profile.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.nav05:
+                        intent = new Intent(getActivity(), OrdersActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.nav06:
+                        intent = new Intent(getActivity(), PostedItems.class);
                         startActivity(intent);
                         break;
                 }

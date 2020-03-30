@@ -70,7 +70,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|right|end"
                     android:clickable="true"
-                    android:src="@drawable/ic_chat_black_24dp"/>
+                    android:src="@drawable/ic_chat_black_24dp"
+                    app:backgroundTint="@color/colorPrimary" />
 
             </LinearLayout>
         </RelativeLayout>
@@ -81,7 +82,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"/>
-    <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/coordinatorLayout"
         android:layout_width="match_parent"
@@ -108,6 +110,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/ic_add_black_24dp"
         android:tint="@android:color/white"
+        app:backgroundTint="@color/colorPrimary"
         app:fabSize="normal"
         app:layout_anchor="@+id/bar"
         app:layout_anchorGravity="top|center" />

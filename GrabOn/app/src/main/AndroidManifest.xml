@@ -15,6 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".item.PostedItems"></activity>
         <activity android:name=".order.OrdersActivity" />
         <activity android:name=".item.ItemActivity" />
         <activity android:name=".item.AddItem" />
