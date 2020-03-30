@@ -3,8 +3,13 @@ package com.spartans.grabon;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.SearchView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,20 +19,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.spartans.grabon.adapters.ItemAdapter;
-import com.spartans.grabon.cart.Cart;
+import com.spartans.grabon.fragments.BottomSheetNavigationFragment;
 import com.spartans.grabon.interfaces.ClickListenerItem;
 import com.spartans.grabon.interfaces.FileDataStatus;
-import com.spartans.grabon.item.AddItem;
 import com.spartans.grabon.item.ItemActivity;
-import com.spartans.grabon.maps.MapsActivity;
 import com.spartans.grabon.model.Item;
-import com.spartans.grabon.user.Profile;
 import com.spartans.grabon.utils.Singleton;
 
 import java.util.ArrayList;
@@ -44,11 +47,14 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private ArrayList<Item> itemsList = new ArrayList<>();
     private ItemAdapter itemAdapter;
+    ArrayAdapter<String> adapter;
+    private BottomAppBar bottomAppBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setUpBottomAppBar();
 
         FirebaseApp.initializeApp(this);
 
@@ -58,36 +64,12 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
 
-        BottomNavigationView mBottomNav = findViewById(R.id.MainBottomNavigation);
-        mBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.map_button:
-                        startActivity(new Intent(getApplicationContext(),MapsActivity.class));
-                        break;
-                    case R.id.add_item:
-                        startActivity(new Intent(getApplicationContext(),AddItem.class));
-                        break;
-                    case R.id.navigation_cart:
-                        startActivity(new Intent(getApplicationContext(),Cart.class));
-                        break;
-                    case R.id.profile_button:
-                        //startActivity(new Intent(getApplicationContext(), OrdersActivity.class));
-                        startActivity(new Intent(getApplicationContext(), Profile.class));
-                        break;
-                }
-                return true;
-            }
-        });
-
         // show 2 items in grid layout
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
         recyclerViewItems.setLayoutManager(gridLayoutManager);
         recyclerViewItems.setNestedScrollingEnabled(false);
 
         displayItems();
-
     }
 
     private void getItems(final FileDataStatus fileDataStatus) {
@@ -167,5 +149,50 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_search, menu);
+        MenuItem item = menu.findItem(R.id.menuSearch);
+        SearchView searchView = (SearchView) item.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Toast.makeText(MainActivity.this,"Searching for "+newText, Toast.LENGTH_SHORT).show();
+                Log.i("newText ",newText);
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    /**
+     * set up Bottom Bar
+     */
+    private void setUpBottomAppBar() {
+        //find id
+        bottomAppBar = findViewById(R.id.bar);
+
+        //set bottom bar to Action bar as it is similar like Toolbar
+        setSupportActionBar(bottomAppBar);
+
+        //click event over navigation menu like back arrow or hamburger icon
+        bottomAppBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //open bottom sheet
+                BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetNavigationFragment.newInstance();
+                bottomSheetDialogFragment.show(getSupportFragmentManager(), "Bottom Sheet Dialog Fragment");
+            }
+        });
+    }
+
 
 }

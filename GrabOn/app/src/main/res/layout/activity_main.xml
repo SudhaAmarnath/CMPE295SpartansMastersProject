@@ -24,7 +24,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:fontFamily="@font/old_standard_tt"
             android:text="@string/grab_on"
             android:textAlignment="center"
             android:textColor="@color/white"
@@ -73,20 +72,38 @@
         android:id="@+id/HomeActivityFrameLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent">
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/MainBottomNavigation"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginBottom="0dp"
-            app:itemBackground="@color/colorPrimary"
-            app:itemIconTint="@drawable/bottom_navigation_item_colors"
-            app:itemTextColor="@drawable/bottom_navigation_item_colors"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:menu="@menu/bottom_navigation_home" />
+        app:layout_constraintBottom_toBottomOf="parent"/>
+    <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/coordinatorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <!-- Bottom bar -->
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bar"
+        style="@style/Widget.MaterialComponents.BottomAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:backgroundTint="@color/colorPrimary"
+        app:fabAlignmentMode="center"
+        app:fabCradleMargin="5dp"
+        app:fabCradleRoundedCornerRadius="5dp"
+        app:fabCradleVerticalOffset="5dp"
+        app:hideOnScroll="true"
+        app:navigationIcon="@drawable/ic_menu_white_24dp" />
 
-    </FrameLayout>
+    <!-- Floating Action button -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_add_black_24dp"
+        android:tint="@android:color/white"
+        app:fabSize="normal"
+        app:layout_anchor="@+id/bar"
+        app:layout_anchorGravity="top|center" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
