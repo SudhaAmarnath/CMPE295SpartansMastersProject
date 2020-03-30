@@ -3,8 +3,13 @@ package com.spartans.grabon;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.SearchView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private ArrayList<Item> itemsList = new ArrayList<>();
     private ItemAdapter itemAdapter;
+    ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewItems.setNestedScrollingEnabled(false);
 
         displayItems();
-
     }
 
     private void getItems(final FileDataStatus fileDataStatus) {
@@ -167,5 +172,28 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_search, menu);
+        MenuItem item = menu.findItem(R.id.menuSearch);
+        SearchView searchView = (SearchView) item.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Toast.makeText(MainActivity.this,"Searching for "+newText, Toast.LENGTH_SHORT).show();
+                Log.i("newText ",newText);
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
+
 
 }
