@@ -1,5 +1,6 @@
 package com.spartans.grabon.user;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +23,8 @@ import com.spartans.grabon.R;
 import javax.annotation.Nullable;
 
 import androidx.appcompat.app.AppCompatActivity;
+import io.kommunicate.Kommunicate;
+import io.kommunicate.callbacks.KMLogoutHandler;
 
 /**
  * Author : Sudha Amarnath on 2020-02-19
@@ -92,6 +95,21 @@ public class Profile extends AppCompatActivity {
                     } else if (providerID.equals("facebook.com")) {
                         LoginManager.getInstance().logOut();
                     }
+
+                    // Logout chatbot
+                    Kommunicate.logout(getApplicationContext(), new KMLogoutHandler() {
+                        @Override
+                        public void onSuccess(Context context) {
+                            Log.i("Logout","Success");
+                        }
+
+                        @Override
+                        public void onFailure(Exception exception) {
+                            Log.i("Logout","Failed");
+
+                        }
+                    });
+
                 } catch (Exception logoutException) {
                     Log.d(TAG, "logoutException: " + logoutException.toString());
                 }

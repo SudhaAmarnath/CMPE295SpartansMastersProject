@@ -1,5 +1,6 @@
 package com.spartans.grabon;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,11 +18,15 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.applozic.mobicomkit.api.account.register.RegistrationResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -32,6 +37,11 @@ import com.spartans.grabon.interfaces.FileDataStatus;
 import com.spartans.grabon.item.ItemActivity;
 import com.spartans.grabon.model.Item;
 import com.spartans.grabon.utils.Singleton;
+import io.kommunicate.KmConversationBuilder;
+import io.kommunicate.Kommunicate;
+import io.kommunicate.callbacks.KMLoginHandler;
+import io.kommunicate.callbacks.KmCallback;
+import io.kommunicate.users.KMUser;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -49,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
     private ItemAdapter itemAdapter;
     ArrayAdapter<String> adapter;
     private BottomAppBar bottomAppBar;
+    private FloatingActionButton fabChat;
+    private FirebaseUser loggedinUser;
+    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +81,17 @@ public class MainActivity extends AppCompatActivity {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
         recyclerViewItems.setLayoutManager(gridLayoutManager);
         recyclerViewItems.setNestedScrollingEnabled(false);
+
+        fabChat = findViewById(R.id.fabChat);
+        firebaseAuth = FirebaseAuth.getInstance();
+        loggedinUser = firebaseAuth.getCurrentUser();
+
+        fabChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startChat();
+            }
+        });
 
         displayItems();
     }
@@ -194,5 +218,26 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // GarbOn Chatbot
+    private void startChat() {
+
+        Kommunicate.init(getApplicationContext(), "12758b23184872aad1fafe101f6efc98b");
+        KMUser user = new KMUser();
+        user.setUserId(loggedinUser.getEmail());
+
+        new KmConversationBuilder(getApplicationContext())
+                .setKmUser(user)
+                .launchConversation(new KmCallback() {
+                    @Override
+                    public void onSuccess(Object message) {
+                        Log.d("Conversation", "Success : " + message);
+                    }
+
+                    @Override
+                    public void onFailure(Object error) {
+                        Log.d("Conversation", "Failure : " + error);
+                    }
+                });
+    }
 
 }
