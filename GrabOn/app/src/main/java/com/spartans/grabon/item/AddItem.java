@@ -43,6 +43,9 @@ import java.util.UUID;
 
 import mehdi.sakout.fancybuttons.FancyButton;
 
+/**
+ * Author : Sudha Amarnath on 2020-02-23
+ */
 public class AddItem extends AppCompatActivity {
 
     private static final int SELECT_PICTURE = 1;
@@ -119,15 +122,6 @@ public class AddItem extends AppCompatActivity {
                                 item = new Item(itemName, itemDesc, uID,
                                         Float.valueOf(itemPrice),
                                         uri.toString(), image);
-
-                                /*
-                                item.setItemSellerUID(uID);
-                                item.setItemName(itemName);
-                                item.setItemDescription(itemDesc);
-                                item.setItemPrice(Float.valueOf(itemPrice));
-                                item.setItemImage(uri.toString());
-                                item.setItemImageList(image);
-                                */
 
                                 //Add item to the db
                                 Map<String, Object> dbitem = new HashMap<>();
