@@ -35,47 +35,54 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <ScrollView
-        android:id="@+id/MainItemsScrollView"
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/MainItemPullToRefresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/HomeActivityFrameLayout"
         android:layout_below="@+id/toolbar"
         android:layout_marginTop="50dp"
         app:layout_constraintTop_toTopOf="parent">
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
+        <ScrollView
+            android:id="@+id/MainItemsScrollView"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <LinearLayout
-                android:id="@+id/new_products"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginEnd="20dp"
-                android:orientation="vertical">
 
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/HomeActivityItemsList"
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:id="@+id/new_products"
                     android:layout_width="match_parent"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="100dp"
-                    android:layout_height="wrap_content"/>
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fabChat"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|right|end"
-                    android:clickable="true"
-                    android:src="@drawable/ic_chat_black_24dp"
-                    app:backgroundTint="@color/colorPrimary" />
+                    android:layout_marginStart="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:orientation="vertical">
 
-            </LinearLayout>
-        </RelativeLayout>
-    </ScrollView>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/HomeActivityItemsList"
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginBottom="100dp"
+                        android:layout_height="wrap_content"/>
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/fabChat"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|right|end"
+                        android:clickable="true"
+                        android:src="@drawable/ic_chat_black_24dp"
+                        app:backgroundTint="@color/colorPrimary" />
+
+                </LinearLayout>
+            </RelativeLayout>
+        </ScrollView>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <FrameLayout
         android:id="@+id/HomeActivityFrameLayout"

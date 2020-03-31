@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -93,6 +94,21 @@ public class MainActivity extends AppCompatActivity {
         });
 
         displayItems();
+
+        final SwipeRefreshLayout pullToRefresh = findViewById(R.id.MainItemPullToRefresh);
+        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                itemAdapter = null;
+                itemsList = new ArrayList<>();
+                GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
+                recyclerViewItems.setLayoutManager(gridLayoutManager);
+                recyclerViewItems.setNestedScrollingEnabled(false);
+                pullToRefresh.setRefreshing(false);
+                displayItems();
+            }
+        });
+
     }
 
     private void getItems(final FileDataStatus fileDataStatus) {
