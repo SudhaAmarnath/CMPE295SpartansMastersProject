@@ -131,6 +131,8 @@ public class AddItem extends AppCompatActivity {
                                 dbitem.put("itemprice", item.getItemPrice());
                                 dbitem.put("itemimage", item.getItemImage());
                                 dbitem.put("itemimagelist", item.getItemImageList());
+                                dbitem.put("itemordered", false);
+                                dbitem.put("itempicked", false);
 
                                 db.collection("items")
                                         .add(dbitem)

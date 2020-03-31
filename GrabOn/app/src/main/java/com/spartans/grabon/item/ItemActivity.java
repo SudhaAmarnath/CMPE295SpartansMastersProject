@@ -102,20 +102,6 @@ public class ItemActivity extends AppCompatActivity {
 
     }
 
-    public void addItemToTinyDBOld(ArrayList<Item> items, TinyDB tinyDB) {
-
-        items = new ArrayList<Item>();
-        ArrayList<Object> itemObjects = new ArrayList<Object>();
-
-        for(Item a : items){
-            itemObjects.add((Object)a);
-        }
-
-        tinyDB = new TinyDB(getApplicationContext());
-        tinyDB.putListObject(user.getUid(), itemObjects);
-
-    }
-
     public void addItemToTinyDB(Item item, TinyDB tinyDB) {
 
         ArrayList<Object> savedObjects = tinyDB.getListObject(user.getUid(), Item.class);

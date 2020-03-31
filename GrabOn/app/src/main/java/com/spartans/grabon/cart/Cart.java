@@ -38,7 +38,7 @@ import mehdi.sakout.fancybuttons.FancyButton;
  */
 public class Cart extends AppCompatActivity {
 
-    private String itemID;
+    private static String itemID;
     private String itemSellerUID;
     private String itemName;
     private String itemDesc;
@@ -81,6 +81,7 @@ public class Cart extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 createOrderInDb();
+                setItemOrderedInDb();
                 startActivity(new Intent(getApplicationContext(), PaypalPaymentClient.class));
                 finish();
             }
@@ -162,6 +163,32 @@ public class Cart extends AppCompatActivity {
                         Log.v("Order:", "Create failed");
                     }
                 });
+
+    }
+
+
+    public void setItemOrderedInDb() {
+
+        for(int i=0; i < itemsList.size(); i++) {
+
+            Cart.itemID = itemsList.get(i).getItemID();
+            DocumentReference updateItem = db.collection("items")
+                    .document(Cart.itemID);
+
+            updateItem.update("itemordered", true)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.v("itemordered", "Update Item Ordered flag Success : " + Cart.itemID);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.v("itemordered", "Update Item Ordered flag Failure: " + Cart.itemID);
+                }
+            });
+
+        }
 
     }
 

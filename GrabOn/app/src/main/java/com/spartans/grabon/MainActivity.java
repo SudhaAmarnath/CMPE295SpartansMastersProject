@@ -106,25 +106,27 @@ public class MainActivity extends AppCompatActivity {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 ArrayList<String> imgs = new ArrayList<>();
                                 Map<String, Object> myMap = document.getData();
-                                for (Map.Entry<String, Object> entry : myMap.entrySet()) {
-                                    if (entry.getKey().equals("itemimagelist")) {
-                                        for (Object s : (ArrayList) entry.getValue()) {
-                                            imgs.add((String) s);
-                                        }
-                                        Log.v("TagImg", entry.getValue().toString());
+                                if ((boolean) myMap.get("itemordered") == false) {
+                                    for (Map.Entry<String, Object> entry : myMap.entrySet()) {
+                                        if (entry.getKey().equals("itemimagelist")) {
+                                            for (Object s : (ArrayList) entry.getValue()) {
+                                                imgs.add((String) s);
+                                            }
+                                            Log.v("TagImg", entry.getValue().toString());
 
+                                        }
                                     }
+                                    Item item = new Item();
+                                    Double price;
+                                    item.setItemID(document.getId());
+                                    item.setItemSellerUID((String) myMap.get("selleruid"));
+                                    item.setItemName((String) myMap.get("itemname"));
+                                    item.setItemDescription((String) myMap.get("itemdesc"));
+                                    price = (Double) myMap.get("itemprice");
+                                    item.setItemPrice(price.floatValue());
+                                    item.setItemImageList(imgs);
+                                    itemsList.add(item);
                                 }
-                                Item item = new Item();
-                                Double price;
-                                item.setItemID(document.getId());
-                                item.setItemSellerUID((String) myMap.get("selleruid"));
-                                item.setItemName((String) myMap.get("itemname"));
-                                item.setItemDescription((String) myMap.get("itemdesc"));
-                                price = (Double) myMap.get("itemprice");
-                                item.setItemPrice(price.floatValue());
-                                item.setItemImageList(imgs);
-                                itemsList.add(item);
                             }
                             fileDataStatus.onSuccess(itemsList);
                         } else {

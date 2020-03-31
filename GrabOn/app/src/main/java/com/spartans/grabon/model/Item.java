@@ -14,6 +14,8 @@ public class Item {
     private float  itemPrice;
     private String itemImage;
     private ArrayList itemImageList;
+    private boolean itemOrdered;
+    private boolean itemPicked;
 
     public Item() {
 
@@ -118,4 +120,19 @@ public class Item {
         this.itemImageList = itemImageList;
     }
 
+    public boolean isItemOrdered() {
+        return itemOrdered;
+    }
+
+    public void setItemOrdered(boolean itemOrdered) {
+        this.itemOrdered = itemOrdered;
+    }
+
+    public boolean isItemPicked() {
+        return itemPicked;
+    }
+
+    public void setItemPicked(boolean itemPicked) {
+        this.itemPicked = itemPicked;
+    }
 }
