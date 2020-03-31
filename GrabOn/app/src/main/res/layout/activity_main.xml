@@ -69,15 +69,6 @@
                         android:layout_marginBottom="100dp"
                         android:layout_height="wrap_content"/>
 
-                    <com.google.android.material.floatingactionbutton.FloatingActionButton
-                        android:id="@+id/fabChat"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom|right|end"
-                        android:clickable="true"
-                        android:src="@drawable/ic_chat_black_24dp"
-                        app:backgroundTint="@color/colorPrimary" />
-
                 </LinearLayout>
             </RelativeLayout>
         </ScrollView>
@@ -121,6 +112,15 @@
         app:fabSize="normal"
         app:layout_anchor="@+id/bar"
         app:layout_anchorGravity="top|center" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabChat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right|end"
+        android:clickable="true"
+        android:src="@drawable/ic_chat_black_24dp"
+        app:backgroundTint="@color/colorPrimaryDark" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

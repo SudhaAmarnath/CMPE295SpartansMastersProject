@@ -38,7 +38,10 @@ import com.spartans.grabon.item.UpdateItem;
 import com.spartans.grabon.model.Item;
 import com.spartans.grabon.utils.Singleton;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import io.kommunicate.KmConversationBuilder;
@@ -259,6 +262,13 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Object message) {
                         Log.d("Conversation", "Success : " + message);
+                        Map<String, String> metadata = new HashMap<>();
+                        metadata.put("email", loggedinUser.getEmail());
+                        metadata.put("uID", loggedinUser.getUid());
+
+                        if (Kommunicate.isLoggedIn(getApplicationContext())) { // Pass application context
+                            Kommunicate.updateChatContext(getApplicationContext(), metadata);
+                        }
                     }
 
                     @Override
