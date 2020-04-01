@@ -36,13 +36,22 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/CartItemsList"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/MainItemPullToRefresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/CartToolbar"
-        android:layout_marginBottom="100dp"/>
+        android:layout_below="@+id/CartToolbar"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/CartItemsList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/CartToolbar"
+            android:layout_marginBottom="100dp"/>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
     <TextView

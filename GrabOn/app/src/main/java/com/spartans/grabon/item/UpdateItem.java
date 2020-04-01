@@ -52,8 +52,8 @@ public class UpdateItem extends AppCompatActivity {
     private StorageReference storageReference;
     private Item item;
     private Uri filePath;
-    private FirebaseAuth auth = Singleton.getAuth();
-    private FirebaseUser user = Singleton.getUser();
+    private FirebaseAuth auth;
+    private FirebaseUser user;
     private FirebaseFirestore db = Singleton.getDb();
     private String uID;
 
@@ -82,7 +82,8 @@ public class UpdateItem extends AppCompatActivity {
         updateItemPrice = findViewById(R.id.updateItemPrice);
         updateItemButton = findViewById(R.id.updateItemButton);
         deleteItemButton = findViewById(R.id.deleteItemButton);
-
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
         uID = auth.getCurrentUser().getUid();
         storage = Singleton.getStorage();
         storageReference = storage.getReference();

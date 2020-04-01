@@ -11,10 +11,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -22,12 +24,14 @@ import com.mukesh.tinydb.TinyDB;
 import com.spartans.grabon.MainActivity;
 import com.spartans.grabon.R;
 import com.spartans.grabon.adapters.CartItemAdapter;
+import com.spartans.grabon.interfaces.ClickListenerItem;
+import com.spartans.grabon.interfaces.FileDataStatus;
+import com.spartans.grabon.item.ItemActivity;
 import com.spartans.grabon.model.Item;
 import com.spartans.grabon.payment.PaypalPaymentClient;
 import com.spartans.grabon.utils.Singleton;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,8 +56,8 @@ public class Cart extends AppCompatActivity {
     private CartItemAdapter cartItemAdapter;
     private TinyDB tinyDB;
     private static double totalPrice;
-
-    private FirebaseUser user = Singleton.getUser();
+    private FirebaseAuth auth;
+    private FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +69,9 @@ public class Cart extends AppCompatActivity {
         cartToolbar = findViewById(R.id.CartToolbar);
         recyclerViewItems = findViewById(R.id.CartItemsList);
         db = Singleton.getDb();
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+
         setSupportActionBar(cartToolbar);
         FancyButton backToItems, cartProceedForPayment;
         backToItems = findViewById(R.id.CartBackToItems);
@@ -94,12 +101,28 @@ public class Cart extends AppCompatActivity {
         recyclerViewItems.setLayoutManager(linearLayoutManager);
         recyclerViewItems.setHasFixedSize(true);
 
-        getItemsFromTinyDB();
+        displayCartItems();
+
+        final SwipeRefreshLayout pullToRefresh = findViewById(R.id.MainItemPullToRefresh);
+        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                cartItemAdapter = null;
+                itemsList = new ArrayList<>();
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Cart.this,
+                        LinearLayoutManager.VERTICAL,
+                        false);
+                recyclerViewItems.setLayoutManager(linearLayoutManager);
+                recyclerViewItems.setHasFixedSize(true);
+                pullToRefresh.setRefreshing(false);
+                displayCartItems();
+            }
+        });
 
     }
 
 
-    private void getItemsFromTinyDB() {
+    private void getItems(final FileDataStatus fileDataStatus) {
 
         tinyDB = new TinyDB(Cart.this);
 
@@ -110,35 +133,55 @@ public class Cart extends AppCompatActivity {
             items.add((Item) objs);
         }
         itemsList = items;
-
-        Collections.reverse(itemsList);
-
-        displayCartItems(itemsList);
+        fileDataStatus.onSuccess(itemsList);
 
     }
 
+    private void displayCartItems () {
 
-    public void displayCartItems(ArrayList<Item> items) {
-        TextView cartsItemsTotal = findViewById(R.id.CartItemsTotal);
-        if (cartItemAdapter == null) {
-            cartItemAdapter = new CartItemAdapter(items, Cart.this);
-            recyclerViewItems.setAdapter(cartItemAdapter);
-            if (!items.isEmpty()) {
-                Cart.totalPrice= 0;
-                for (int i = 0; i < items.size(); i++) {
-                    Cart.totalPrice += items.get(i).getItemPrice();
+        getItems(new FileDataStatus() {
+            @Override
+            public void onSuccess(ArrayList list) {
+                if (cartItemAdapter == null) {
+                    cartItemAdapter = new CartItemAdapter(itemsList, Cart.this, new ClickListenerItem() {
+                        @Override
+                        public void onClick(View view, Item item) {
+                                Intent itemPage = new Intent(Cart.this, ItemActivity.class);
+                                itemPage.putExtra("itemid", item.getItemID());
+                                itemPage.putExtra("selleruid",item.getItemSellerUID());
+                                itemPage.putExtra("itemname",item.getItemName());
+                                itemPage.putExtra("itemdesc", item.getItemDescription());
+                                itemPage.putExtra("itemprice", item.getItemPrice());
+                                itemPage.putExtra("itemimage", item.getItemImage());
+                                itemPage.putExtra("itemimagelist", item.getItemImageList());
+                                startActivity(itemPage);
+                        }
+                    });
+                    recyclerViewItems.setAdapter(cartItemAdapter);
+                    TextView cartsItemsTotal = findViewById(R.id.CartItemsTotal);
+                    if (!itemsList.isEmpty()) {
+                        Cart.totalPrice= 0;
+                        for (int i = 0; i < itemsList.size(); i++) {
+                            Cart.totalPrice += itemsList.get(i).getItemPrice();
+                        }
+                        cartsItemsTotal.setText("Total Price: $" + Cart.totalPrice);
+                    } else {
+                        cartsItemsTotal.setVisibility(View.GONE);
+                    }
+                } else {
+                    cartItemAdapter.getItems().clear();
+                    cartItemAdapter.getItems().addAll(itemsList);
+                    cartItemAdapter.notifyDataSetChanged();
                 }
-                cartsItemsTotal.setText("Total Price: $" + Cart.totalPrice);
-            } else {
-                cartsItemsTotal.setVisibility(View.GONE);
             }
-        } else {
-            cartItemAdapter.getItems().clear();
-            cartItemAdapter.getItems().addAll(items);
-            cartItemAdapter.notifyDataSetChanged();
-        }
-    }
 
+            @Override
+            public void onError(String e) {
+
+            }
+        });
+
+    }
 
     public void createOrderInDb() {
 

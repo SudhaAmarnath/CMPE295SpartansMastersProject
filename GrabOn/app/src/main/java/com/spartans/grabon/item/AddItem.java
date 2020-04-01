@@ -53,8 +53,8 @@ public class AddItem extends AppCompatActivity {
     private StorageReference storageReference;
     private Item item;
     private Uri filePath;
-    private FirebaseAuth auth = Singleton.getAuth();
-    private FirebaseUser user = Singleton.getUser();
+    private FirebaseAuth auth;
+    private FirebaseUser user;
     private FirebaseFirestore db = Singleton.getDb();
     private String uID;
 
@@ -64,6 +64,7 @@ public class AddItem extends AppCompatActivity {
     private EditText addItemPrice;
     private FancyButton addItemButton;
     public static String docid=null;
+    ArrayList image = new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +77,8 @@ public class AddItem extends AppCompatActivity {
         addItemPrice = findViewById(R.id.addItemPrice);
         addItemButton = findViewById(R.id.addItemButton);
 
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
         uID = auth.getCurrentUser().getUid();
         storage = Singleton.getStorage();
         storageReference = storage.getReference();
@@ -108,8 +111,9 @@ public class AddItem extends AppCompatActivity {
                     addItemButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            ArrayList image = new ArrayList();
-                            image.add(uri.toString());
+
+                            //ArrayList image = new ArrayList();
+                            //image.add(uri.toString());
 
                             String itemName = addItemName.getText().toString();
                             String itemDesc = addItemDesc.getText().toString();
@@ -203,6 +207,8 @@ public class AddItem extends AppCompatActivity {
                                     if (task.isSuccessful()) {
                                         Uri downloadUri = task.getResult();
                                         fileDataImageStatus.onSuccess(downloadUri);
+                                        image.add(downloadUri.toString());
+                                        Log.v("uploadImages", downloadUri.toString());
                                     } else {
                                         Toast.makeText(AddItem.this, "Error in fileDataImageStatus", Toast.LENGTH_SHORT).show();
                                     }

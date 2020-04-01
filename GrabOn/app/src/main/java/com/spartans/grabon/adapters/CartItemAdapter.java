@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.spartans.grabon.R;
+import com.spartans.grabon.interfaces.ClickListenerItem;
 import com.spartans.grabon.model.Item;
 
 import java.util.ArrayList;
@@ -23,10 +24,12 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.ViewHo
 
     private Context context;
     private ArrayList<Item> items;
+    private ClickListenerItem itemClickListener;
 
-    public CartItemAdapter(ArrayList<Item> items, Context context) {
+    public CartItemAdapter(ArrayList<Item> items, Context context, ClickListenerItem itemClickListener) {
         this.context = context;
         this.items = items;
+        this.itemClickListener = itemClickListener;
     }
 
     @NonNull
@@ -51,7 +54,7 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.ViewHo
         viewHolder.bindModel(items.get(position));
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         Item item;
         TextView itemName;
@@ -63,6 +66,7 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.ViewHo
             itemName = itemView.findViewById(R.id.layout_cartitems_text);
             itemPrice = itemView.findViewById(R.id.layout_cartitems_price);
             itemImage = itemView.findViewById(R.id.layout_cartitems_image);
+            v.setOnClickListener(this);
         }
 
         void bindModel(Item items) {
@@ -70,6 +74,10 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.ViewHo
             itemName.setText(item.getItemName());
             itemPrice.setText("$"+String.format("%.2f", item.getItemPrice()));
             Glide.with(context).load(item.getItemImageList().get(0)).into(itemImage);
+        }
+
+        public void onClick(View view) {
+            itemClickListener.onClick(view, item);
         }
 
     }

@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.mukesh.tinydb.TinyDB;
@@ -44,14 +45,17 @@ public class ItemActivity extends AppCompatActivity {
     private SliderLayout sliderLayout;
     private String TAG = "ITEM";
     private TinyDB tinyDB;
-
-    private FirebaseUser user = Singleton.getUser();
+    private FirebaseAuth auth;
+    private FirebaseUser user;
     private FirebaseFirestore db = Singleton.getDb();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item);
+
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
 
         tinyDB = new TinyDB(this);
         itemID = (String) getIntent().getSerializableExtra("itemid");
