@@ -30,6 +30,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.spartans.grabon.adapters.ItemAdapter;
+import com.spartans.grabon.cart.Cart;
 import com.spartans.grabon.fragments.BottomSheetNavigationFragment;
 import com.spartans.grabon.interfaces.ClickListenerItem;
 import com.spartans.grabon.interfaces.FileDataStatus;
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private ItemAdapter itemAdapter;
     ArrayAdapter<String> adapter;
     private BottomAppBar bottomAppBar;
-    private FloatingActionButton fabChat;
+    private FloatingActionButton fabChat, fabCart;
     private FirebaseUser loggedinUser;
     private FirebaseAuth firebaseAuth;
     private String conversationId = "";
@@ -90,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewItems.setNestedScrollingEnabled(false);
 
         fabChat = findViewById(R.id.fabChat);
+        fabCart = findViewById(R.id.fabCart);
         firebaseAuth = FirebaseAuth.getInstance();
         loggedinUser = firebaseAuth.getCurrentUser();
 
@@ -97,6 +99,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startChat();
+            }
+        });
+
+        fabCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), Cart.class));
             }
         });
 

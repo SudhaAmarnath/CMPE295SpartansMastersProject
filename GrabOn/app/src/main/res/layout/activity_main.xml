@@ -103,10 +103,10 @@
 
     <!-- Floating Action button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/fabCart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_add_black_24dp"
+        android:src="@drawable/ic_shopping_cart"
         android:tint="@android:color/white"
         app:backgroundTint="@color/colorPrimary"
         app:fabSize="normal"
