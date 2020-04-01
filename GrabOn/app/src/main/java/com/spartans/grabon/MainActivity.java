@@ -45,6 +45,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.kommunicate.KmConversationBuilder;
+import io.kommunicate.KmConversationHelper;
+import io.kommunicate.KmException;
 import io.kommunicate.Kommunicate;
 import io.kommunicate.callbacks.KmCallback;
 import io.kommunicate.users.KMUser;
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton fabChat;
     private FirebaseUser loggedinUser;
     private FirebaseAuth firebaseAuth;
+    private String conversationId = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseApp.initializeApp(this);
 
+        conversationId = "";
         toolbar = findViewById(R.id.toolbar);
         recyclerViewItems = findViewById(R.id.HomeActivityItemsList);
         db = Singleton.getDb();
@@ -256,26 +260,55 @@ public class MainActivity extends AppCompatActivity {
         KMUser user = new KMUser();
         user.setUserId(loggedinUser.getEmail());
 
-        new KmConversationBuilder(getApplicationContext())
-                .setKmUser(user)
-                .launchConversation(new KmCallback() {
-                    @Override
-                    public void onSuccess(Object message) {
-                        Log.d("Conversation", "Success : " + message);
-                        Map<String, String> metadata = new HashMap<>();
-                        metadata.put("email", loggedinUser.getEmail());
-                        metadata.put("uID", loggedinUser.getUid());
+        if(conversationId == "") {
+            new KmConversationBuilder(MainActivity.this)
+                    .setKmUser(user)
+                    .setSingleConversation(false)
+                    .launchConversation(new KmCallback() {
+                        @Override
+                        public void onSuccess(Object message) {
+                            Log.d("Conversation", "Success : " + message);
+                            conversationId = message.toString();
+                            Map<String, String> metadata = new HashMap<>();
+                            metadata.put("email", loggedinUser.getEmail());
+                            metadata.put("uID", loggedinUser.getUid());
 
-                        if (Kommunicate.isLoggedIn(getApplicationContext())) { // Pass application context
-                            Kommunicate.updateChatContext(getApplicationContext(), metadata);
+                            if (Kommunicate.isLoggedIn(MainActivity.this)) { // Pass application context
+                                Kommunicate.updateChatContext(MainActivity.this, metadata);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Object error) {
-                        Log.d("Conversation", "Failure : " + error);
-                    }
-                });
+                        @Override
+                        public void onFailure(Object error) {
+                            Log.d("Conversation", "Failure : " + error);
+                        }
+                    });
+        } else {
+            try {
+                KmConversationHelper.openConversation(MainActivity.this,
+                        true,
+                        Integer.parseInt(conversationId),
+                        new KmCallback() {
+                            @Override
+                            public void onSuccess(Object message) {
+                                Map<String, String> metadata = new HashMap<>();
+                                metadata.put("email", loggedinUser.getEmail());
+                                metadata.put("uID", loggedinUser.getUid());
+
+                                if (Kommunicate.isLoggedIn(MainActivity.this)) { // Pass application context
+                                    Kommunicate.updateChatContext(MainActivity.this, metadata);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Object error) {
+
+                            }
+                        });
+            } catch (KmException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }
