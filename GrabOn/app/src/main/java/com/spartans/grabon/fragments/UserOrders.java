@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -35,7 +36,8 @@ public class UserOrders extends Fragment {
 
 
     private ArrayList<Order> orderArrayList = new ArrayList<>();
-    private FirebaseUser user = Singleton.getUser();
+    private FirebaseAuth auth;
+    private FirebaseUser user;
     private FirebaseFirestore db = Singleton.getDb();
     private UserOrderAdapter userOrderAdapter;
     RecyclerView recyclerView;
@@ -48,6 +50,9 @@ public class UserOrders extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
 
         getUserOrdersList(new FileDataStatus() {
             @Override
