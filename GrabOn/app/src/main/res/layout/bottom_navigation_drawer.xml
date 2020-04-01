@@ -28,7 +28,7 @@
             android:layout_toLeftOf="@+id/close_image_view"
             android:layout_toRightOf="@+id/profile_image"
             android:text="Test User"
-            android:textColor="@android:color/black"
+            android:textColor="@color/colorPrimaryDark"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -42,7 +42,7 @@
             android:layout_toLeftOf="@+id/close_image_view"
             android:layout_toRightOf="@+id/profile_image"
             android:text="test@gmail.com"
-            android:textColor="@android:color/black" />
+            android:textColor="@color/colorPrimaryDark"/>
 
 
         <ImageView

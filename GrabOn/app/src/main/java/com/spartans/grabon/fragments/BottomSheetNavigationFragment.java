@@ -7,13 +7,21 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.spartans.grabon.R;
 import com.spartans.grabon.cart.Cart;
 import com.spartans.grabon.item.AddItem;
@@ -21,10 +29,17 @@ import com.spartans.grabon.item.PostedItems;
 import com.spartans.grabon.maps.MapsActivity;
 import com.spartans.grabon.order.OrdersActivity;
 import com.spartans.grabon.user.Profile;
+import com.spartans.grabon.utils.Singleton;
 
 public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
 
     Intent intent = new Intent();
+
+    TextView username, emailid;
+    private FirebaseAuth auth;
+    private FirebaseUser user;
+    private FirebaseFirestore db = Singleton.getDb();;
+    private ListenerRegistration documentRefRegistration;
 
     public static BottomSheetNavigationFragment newInstance() {
 
@@ -67,7 +82,30 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
         View contentView = View.inflate(getContext(), R.layout.bottom_navigation_drawer, null);
         dialog.setContentView(contentView);
 
+
         NavigationView navigationView = contentView.findViewById(R.id.navigation_view);
+
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+
+        username = contentView.findViewById(R.id.user_name);
+        emailid = contentView.findViewById(R.id.user_email);
+
+        db.collection("users")
+                .document(user.getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            String name = task.getResult().get("firstname").toString()
+                                    + " "
+                                    + task.getResult().get("lastname").toString();
+                            username.setText(name);
+                            emailid.setText(task.getResult().get("email").toString());
+                        }
+                    }
+                });
 
         //implement navigation menu item click event
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
