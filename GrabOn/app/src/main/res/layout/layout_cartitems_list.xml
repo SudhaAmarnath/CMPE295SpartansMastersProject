@@ -48,7 +48,7 @@
                 android:layout_marginTop="30dp"
                 android:text="  Item Name  : "
                 android:textStyle="bold"
-                android:fontFamily="@font/old_standard_tt"
+                android:fontFamily="@font/helvetica"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="16dp" />
 
@@ -57,7 +57,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
-                android:fontFamily="@font/old_standard_tt"
+                android:fontFamily="@font/helvetica"
                 android:text="Item Name"
                 android:textAlignment="center"
                 android:textColor="@color/black"
@@ -77,7 +77,7 @@
                 android:layout_marginTop="30dp"
                 android:text="  Item Price  : "
                 android:textStyle="bold"
-                android:fontFamily="@font/old_standard_tt"
+                android:fontFamily="@font/helvetica"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="16dp" />
 
@@ -86,7 +86,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
-                android:fontFamily="@font/old_standard_tt"
+                android:fontFamily="@font/helvetica"
                 android:text="$1.00"
                 android:textAlignment="center"
                 android:textColor="@color/black"

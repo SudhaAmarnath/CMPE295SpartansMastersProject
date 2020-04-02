@@ -32,14 +32,14 @@
                     android:layout_height="wrap_content"
                     android:text="Order ID     : "
                     android:textStyle="bold"
-                    android:fontFamily="@font/old_standard_tt"
+                    android:fontFamily="@font/helvetica"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="18dp" />
                 <TextView
                     android:id="@+id/layout_userorder_id"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/old_standard_tt"
+                    android:fontFamily="@font/helvetica"
                     android:text="123456"
                     android:textColor="@color/black"
                     android:textSize="18dp" />
@@ -61,7 +61,7 @@
                     android:layout_height="wrap_content"
                     android:text="Total Items : "
                     android:textStyle="bold"
-                    android:fontFamily="@font/old_standard_tt"
+                    android:fontFamily="@font/helvetica"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="18dp" />
 
@@ -70,14 +70,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="10"
-                    android:fontFamily="@font/old_standard_tt"
+                    android:fontFamily="@font/helvetica"
                     android:textColor="@color/black"
                     android:textSize="18dp"/>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/old_standard_tt"
+                    android:fontFamily="@font/helvetica"
                     android:text="      Total Price : "
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="18dp"
@@ -88,7 +88,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="$1.00"
-                    android:fontFamily="@font/old_standard_tt"
+                    android:fontFamily="@font/helvetica"
                     android:textColor="@color/black"
                     android:textSize="18dp"/>
 

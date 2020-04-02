@@ -50,7 +50,7 @@
                     android:layout_marginEnd="10dp"
                     android:layout_marginRight="10dp"
                     android:layout_marginBottom="10dp"
-                    android:fontFamily="@font/old_standard_tt"
+                    android:fontFamily="@font/helvetica"
                     android:text="Kitchen Table"
                     android:textColor="@color/black"
                     android:textSize="20sp"

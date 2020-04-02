@@ -16,7 +16,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
-            android:fontFamily="@font/old_standard_tt"
+            android:fontFamily="@font/helvetica"
             android:text="Your Placed Orders"
             android:textAlignment="center"
             android:textColor="@color/black"

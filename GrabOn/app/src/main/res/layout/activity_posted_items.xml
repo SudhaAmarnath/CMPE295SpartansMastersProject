@@ -23,7 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:fontFamily="@font/old_standard_tt"
+            android:fontFamily="@font/helvetica"
             android:text="Your Posted Items"
             android:textAlignment="center"
             android:textColor="@color/white"
