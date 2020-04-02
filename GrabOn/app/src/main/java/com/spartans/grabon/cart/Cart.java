@@ -32,6 +32,7 @@ import com.spartans.grabon.payment.PaypalPaymentClient;
 import com.spartans.grabon.utils.Singleton;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -185,11 +186,18 @@ public class Cart extends AppCompatActivity {
 
     public void createOrderInDb() {
 
+
+        String orderTime = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
+
+        //Log.v("Time:", FieldValue.serverTimestamp().toString());
+
         Map<String, Object> dborder = new HashMap<>();
         dborder.put("user_id", user.getUid());
         dborder.put("seller_id", itemsList.get(0).getItemSellerUID());
         dborder.put("items", itemsList);
         dborder.put("ordertotal", Cart.totalPrice);
+        dborder.put("orderstatus", "In Progress");
+        dborder.put("ordertime", orderTime);
 
         db.collection("orders")
                 .add(dborder)

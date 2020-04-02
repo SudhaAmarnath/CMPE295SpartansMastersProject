@@ -105,6 +105,8 @@ public class UserOrders extends Fragment {
                                     String orderID = documentSnapshot.getId();
                                     String user_id = documentSnapshot.get("user_id").toString();
                                     String seller_id = documentSnapshot.get("seller_id").toString();
+                                    String orderstatus = documentSnapshot.get("orderstatus").toString();
+                                    String ordertime = documentSnapshot.get("ordertime").toString();
 
                                     if (orderItems != null) {
                                         for (int i = 0; i < orderItems.size(); i++) {
@@ -128,7 +130,9 @@ public class UserOrders extends Fragment {
                                                 user_id,
                                                 seller_id,
                                                 itemArrayList,
-                                                order_total
+                                                order_total,
+                                                orderstatus,
+                                                ordertime
                                         );
 
                                     orderArrayList.add(order);

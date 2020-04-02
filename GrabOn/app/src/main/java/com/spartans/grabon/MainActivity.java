@@ -39,8 +39,6 @@ import com.spartans.grabon.item.UpdateItem;
 import com.spartans.grabon.model.Item;
 import com.spartans.grabon.utils.Singleton;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -84,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
         db = Singleton.getDb();
 
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(null);
+        getSupportActionBar().setSubtitle(null);
 
         // show 2 items in grid layout
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);

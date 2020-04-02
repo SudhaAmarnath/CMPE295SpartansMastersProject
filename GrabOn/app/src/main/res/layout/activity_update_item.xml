@@ -151,7 +151,7 @@
             fancy:fb_borderWidth="1dp"
             fancy:fb_defaultColor="@color/colorPrimaryDark"
             fancy:fb_radius="6dp"
-            fancy:fb_text="Update Item"
+            fancy:fb_text="Update"
             fancy:fb_textColor="#FFFFFF"
             fancy:fb_textSize="18dp" />
 
@@ -165,7 +165,7 @@
             android:paddingTop="10dp"
             android:paddingRight="30dp"
             android:paddingBottom="10dp"
-            android:text="Delete Item"
+            android:text="Delete"
             fancy:fb_borderColor="#FFFFFF"
             fancy:fb_borderWidth="1dp"
             fancy:fb_defaultColor="@color/colorPrimaryDark"

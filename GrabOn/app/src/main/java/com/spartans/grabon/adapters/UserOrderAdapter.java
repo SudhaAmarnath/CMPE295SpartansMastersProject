@@ -56,6 +56,8 @@ public class UserOrderAdapter extends RecyclerView.Adapter<UserOrderAdapter.View
         TextView orderId;
         TextView orderTotal;
         TextView orderTotalItems;
+        TextView orderStatus;
+        TextView orderTime;
         RecyclerView orderItemsList;
 
         ViewHolder(View v) {
@@ -64,6 +66,8 @@ public class UserOrderAdapter extends RecyclerView.Adapter<UserOrderAdapter.View
             orderTotalItems = itemView.findViewById(R.id.layout_userorder_totalitems);
             orderTotal = itemView.findViewById(R.id.layout_userorder_total);
             orderItemsList = itemView.findViewById(R.id.layout_userorder_itemslist);
+            orderStatus = itemView.findViewById(R.id.layout_userorder_status);
+            orderTime = itemView.findViewById(R.id.layout_userorder_time);
 
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context,
                     LinearLayoutManager.VERTICAL, false);
@@ -82,6 +86,8 @@ public class UserOrderAdapter extends RecyclerView.Adapter<UserOrderAdapter.View
                 orderItemsList.setAdapter(orderItemAdapter);
                 orderTotalItems.setText(String.valueOf(orderItems.size()));
                 orderTotal.setText("$"+String.format("%.2f", order.getOrderTotal()));
+                orderStatus.setText(order.getOrderStatus());
+                orderTime.setText(order.getOrderTime());
             }
         }
 

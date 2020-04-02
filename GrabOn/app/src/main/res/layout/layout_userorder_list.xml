@@ -30,19 +30,43 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Order ID     : "
+                    android:text="Order ID       : "
                     android:textStyle="bold"
                     android:fontFamily="@font/helvetica"
                     android:textColor="@color/colorPrimaryDark"
-                    android:textSize="18dp" />
+                    android:textSize="16dp" />
                 <TextView
                     android:id="@+id/layout_userorder_id"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/helvetica"
-                    android:text="123456"
+                    android:text="abc123456"
                     android:textColor="@color/black"
-                    android:textSize="18dp" />
+                    android:textSize="16dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Order Status : "
+                    android:textStyle="bold"
+                    android:fontFamily="@font/helvetica"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="16dp" />
+                <TextView
+                    android:id="@+id/layout_userorder_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica"
+                    android:text="Item Picked"
+                    android:textColor="@color/black"
+                    android:textSize="16dp" />
 
             </LinearLayout>
 
@@ -59,11 +83,37 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:text="Order Time : "
+                    android:textStyle="bold"
+                    android:fontFamily="@font/helvetica"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="16dp" />
+
+                <TextView
+                    android:id="@+id/layout_userorder_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Wed, 4 Jul 2001 12:08:56 -0700"
+                    android:fontFamily="@font/helvetica"
+                    android:textColor="@color/black"
+                    android:textSize="16dp"/>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:text="Total Items : "
                     android:textStyle="bold"
                     android:fontFamily="@font/helvetica"
                     android:textColor="@color/colorPrimaryDark"
-                    android:textSize="18dp" />
+                    android:textSize="16dp" />
 
                 <TextView
                     android:id="@+id/layout_userorder_totalitems"
@@ -72,7 +122,7 @@
                     android:text="10"
                     android:fontFamily="@font/helvetica"
                     android:textColor="@color/black"
-                    android:textSize="18dp"/>
+                    android:textSize="16dp"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -80,7 +130,7 @@
                     android:fontFamily="@font/helvetica"
                     android:text="      Total Price : "
                     android:textColor="@color/colorPrimaryDark"
-                    android:textSize="18dp"
+                    android:textSize="16dp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -90,7 +140,8 @@
                     android:text="$1.00"
                     android:fontFamily="@font/helvetica"
                     android:textColor="@color/black"
-                    android:textSize="18dp"/>
+                    android:textSize="16dp"/>
+
 
             </LinearLayout>
 

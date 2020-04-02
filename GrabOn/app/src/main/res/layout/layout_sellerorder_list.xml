@@ -46,10 +46,59 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Order Status : "
+                    android:textStyle="bold"
+                    android:fontFamily="@font/helvetica"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="16dp" />
+                <TextView
+                    android:id="@+id/layout_sellerorder_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica"
+                    android:text="Item Picked"
+                    android:textColor="@color/black"
+                    android:textSize="16dp" />
+
+            </LinearLayout>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/layout_sellerorder_itemslist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Order Time : "
+                    android:textStyle="bold"
+                    android:fontFamily="@font/helvetica"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="16dp" />
+
+                <TextView
+                    android:id="@+id/layout_sellerorder_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Wed, 4 Jul 2001 12:08:56 -0700"
+                    android:fontFamily="@font/helvetica"
+                    android:textColor="@color/black"
+                    android:textSize="16dp"/>
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
