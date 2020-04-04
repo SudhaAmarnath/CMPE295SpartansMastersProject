@@ -277,6 +277,12 @@ public class Login extends AppCompatActivity {
                 user.put("lastname", emptyVal);
                 user.put("email", loggedinUser.getEmail());
                 user.put("password", emptyVal);
+                user.put("paypalid", "");
+                user.put("address", "");
+                user.put("apt", "");
+                user.put("phone", "");
+                user.put("latitude", "");
+                user.put("longitude", "");
                 documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -40,6 +41,11 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
     private FirebaseUser user;
     private FirebaseFirestore db = Singleton.getDb();;
     private ListenerRegistration documentRefRegistration;
+    private String uID;
+    private String paypalid = "";
+    private String latitude = "";
+    private String longitude = "";
+
 
     public static BottomSheetNavigationFragment newInstance() {
 
@@ -87,6 +93,7 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
+        uID = auth.getCurrentUser().getUid();
 
         username = contentView.findViewById(R.id.user_name);
         emailid = contentView.findViewById(R.id.user_email);
@@ -103,6 +110,9 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
                                     + task.getResult().get("lastname").toString();
                             username.setText(name);
                             emailid.setText(task.getResult().get("email").toString());
+                            paypalid = task.getResult().get("paypalid").toString();
+                            latitude = task.getResult().get("latitude").toString();
+                            longitude = task.getResult().get("longitude").toString();
                         }
                     }
                 });
@@ -117,8 +127,14 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
                         startActivity(intent);
                         break;
                     case R.id.nav02:
-                        intent = new Intent(getActivity(), AddItem.class);
-                        startActivity(intent);
+                        if (paypalid.equals("")  || latitude.equals("") || longitude.equals("")) {
+                            Toast.makeText(getContext(), "Set Paypal id and Address in User Profile before adding item", Toast.LENGTH_LONG).show();
+                            intent = new Intent(getActivity(), Profile.class);
+                            startActivity(intent);
+                        } else {
+                            intent = new Intent(getActivity(), AddItem.class);
+                            startActivity(intent);
+                        }
                         break;
                     case R.id.nav03:
                         intent = new Intent(getActivity(), Cart.class);

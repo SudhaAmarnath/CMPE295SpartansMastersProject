@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -57,7 +58,6 @@ public class AddItem extends AppCompatActivity {
     private FirebaseUser user;
     private FirebaseFirestore db = Singleton.getDb();
     private String uID;
-
     private ImageButton addItemImage;
     private EditText addItemName;
     private EditText addItemDesc;
@@ -65,6 +65,9 @@ public class AddItem extends AppCompatActivity {
     private FancyButton addItemButton;
     public static String docid=null;
     ArrayList image = new ArrayList();
+    private static String paypalid = "";
+    private static String latitude = "";
+    private static String longitude = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +85,27 @@ public class AddItem extends AppCompatActivity {
         uID = auth.getCurrentUser().getUid();
         storage = Singleton.getStorage();
         storageReference = storage.getReference();
+
+        db.collection("users")
+                .document(user.getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            AddItem.paypalid = task.getResult().get("paypalid").toString();
+                            AddItem.latitude = task.getResult().get("latitude").toString();
+                            AddItem.longitude = task.getResult().get("longitude").toString();
+                            Log.v("sudha", AddItem.paypalid + "," + AddItem.latitude + "," + AddItem.longitude);
+                        }
+                    }
+                })
+        .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
 
         addItemImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,31 +136,31 @@ public class AddItem extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
 
-                            //ArrayList image = new ArrayList();
-                            //image.add(uri.toString());
-
                             String itemName = addItemName.getText().toString();
                             String itemDesc = addItemDesc.getText().toString();
                             String itemPrice = addItemPrice.getText().toString();
 
                             if (TextUtils.isEmpty(itemName) == false &&
-                                TextUtils.isEmpty(itemDesc) == false &&
-                                TextUtils.isEmpty(itemPrice) == false) {
+                                    TextUtils.isEmpty(itemDesc) == false &&
+                                    TextUtils.isEmpty(itemPrice) == false) {
 
                                 item = new Item(itemName, itemDesc, uID,
                                         Float.valueOf(itemPrice),
                                         uri.toString(), image);
 
+
                                 //Add item to the db
                                 Map<String, Object> dbitem = new HashMap<>();
-                                dbitem.put("selleruid",item.getItemSellerUID());
-                                dbitem.put("itemname",item.getItemName());
+                                dbitem.put("selleruid", item.getItemSellerUID());
+                                dbitem.put("itemname", item.getItemName());
                                 dbitem.put("itemdesc", item.getItemDescription());
                                 dbitem.put("itemprice", item.getItemPrice());
                                 dbitem.put("itemimage", item.getItemImage());
                                 dbitem.put("itemimagelist", item.getItemImageList());
                                 dbitem.put("itemordered", false);
                                 dbitem.put("itempicked", false);
+                                dbitem.put("itemlatitude", AddItem.latitude);
+                                dbitem.put("itemlongitude", AddItem.longitude);
 
                                 db.collection("items")
                                         .add(dbitem)
@@ -148,11 +172,11 @@ public class AddItem extends AppCompatActivity {
                                                 Log.v("addItem", "Add Item Success, Document ID : " + AddItem.docid);
                                             }
                                         }).addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Log.v("addItem", "Add Item Failed");
-                                            }
-                                        });
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.v("addItem", "Add Item Failed");
+                                    }
+                                });
                                 Toast.makeText(AddItem.this, "Item Added", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
                             } else {
