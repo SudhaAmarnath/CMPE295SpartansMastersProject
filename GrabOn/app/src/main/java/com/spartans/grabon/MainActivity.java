@@ -58,7 +58,10 @@ public class MainActivity extends AppCompatActivity {
     public static final String TAG = "TAG";
     private Toolbar toolbar;
     private RecyclerView recyclerViewItems;
+//    private RecyclerView.adapter
+    private RecyclerView.LayoutManager mLayoutManager;
     private FirebaseFirestore db;
+
     private ArrayList<Item> itemsList = new ArrayList<>();
     private ItemAdapter itemAdapter;
     ArrayAdapter<String> adapter;
