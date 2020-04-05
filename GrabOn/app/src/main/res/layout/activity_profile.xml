@@ -182,7 +182,6 @@
     <ScrollView
         android:id="@+id/ProfileScrollView"
         android:layout_below="@+id/linearLayout1"
-        android:layout_above="@+id/UserLogout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -478,24 +477,10 @@
 
                 </LinearLayout>
 
-
             </LinearLayout>
 
         </RelativeLayout>
 
     </ScrollView>
-
-    <Button
-        android:id="@+id/UserLogout"
-        style="@style/Widget.MaterialComponents.Button"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="0dp"
-        android:background="@color/transparent"
-        android:text="Logout"
-        android:textColor="@color/colorPrimaryDark"
-        android:textSize="18sp" />
-
 
 </RelativeLayout>

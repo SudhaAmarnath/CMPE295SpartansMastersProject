@@ -1,4 +1,4 @@
-package com.spartans.grabon;
+package com.spartans.grabon.user;
 
 
 import android.content.Intent;
@@ -22,6 +22,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.spartans.grabon.MainActivity;
+import com.spartans.grabon.R;
 import com.spartans.grabon.utils.Singleton;
 
 import java.util.HashMap;
@@ -132,7 +134,7 @@ public class Register extends AppCompatActivity {
                                     Log.d(TAG, "onFailure: " + e.toString());
                                 }
                             });
-                            startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
                             Toast.makeText(Register.this,"User Registered", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(Register.this, "Error ! " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();

@@ -29,6 +29,7 @@ import com.spartans.grabon.item.AddItem;
 import com.spartans.grabon.item.PostedItems;
 import com.spartans.grabon.maps.MapsActivity;
 import com.spartans.grabon.order.OrdersActivity;
+import com.spartans.grabon.user.Logout;
 import com.spartans.grabon.user.Profile;
 import com.spartans.grabon.utils.Singleton;
 
@@ -150,6 +151,10 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
                         break;
                     case R.id.nav06:
                         intent = new Intent(getActivity(), PostedItems.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.nav07:
+                        intent = new Intent(getActivity(), Logout.class);
                         startActivity(intent);
                         break;
                 }

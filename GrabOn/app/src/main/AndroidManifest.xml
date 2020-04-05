@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".item.UpdateItem"></activity>
+        <activity android:name=".user.Logout"></activity>
+        <activity android:name=".item.UpdateItem" />
         <activity android:name=".item.PostedItems" />
         <activity android:name=".order.OrdersActivity" />
         <activity android:name=".item.ItemActivity" />
@@ -37,10 +38,11 @@
         <activity android:name=".user.Profile" />
         <activity android:name=".payment.PaypalPaymentClient" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".Register" />
-        <activity android:name=".Login">
+        <activity android:name=".user.Register" />
+        <activity android:name=".user.Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

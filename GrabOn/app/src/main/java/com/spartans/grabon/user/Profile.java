@@ -1,7 +1,5 @@
 package com.spartans.grabon.user;
 
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -10,7 +8,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,7 +16,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.facebook.login.LoginManager;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -37,7 +33,6 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.spartans.grabon.Login;
 import com.spartans.grabon.R;
 import com.spartans.grabon.utils.Singleton;
 
@@ -47,9 +42,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
-
-import io.kommunicate.Kommunicate;
-import io.kommunicate.callbacks.KMLogoutHandler;
 
 /**
  * Author : Sudha Amarnath on 2020-02-19
@@ -79,7 +71,6 @@ public class Profile extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
         final EditText name, email, phone, paypalid, apt;
-        final Button userLogout;
         final ImageView phonebutton, paypalidbutton, addressbutton, aptbutton;
         final AutocompleteSupportFragment address;
         final FirebaseAuth firebaseAuth;
@@ -88,7 +79,6 @@ public class Profile extends AppCompatActivity {
 
         name = findViewById(R.id.profile_username);
         email = findViewById(R.id.Email);
-        userLogout = findViewById(R.id.UserLogout);
         phone = findViewById(R.id.Phone);
         phonebutton = findViewById(R.id.profile_phone_edit);
         paypalid = findViewById(R.id.profile_paypalid);
@@ -316,44 +306,6 @@ public class Profile extends AppCompatActivity {
                     }
                 });
 
-            }
-        });
-
-
-        userLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    if (documentRefRegistration!=null) {
-                        documentRefRegistration.remove();
-                    }
-                    FirebaseAuth.getInstance().signOut();//logout
-
-                    if (providerID.equals("google.com")) {
-                        Login.mGoogleSignInClient.signOut();
-                    } else if (providerID.equals("facebook.com")) {
-                        LoginManager.getInstance().logOut();
-                    }
-
-                    // Logout chatbot
-                    Kommunicate.logout(getApplicationContext(), new KMLogoutHandler() {
-                        @Override
-                        public void onSuccess(Context context) {
-                            Log.i("Logout","Success");
-                        }
-
-                        @Override
-                        public void onFailure(Exception exception) {
-                            Log.i("Logout","Failed");
-
-                        }
-                    });
-
-                } catch (Exception logoutException) {
-                    Log.d(TAG, "logoutException: " + logoutException.toString());
-                }
-                startActivity(new Intent(getApplicationContext(), Login.class));
-                finish();
             }
         });
 

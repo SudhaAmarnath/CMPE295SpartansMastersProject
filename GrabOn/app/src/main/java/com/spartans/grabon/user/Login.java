@@ -1,4 +1,4 @@
-package com.spartans.grabon;
+package com.spartans.grabon.user;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -36,6 +36,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.spartans.grabon.MainActivity;
+import com.spartans.grabon.R;
 import com.spartans.grabon.utils.Singleton;
 
 import java.util.HashMap;
@@ -114,7 +116,7 @@ public class Login extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
                             Toast.makeText(Login.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         } else {
                             Toast.makeText(Login.this, "Error ! " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                             loginProgressBar.setVisibility(View.GONE);
