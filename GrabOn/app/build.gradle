@@ -45,15 +45,12 @@ dependencies {
     //Swipe refresh layout package
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
 
-    // google location api
+    // Google Apis
     implementation "com.google.android.gms:play-services-location:17.0.0"
-
-    //google maps api
     implementation "com.google.android.gms:play-services-maps:17.0.0"
     implementation 'com.google.maps.android:android-maps-utils:1.0.0'
-
-    // Google Login API
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
+    implementation 'com.google.android.libraries.places:places:2.2.0'
 
     // Facebook Login API
     implementation 'com.facebook.android:facebook-login:[5,6)'

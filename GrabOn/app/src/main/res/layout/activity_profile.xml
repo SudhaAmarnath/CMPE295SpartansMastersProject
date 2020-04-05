@@ -92,6 +92,7 @@
             android:scaleType="centerInside"
             android:src="@drawable/ic_edit" />
 
+
     </RelativeLayout>
 
     <LinearLayout
@@ -227,13 +228,14 @@
                             android:enabled="false"
                             android:background="@color/transparent"/>
 
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="15dp"
+                            android:background="@color/grey" />
+
                     </LinearLayout>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="20dp"
-                        android:background="@color/grey" />
 
                 </LinearLayout>
 
@@ -310,7 +312,6 @@
                             android:src="@drawable/ic_save_black_24dp" />
 
                     </LinearLayout>
-
 
                     <View
                         android:layout_width="match_parent"
@@ -393,14 +394,16 @@
                         android:layout_marginTop="0dp"
                         android:orientation="horizontal">
 
-                        <AutoCompleteTextView
+                        <fragment
                             android:id="@+id/profile_address"
+                            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
                             android:layout_width="320dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="30dp"
                             android:background="@color/transparent"
                             android:fontFamily="sans-serif-light"
                             android:hint="Enter shipping/item postal address"
                             android:inputType="textPostalAddress"
+                            android:text=""
                             android:textColor="#000000"
                             android:textSize="18sp" />
 

@@ -2,6 +2,7 @@ package com.spartans.grabon.user;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -9,20 +10,25 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.facebook.login.LoginManager;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -30,13 +36,12 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.spartans.grabon.Login;
 import com.spartans.grabon.R;
-import com.spartans.grabon.adapters.PlaceAutoSuggestAdapter;
 import com.spartans.grabon.utils.Singleton;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +71,7 @@ public class Profile extends AppCompatActivity {
     private static String pincode = null;
     private static String latitude = null;
     private static String longitude = null;
-    private static GeoPoint geopoint = new GeoPoint(0, 0);
+    PlacesClient placesClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +81,7 @@ public class Profile extends AppCompatActivity {
         final EditText name, email, phone, paypalid, apt;
         final Button userLogout;
         final ImageView phonebutton, paypalidbutton, addressbutton, aptbutton;
-        final AutoCompleteTextView address;
+        final AutocompleteSupportFragment address;
         final FirebaseAuth firebaseAuth;
         FirebaseFirestore firebaseFirestore;
         final String uID;
@@ -88,7 +93,7 @@ public class Profile extends AppCompatActivity {
         phonebutton = findViewById(R.id.profile_phone_edit);
         paypalid = findViewById(R.id.profile_paypalid);
         paypalidbutton = findViewById(R.id.profile_paypalid_edit);
-        address = findViewById(R.id.profile_address);
+        address = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.profile_address);
         addressbutton = findViewById(R.id.profile_address_edit);
         apt = findViewById(R.id.profile_addressapt);
         aptbutton = findViewById(R.id.profile_addressapt_edit);
@@ -97,7 +102,16 @@ public class Profile extends AppCompatActivity {
         firebaseFirestore = FirebaseFirestore.getInstance();
         loggedinUser = firebaseAuth.getCurrentUser();
 
-        address.setAdapter(new PlaceAutoSuggestAdapter(Profile.this,android.R.layout.simple_list_item_1));
+        String apiKey = getString(R.string.google_maps_key);
+        if (!Places.isInitialized()) {
+            Places.initialize(Profile.this, apiKey);
+        }
+        placesClient = Places.createClient(this);
+        address.setPlaceFields(Arrays.asList(Place.Field.ID,
+                Place.Field.NAME,
+                Place.Field.LAT_LNG,
+                Place.Field.ADDRESS
+        ));
 
         if (loggedinUser != null) {
             providerID = loggedinUser.getProviderData().get(1).getProviderId();
@@ -118,8 +132,6 @@ public class Profile extends AppCompatActivity {
 
                     }
                 });
-
-
 
         }
 
@@ -192,47 +204,53 @@ public class Profile extends AppCompatActivity {
             }
         });
 
-        address.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("Address : ",address.getText().toString());
-                LatLng latLng=getLatLngFromAddress(address.getText().toString());
-                if(latLng!=null) {
-                    Address address=getAddressFromLatLng(latLng);
-                    if(address!=null) {
-                        Profile.addressline = address.getAddressLine(0);
-                        Profile.feature = address.getFeatureName();
-                        Profile.street = address.getThoroughfare();
-                        Profile.city = address.getLocality();
-                        Profile.country = address.getCountryName();
-                        Profile.pincode = address.getPostalCode();
-                        Profile.latitude = String.valueOf(address.getLatitude());
-                        Profile.longitude = String.valueOf(address.getLongitude());
-                        Log.d("Address : ", "" + address.toString());
-                        Log.d("Address Line : ",""+Profile.addressline);
-                        Log.d("Phone : ",""+address.getPhone());
-                        Log.d("Pin Code : ",""+Profile.pincode);
-                        Log.d("Feature No: ",""+Profile.feature);
-                        Log.d("City : ",""+Profile.city);
-                        Log.d("Street : ",""+Profile.street);
-                        Log.d("Country : ",""+Profile.country);
-                        Log.d("Lat Lng: ",""+Profile.latitude + " " + Profile.longitude);
-                    } else {
-                        Log.d("Address","Address Not Found");
-                    }
-                }
-                else {
-                    Log.d("LatLng","Latitude Longitued Not Found");
-                }
+        address.setOnPlaceSelectedListener(
+                new PlaceSelectionListener() {
+                    @Override
+                    public void onPlaceSelected(Place place) {
+                        final LatLng latLng = place.getLatLng();
 
-            }
-        });
+                        Address address=getAddressFromLatLng(latLng);
+                        if(address!=null) {
+                            Profile.addressline = address.getAddressLine(0);
+                            Profile.edittxtaddrline = place.getName();
+                            Profile.feature = address.getFeatureName();
+                            Profile.street = address.getThoroughfare();
+                            Profile.city = address.getLocality();
+                            Profile.country = address.getCountryName();
+                            Profile.pincode = address.getPostalCode();
+                            Profile.latitude = String.valueOf(address.getLatitude());
+                            Profile.longitude = String.valueOf(address.getLongitude());
+                            Log.d("Address : ", "" + address.toString());
+                            Log.d("Address Line : ",""+Profile.addressline);
+                            Log.d("Address : ", "" + Profile.edittxtaddrline);
+                            Log.d("Phone : ",""+address.getPhone());
+                            Log.d("Pin Code : ",""+Profile.pincode);
+                            Log.d("Feature No: ",""+Profile.feature);
+                            Log.d("City : ",""+Profile.city);
+                            Log.d("Street : ",""+Profile.street);
+                            Log.d("Country : ",""+Profile.country);
+                            Log.d("Lat Lng: ",""+Profile.latitude + " " + Profile.longitude);
+                        } else {
+                            Log.d("Address","Address Not Found");
+                        }
+
+                        Log.v("search", place.getLatLng().toString());
+                        Log.v("search", place.getAddress());
+                        Log.v("search", place.getName());
+
+                    }
+
+                    @Override
+                    public void onError(Status status) {
+                        Toast.makeText(Profile.this, ""+status.getStatusMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
 
         addressbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Profile.edittxtaddrline = address.getText().toString();
 
                 if (isValidAddress()) {
 
@@ -260,7 +278,13 @@ public class Profile extends AppCompatActivity {
                     });
 
                 } else {
-                    address.setError("Invalid Postal Address");
+                    address.setText("");
+                    address.setHint("Enter shipping address");
+                    Toast toast2 = Toast.makeText(Profile.this, "Enter shipping address", Toast.LENGTH_SHORT);
+                    TextView toastMessage= toast2.getView().findViewById(android.R.id.message);
+                    toastMessage.setTextColor(Color.RED);
+                    toast2.show();
+
                 }
             }
         });
