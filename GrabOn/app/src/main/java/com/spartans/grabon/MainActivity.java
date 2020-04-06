@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView searchRecycleView;
     private ProductListAdapter searchRecycleViewAdapter;
     private RecyclerView.LayoutManager searchRecycleViewLayoutManager;
+    private SearchView searchView;
 
 
     @Override
@@ -265,11 +266,12 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu_search, menu);
         final MenuItem item = menu.findItem(R.id.menuSearch);
-        SearchView searchView = (SearchView) item.getActionView();
+        searchView = (SearchView) item.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
             @Override
             public boolean onQueryTextSubmit(String query) {
                 recyclerViewItems.setVisibility(View.GONE);
+
                 getSearchResultFromEbay(query);
                 return false;
             }
@@ -277,6 +279,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 Log.i("newText ",newText);
+                return false;
+            }
+        });
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                recyclerViewItems.setVisibility(View.VISIBLE);
+                searchRecycleView.setVisibility(View.GONE);
                 return false;
             }
         });
@@ -377,6 +387,7 @@ public class MainActivity extends AppCompatActivity {
                         SearchResponse searchResponse = response.body();
                         itemList = searchResponse.getItemSummaries();
                         searchRecycleView = findViewById(R.id.searchRecycleView);
+                        searchRecycleView.setVisibility(View.VISIBLE);
                         searchRecycleView.setHasFixedSize(true);
                         searchRecycleViewLayoutManager = new LinearLayoutManager(getApplicationContext());
                         searchRecycleViewAdapter = new ProductListAdapter(itemList);

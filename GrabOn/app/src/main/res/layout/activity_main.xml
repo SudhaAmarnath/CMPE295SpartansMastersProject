@@ -70,7 +70,8 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/searchRecycleView"
                         android:layout_width="match_parent"
-                        android:layout_height="500dp" />
+                        android:layout_height="500dp"
+                        android:iconifiedByDefault="false" />
 
                 </LinearLayout>
             </RelativeLayout>
