@@ -1,7 +1,9 @@
 package com.spartans.grabon;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -30,17 +33,23 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.spartans.grabon.adapters.ItemAdapter;
+import com.spartans.grabon.adapters.ProductListAdapter;
 import com.spartans.grabon.cart.Cart;
 import com.spartans.grabon.fragments.BottomSheetNavigationFragment;
 import com.spartans.grabon.interfaces.ClickListenerItem;
 import com.spartans.grabon.interfaces.FileDataStatus;
 import com.spartans.grabon.item.ItemActivity;
 import com.spartans.grabon.item.UpdateItem;
+import com.spartans.grabon.model.ApplicationToken;
 import com.spartans.grabon.model.Item;
+import com.spartans.grabon.model.ItemSummary;
+import com.spartans.grabon.model.SearchResponse;
+import com.spartans.grabon.services.EbayAPI;
 import com.spartans.grabon.utils.Singleton;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.kommunicate.KmConversationBuilder;
@@ -49,6 +58,9 @@ import io.kommunicate.KmException;
 import io.kommunicate.Kommunicate;
 import io.kommunicate.callbacks.KmCallback;
 import io.kommunicate.users.KMUser;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Author : Sudha Amarnath on 2020-01-29
@@ -70,6 +82,26 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseUser loggedinUser;
     private FirebaseAuth firebaseAuth;
     private String conversationId = "";
+    private static final String APPLICATION_TOKEN_KEY = "application_token_key";
+    private static final String signInURL = "https://auth.ebay.com/oauth2/authorize";
+    private static final String clientID = "Thirumal-GrapOn-PRD-e69ec6afc-fc19e172";
+    private static final String clientSecret = "PRD-69ec6afc372e-74d0-4674-8d9b-b933";
+    private static final String redirectURI = "Thirumalai_Namb-Thirumal-GrapOn-fgiiylk";
+    private static final String scope = "https://api.ebay.com/oauth/api_scope";
+
+    private String applictionToken;
+    List<ItemSummary> itemList;
+
+    String base = clientID + ":" + clientSecret;
+    final String basicAuthToken = "Basic " + Base64.encodeToString(base.getBytes(), Base64.NO_WRAP);
+    public MainActivity() {
+        itemList = new ArrayList<ItemSummary>();
+    }
+
+    private RecyclerView searchRecycleView;
+    private ProductListAdapter searchRecycleViewAdapter;
+    private RecyclerView.LayoutManager searchRecycleViewLayoutManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -232,17 +264,18 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu_search, menu);
-        MenuItem item = menu.findItem(R.id.menuSearch);
+        final MenuItem item = menu.findItem(R.id.menuSearch);
         SearchView searchView = (SearchView) item.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
             @Override
             public boolean onQueryTextSubmit(String query) {
+                recyclerViewItems.setVisibility(View.GONE);
+                getSearchResultFromEbay(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                Toast.makeText(MainActivity.this,"Searching for "+newText, Toast.LENGTH_SHORT).show();
                 Log.i("newText ",newText);
                 return false;
             }
@@ -327,6 +360,51 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
+
+    private List<ItemSummary> getSearchResultFromEbay(final String query) {
+        Call<ApplicationToken> call = EbayAPI.getClientTokenService().getApplicationToken(basicAuthToken, "client_credentials",
+                EbayAPI.RuName, EbayAPI.APPLICATION_ACCESS_TOKEN_SCOPE);
+        call.enqueue(new Callback<ApplicationToken>() {
+            @Override
+            public void onResponse(Call<ApplicationToken> call, Response<ApplicationToken> response) {
+                applictionToken = response.body().getAccess_token();
+                String authorization = "Bearer " + applictionToken;
+                Call<SearchResponse> callComputer = EbayAPI.getService().getSearchResult(authorization, query, 15);
+                callComputer.enqueue(new Callback<SearchResponse>() {
+                    @Override
+                    public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
+                        SearchResponse searchResponse = response.body();
+                        itemList = searchResponse.getItemSummaries();
+                        searchRecycleView = findViewById(R.id.searchRecycleView);
+                        searchRecycleView.setHasFixedSize(true);
+                        searchRecycleViewLayoutManager = new LinearLayoutManager(getApplicationContext());
+                        searchRecycleViewAdapter = new ProductListAdapter(itemList);
+                        searchRecycleView.setLayoutManager(searchRecycleViewLayoutManager);
+                        searchRecycleView.setAdapter(searchRecycleViewAdapter);
+                        searchRecycleViewAdapter.setOnItemClickListener(new ProductListAdapter.OnItemClickListener() {
+                            @Override
+                            public void OnItemClickListener(int position) {
+                                itemList.get(position);
+                                Intent browserIntent = new Intent(Intent.ACTION_VIEW);
+                                browserIntent.setData(Uri.parse(itemList.get(position).getItemWebUrl()));
+                                startActivity(new Intent(browserIntent));
+                            }
+                        });
+                    }
+                    @Override
+                    public void onFailure(Call<SearchResponse> call, Throwable t) {
+                        Toast.makeText(MainActivity.this, "call fail", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+            @Override
+            public void onFailure(Call<ApplicationToken> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "fail", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "fail: " + t.getCause().getLocalizedMessage());
+            }
+        });
+        return itemList;
     }
 
 }

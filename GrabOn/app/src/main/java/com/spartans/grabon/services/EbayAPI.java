@@ -5,6 +5,8 @@ import android.util.Base64;
 import com.spartans.grabon.model.ApplicationToken;
 import com.spartans.grabon.model.SearchResponse;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -33,9 +35,13 @@ public class EbayAPI {
 
     public static EbayService getService() {
         if (service == null) {
+            HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
+                    .client(client)
                     .build();
 
             service = retrofit.create(EbayService.class);
