@@ -17,6 +17,7 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -91,6 +92,8 @@ public class Login extends AppCompatActivity {
 
         //Then we will get the GoogleSignInClient object from GoogleSignIn class
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        logoutPreviousUser();
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -298,6 +301,19 @@ public class Login extends AppCompatActivity {
                 });
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 Toast.makeText(Login.this, "User Registered", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void logoutPreviousUser() {
+        FirebaseUser user = auth.getCurrentUser();
+        if (user != null) {
+            String providerID = user.getProviderData().get(1).getProviderId();
+            FirebaseAuth.getInstance().signOut();
+            if (providerID.equals("google.com")) {
+                Login.mGoogleSignInClient.signOut();
+            } else if (providerID.equals("facebook.com")) {
+                LoginManager.getInstance().logOut();
             }
         }
     }
