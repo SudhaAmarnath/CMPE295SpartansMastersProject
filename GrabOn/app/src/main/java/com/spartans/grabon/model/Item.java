@@ -16,6 +16,8 @@ public class Item {
     private ArrayList itemImageList;
     private boolean itemOrdered;
     private boolean itemPicked;
+    private String latitude;
+    private String longitude;
 
     public Item() {
 
@@ -134,5 +136,21 @@ public class Item {
 
     public void setItemPicked(boolean itemPicked) {
         this.itemPicked = itemPicked;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 }

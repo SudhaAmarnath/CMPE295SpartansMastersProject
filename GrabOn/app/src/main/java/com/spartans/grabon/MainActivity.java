@@ -9,8 +9,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.SearchView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,8 +23,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -45,9 +54,11 @@ import com.spartans.grabon.model.Item;
 import com.spartans.grabon.model.ItemSummary;
 import com.spartans.grabon.model.SearchResponse;
 import com.spartans.grabon.services.EbayAPI;
+import com.spartans.grabon.utils.DistanceCalculator;
 import com.spartans.grabon.utils.Singleton;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,6 +113,10 @@ public class MainActivity extends AppCompatActivity {
     private ProductListAdapter searchRecycleViewAdapter;
     private RecyclerView.LayoutManager searchRecycleViewLayoutManager;
 
+    PlacesClient placesClient;
+    private double userlat = 0;
+    private double userlon = 0;
+    private double usermiles = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,10 +130,57 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         recyclerViewItems = findViewById(R.id.HomeActivityItemsList);
         db = Singleton.getDb();
+        final AutocompleteSupportFragment address;
+        address = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.MainActivityLocation);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(null);
         getSupportActionBar().setSubtitle(null);
+
+        String apiKey = getString(R.string.google_maps_key);
+        if (!Places.isInitialized()) {
+            Places.initialize(MainActivity.this, apiKey);
+        }
+        placesClient = Places.createClient(this);
+        address.setPlaceFields(Arrays.asList(Place.Field.ID,
+                Place.Field.NAME,
+                Place.Field.LAT_LNG,
+                Place.Field.ADDRESS
+        ));
+
+        address.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(@NonNull Place place) {
+                Log.v("search", place.getLatLng().toString());
+                Log.v("search", place.getAddress());
+                Log.v("search", place.getName());
+                final LatLng latLng = place.getLatLng();
+                userlat = latLng.latitude;
+                userlon = latLng.longitude;
+            }
+
+            @Override
+            public void onError(@NonNull Status status) {
+
+            }
+        });
+
+        Spinner distance = (Spinner) findViewById(R.id.MainActivityDistance);
+        distance.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Object miles = parent.getItemAtPosition(position);
+                if (miles.toString().equals("mi")) {
+                    usermiles =  10000;
+                } else {
+                    usermiles = Double.parseDouble(miles.toString());
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         // show 2 items in grid layout
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
@@ -127,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
 
         fabChat = findViewById(R.id.fabChat);
         fabCart = findViewById(R.id.fabCart);
-        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance ();
         loggedinUser = firebaseAuth.getCurrentUser();
 
         fabChat.setOnClickListener(new View.OnClickListener() {
@@ -173,7 +235,17 @@ public class MainActivity extends AppCompatActivity {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 ArrayList<String> imgs = new ArrayList<>();
                                 Map<String, Object> myMap = document.getData();
-                                if ((boolean) myMap.get("itemordered") == false) {
+                                String itemlat = (String) myMap.get("itemlatitude");
+                                String itemlon = (String) myMap.get("itemlongitude");
+                                double lat = Double.parseDouble(itemlat);
+                                double lon = Double.parseDouble(itemlon);
+                                double distance = 0.0;
+                                if (userlat != 0 && userlon != 0) {
+                                    distance = new DistanceCalculator().distance(userlat, userlon,
+                                            lat, lon, 'M');
+                                }
+                                if ((boolean) myMap.get("itemordered") == false
+                                        && distance <= usermiles) {
                                     for (Map.Entry<String, Object> entry : myMap.entrySet()) {
                                         if (entry.getKey().equals("itemimagelist")) {
                                             for (Object s : (ArrayList) entry.getValue()) {

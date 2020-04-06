@@ -42,4 +42,17 @@
 
     <string name="notification">Notification</string>
 
+    <string name="distance_prompt">In Miles</string>
+
+    <string-array name="distance">
+        <item>mi</item>
+        <item>1</item>
+        <item>5</item>
+        <item>10</item>
+        <item>25</item>
+        <item>50</item>
+        <item>100</item>
+    </string-array>
+
+
 </resources>

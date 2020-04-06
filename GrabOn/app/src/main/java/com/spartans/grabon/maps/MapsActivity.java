@@ -28,9 +28,20 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.maps.android.clustering.ClusterManager;
 import com.spartans.grabon.R;
+import com.spartans.grabon.interfaces.FileDataStatus;
+import com.spartans.grabon.model.Item;
 import com.spartans.grabon.model.MapItem;
+import com.spartans.grabon.utils.Singleton;
 
 import org.json.JSONObject;
 
@@ -43,6 +54,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Author : Sudha Amarnath on 2020-02-19
@@ -56,6 +68,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleApiClient mGoogleApiClient;
     ArrayList<LatLng> markerPoints= new ArrayList<>();
     private ClusterManager<MapItem> mClusterManager;
+    private ArrayList<Item> itemsList = new ArrayList<>();
+    private FirebaseUser user;
+    private FirebaseAuth auth;
+    private FirebaseFirestore db = Singleton.getDb();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +90,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSION_CODE);
         }
+
+        FirebaseApp.initializeApp(this);
+
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
 
     }
 
@@ -129,7 +151,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         googleMap.setOnCameraIdleListener(mClusterManager);
         googleMap.setOnMarkerClickListener(mClusterManager);
         googleMap.setOnInfoWindowClickListener(mClusterManager);
-        addItemsOnMap();
+        displayItemsOnMap();
         mClusterManager.cluster();
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -184,13 +206,86 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void addItemsOnMap() {
-        for (int i = 0; i < 3; i++) {
-            mClusterManager.addItem(new MapItem(37.3594918, -122.0516074, "Item1", "snippet1"));
-            mClusterManager.addItem(new MapItem(37.3608915, -122.0566732, "Item2", "snippet2"));
-            mClusterManager.addItem(new MapItem(37.3636095, -122.0694625, "Item3", "snippet3"));
-        }
+    private void getItems(final FileDataStatus fileDataStatus) {
+
+        db.collection("items")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                if (!user.getUid().matches(document.get("selleruid").toString())) {
+
+                                    ArrayList<String> imgs = new ArrayList<>();
+                                    Map<String, Object> myMap = document.getData();
+
+                                    boolean itempicked = (boolean) myMap.get("itempicked");
+
+                                    if (!itempicked) {
+                                        for (Map.Entry<String, Object> entry : myMap.entrySet()) {
+                                            if (entry.getKey().equals("itemimagelist")) {
+                                                for (Object s : (ArrayList) entry.getValue()) {
+                                                    imgs.add((String) s);
+                                                }
+                                                Log.v("TagImg", entry.getValue().toString());
+                                            }
+                                        }
+                                        Item item = new Item();
+                                        Double price;
+                                        item.setItemID(document.getId());
+                                        item.setItemSellerUID((String) myMap.get("selleruid"));
+                                        item.setItemName((String) myMap.get("itemname"));
+                                        item.setItemDescription((String) myMap.get("itemdesc"));
+                                        price = (Double) myMap.get("itemprice");
+                                        item.setItemPrice(price.floatValue());
+                                        item.setItemImageList(imgs);
+                                        item.setLatitude((String) myMap.get("itemlatitude"));
+                                        item.setLongitude((String) myMap.get("itemlongitude"));
+                                        item.setItemOrdered((boolean) myMap.get("itemordered"));
+                                        itemsList.add(item);
+
+                                    }
+                                }
+                            }
+                            fileDataStatus.onSuccess(itemsList);
+                        } else {
+                            fileDataStatus.onError("Error getting data");
+                            Log.w("Posted Items:", "Error getting data.", task.getException());
+                        }
+
+                    }
+                });
     }
+
+
+    private void displayItemsOnMap () {
+
+        getItems(new FileDataStatus() {
+            @Override
+            public void onSuccess(ArrayList list) {
+
+                for (int i = 0; i < itemsList.size(); i++) {
+                    Item item = itemsList.get(i);
+                    String itemname = item.getItemName();
+                    float itemprice = item.getItemPrice();
+                    boolean itemordered = item.isItemOrdered();
+                    double itemlat = Double.parseDouble(item.getLatitude());
+                    double itemlon = Double.parseDouble(item.getLongitude());
+                    mClusterManager.addItem(new MapItem(itemlat, itemlon, itemname, "Price: $" + String.valueOf(itemprice)));
+
+                }
+
+            }
+
+            @Override
+            public void onError(String e) {
+
+            }
+        });
+
+    }
+
 
     private class DownloadTask extends AsyncTask<String,Void,String> {
 
