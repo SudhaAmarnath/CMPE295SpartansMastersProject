@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -60,7 +61,7 @@ public class Cart extends AppCompatActivity {
     private ArrayList<Item> itemsList = new ArrayList<>();
     private CartItemAdapter cartItemAdapter;
     private TinyDB tinyDB;
-    private static double shippingFees = 2;
+    private static double shippingFees;
     private static double totalPrice;
     private static String state = null;
     private static double shippingTotal = 0;
@@ -71,6 +72,8 @@ public class Cart extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseUser user;
     private static FancyButton backToItems, cartProceedForPayment;
+    private static RadioGroup radioGroup;
+    private static boolean pickup = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,9 +88,38 @@ public class Cart extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
+        radioGroup = findViewById(R.id.CartItemsRadioGroup);
         setSupportActionBar(cartToolbar);
         backToItems = findViewById(R.id.CartBackToItems);
         cartProceedForPayment = findViewById(R.id.CartProceedForPayment);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Cart.this,
+                LinearLayoutManager.VERTICAL,
+                false);
+
+        recyclerViewItems.setLayoutManager(linearLayoutManager);
+        recyclerViewItems.setHasFixedSize(true);
+
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == R.id.CartItemsRadioPickup) {
+                    pickup = true;
+                } else {
+                    pickup = false;
+                }
+                cartItemAdapter = null;
+                itemsList = new ArrayList<>();
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Cart.this,
+                        LinearLayoutManager.VERTICAL,
+                        false);
+                recyclerViewItems.setLayoutManager(linearLayoutManager);
+                recyclerViewItems.setHasFixedSize(true);
+                displayCartItems();
+            }
+        });
+
 
         backToItems.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,13 +137,6 @@ public class Cart extends AppCompatActivity {
                 finish();
             }
         });
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Cart.this,
-                LinearLayoutManager.VERTICAL,
-                false);
-
-        recyclerViewItems.setLayoutManager(linearLayoutManager);
-        recyclerViewItems.setHasFixedSize(true);
 
         displayCartItems();
 
@@ -180,18 +205,21 @@ public class Cart extends AppCompatActivity {
                         shippingTotal = 0;
                         totalbeforetax = 0;
                         totaltax=0;
+                        if (pickup == true) {
+                            shippingFees = 0;
+                        } else {
+                            shippingFees = 2;
+                        }
+
                         for (i = 0; i < itemsList.size(); i++) {
                             Item item = itemsList.get(i);
-                            String sellerUID = item.getItemSellerUID();
-                            String address = "600 Showers Dr, Mountain View, CA 94043, USA";
+                            String address = item.getItemAddress();
                             Log.v("sales", address);
                             String pattern = ", ([a-zA-Z]+) (\\d+),";
                             Pattern r = Pattern.compile(pattern);
                             Matcher m = r.matcher(address);
                             if (m.find()) {
                                 state = m.group(1);
-                                Log.v("sales", String.valueOf(m.group(1)));
-                                Log.v("sales", "aaa" + state);
                                 double itemprice = item.getItemPrice();
                                 double itemshippingfees = shippingFees;
                                 shippingTotal += shippingFees;
@@ -202,7 +230,6 @@ public class Cart extends AppCompatActivity {
                                 totaltax += itemtax;
                                 totalPrice += item.getItemPrice();
                             }
-                            Log.v("sales", "price:" + String.valueOf(totalPrice));
 
                         }
                         cartsItemsTotal.setText("$"+String.format("%.2f",totalPrice));
@@ -292,6 +319,5 @@ public class Cart extends AppCompatActivity {
         }
 
     }
-
 
 }
