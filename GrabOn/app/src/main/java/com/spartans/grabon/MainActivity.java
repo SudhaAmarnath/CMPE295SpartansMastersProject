@@ -113,6 +113,8 @@ public class MainActivity extends AppCompatActivity {
     private ProductListAdapter searchRecycleViewAdapter;
     private RecyclerView.LayoutManager searchRecycleViewLayoutManager;
 
+    private SearchView searchView;
+
     PlacesClient placesClient;
     private double userlat = 0;
     private double userlon = 0;
@@ -341,6 +343,7 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu_search, menu);
         final MenuItem item = menu.findItem(R.id.menuSearch);
+        searchView = (SearchView) item.getActionView();
         SearchView searchView = (SearchView) item.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
             @Override
@@ -353,6 +356,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 Log.i("newText ",newText);
+                return false;
+            }
+        });
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                recyclerViewItems.setVisibility(View.VISIBLE);
+                searchRecycleView.setVisibility(View.GONE);
                 return false;
             }
         });
@@ -453,6 +464,7 @@ public class MainActivity extends AppCompatActivity {
                         SearchResponse searchResponse = response.body();
                         itemList = searchResponse.getItemSummaries();
                         searchRecycleView = findViewById(R.id.searchRecycleView);
+                        searchRecycleView.setVisibility(View.VISIBLE);
                         searchRecycleView.setHasFixedSize(true);
                         searchRecycleViewLayoutManager = new LinearLayoutManager(getApplicationContext());
                         searchRecycleViewAdapter = new ProductListAdapter(itemList);

@@ -8,7 +8,9 @@
         android:icon="@android:drawable/ic_menu_search"
         android:textColorHint="@android:color/white"
         android:title="Search"
+        android:iconifiedByDefault="false"
+        app:showAsAction="always"
         app:actionViewClass="android.widget.SearchView"
-        app:showAsAction="always" />
+        android:queryHint="Search Here" />
 
 </menu>
