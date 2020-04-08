@@ -36,6 +36,7 @@ public class ItemActivity extends AppCompatActivity {
     private String itemDesc;
     private float  itemPrice;
     private String itemImage;
+    private String itemAddress;
     private ArrayList itemImageList;
     private TextView viewItemName;
     private TextView viewItemDesc;
@@ -64,6 +65,7 @@ public class ItemActivity extends AppCompatActivity {
         itemDesc = (String) getIntent().getSerializableExtra("itemdesc");
         itemPrice = (float) getIntent().getSerializableExtra("itemprice");
         itemImageList = (ArrayList) getIntent().getSerializableExtra("itemimagelist");
+        itemAddress = (String) getIntent().getSerializableExtra("itemaddress");
 
         viewItemName = findViewById(R.id.ItemName);
         viewItemDesc = findViewById(R.id.ItemDescription);
@@ -88,6 +90,7 @@ public class ItemActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Item item = new Item(itemID, itemName, itemDesc, itemSellerUID, itemPrice, itemImageList);
+                item.setItemAddress(itemAddress);
                 if(cartClicked == false) {
                     addItemToTinyDB(item, tinyDB);
                     viewAddToCart.setBackgroundColor(getResources().getColor(R.color.colorPrimary));

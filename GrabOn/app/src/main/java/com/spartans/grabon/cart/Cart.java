@@ -29,12 +29,16 @@ import com.spartans.grabon.interfaces.FileDataStatus;
 import com.spartans.grabon.item.ItemActivity;
 import com.spartans.grabon.model.Item;
 import com.spartans.grabon.payment.PaypalPaymentClient;
+import com.spartans.grabon.utils.SalesTaxCalculator;
 import com.spartans.grabon.utils.Singleton;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import mehdi.sakout.fancybuttons.FancyButton;
 
@@ -56,9 +60,17 @@ public class Cart extends AppCompatActivity {
     private ArrayList<Item> itemsList = new ArrayList<>();
     private CartItemAdapter cartItemAdapter;
     private TinyDB tinyDB;
+    private static double shippingFees = 2;
     private static double totalPrice;
+    private static String state = null;
+    private static double shippingTotal = 0;
+    private static double totalbeforetax = 0;
+    private static double totaltax = 0;
+    private static CountDownLatch done;
+    private static int i=0;
     private FirebaseAuth auth;
     private FirebaseUser user;
+    private static FancyButton backToItems, cartProceedForPayment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +86,6 @@ public class Cart extends AppCompatActivity {
         user = auth.getCurrentUser();
 
         setSupportActionBar(cartToolbar);
-        FancyButton backToItems, cartProceedForPayment;
         backToItems = findViewById(R.id.CartBackToItems);
         cartProceedForPayment = findViewById(R.id.CartProceedForPayment);
 
@@ -122,7 +133,6 @@ public class Cart extends AppCompatActivity {
 
     }
 
-
     private void getItems(final FileDataStatus fileDataStatus) {
 
         tinyDB = new TinyDB(Cart.this);
@@ -155,19 +165,59 @@ public class Cart extends AppCompatActivity {
                                 itemPage.putExtra("itemprice", item.getItemPrice());
                                 itemPage.putExtra("itemimage", item.getItemImage());
                                 itemPage.putExtra("itemimagelist", item.getItemImageList());
+                                itemPage.putExtra("itemaddress", item.getItemAddress());
                                 startActivity(itemPage);
                         }
                     });
                     recyclerViewItems.setAdapter(cartItemAdapter);
                     TextView cartsItemsTotal = findViewById(R.id.CartItemsTotal);
+                    TextView cartItemsShippingFees = findViewById(R.id.CartItemsShippingFees);
+                    TextView cartItemsTotalBeforeTax = findViewById(R.id.CartItemsTotalBeforeTax);
+                    TextView cartItemsTotalTax = findViewById(R.id.CartItemsTotalTax);
+                    TextView cartItemsGrandTotal = findViewById(R.id.CartItemsGrandTotal);
                     if (!itemsList.isEmpty()) {
-                        Cart.totalPrice= 0;
-                        for (int i = 0; i < itemsList.size(); i++) {
-                            Cart.totalPrice += itemsList.get(i).getItemPrice();
+                        totalPrice= 0;
+                        shippingTotal = 0;
+                        totalbeforetax = 0;
+                        totaltax=0;
+                        for (i = 0; i < itemsList.size(); i++) {
+                            Item item = itemsList.get(i);
+                            String sellerUID = item.getItemSellerUID();
+                            String address = "600 Showers Dr, Mountain View, CA 94043, USA";
+                            Log.v("sales", address);
+                            String pattern = ", ([a-zA-Z]+) (\\d+),";
+                            Pattern r = Pattern.compile(pattern);
+                            Matcher m = r.matcher(address);
+                            if (m.find()) {
+                                state = m.group(1);
+                                Log.v("sales", String.valueOf(m.group(1)));
+                                Log.v("sales", "aaa" + state);
+                                double itemprice = item.getItemPrice();
+                                double itemshippingfees = shippingFees;
+                                shippingTotal += shippingFees;
+                                double itemtotal = itemprice + itemshippingfees;
+                                totalbeforetax += itemtotal;
+                                double taxrate = new SalesTaxCalculator().getSalesTax(state);
+                                double itemtax = itemtotal * taxrate / 100;
+                                totaltax += itemtax;
+                                totalPrice += item.getItemPrice();
+                            }
+                            Log.v("sales", "price:" + String.valueOf(totalPrice));
+
                         }
-                        cartsItemsTotal.setText("Total Price: $" + Cart.totalPrice);
+                        cartsItemsTotal.setText("$"+String.format("%.2f",totalPrice));
+                        cartItemsShippingFees.setText("$"+String.format("%.2f",shippingTotal));
+                        cartItemsTotalBeforeTax.setText("$"+String.format("%.2f",totalbeforetax));
+                        cartItemsTotalTax.setText("$"+String.format("%.2f",totaltax));
+                        cartItemsGrandTotal.setText("$"+String.format("%.2f",totalbeforetax + totaltax));
+                        cartProceedForPayment.setClickable(true);
                     } else {
                         cartsItemsTotal.setVisibility(View.GONE);
+                        cartItemsShippingFees.setVisibility(View.GONE);
+                        cartItemsTotalBeforeTax.setVisibility(View.GONE);
+                        cartItemsTotalTax.setVisibility(View.GONE);
+                        cartItemsGrandTotal.setVisibility(View.GONE);
+                        cartProceedForPayment.setClickable(false);
                     }
                 } else {
                     cartItemAdapter.getItems().clear();
@@ -242,7 +292,6 @@ public class Cart extends AppCompatActivity {
         }
 
     }
-
 
 
 }

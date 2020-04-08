@@ -246,7 +246,7 @@ public class Profile extends AppCompatActivity {
 
                     //Update item to the db
                     Map<String, Object> dbitem = new HashMap<>();
-                    dbitem.put("address", Profile.edittxtaddrline);
+                    dbitem.put("address", Profile.addressline);
                     dbitem.put("latitude", Profile.latitude);
                     dbitem.put("longitude", Profile.longitude);
                     DocumentReference updateUser = db.collection("users")

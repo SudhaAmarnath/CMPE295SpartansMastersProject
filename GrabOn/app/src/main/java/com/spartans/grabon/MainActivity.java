@@ -237,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
                                 Map<String, Object> myMap = document.getData();
                                 String itemlat = (String) myMap.get("itemlatitude");
                                 String itemlon = (String) myMap.get("itemlongitude");
+                                String itemaddress = (String) myMap.get("itemaddress");
                                 double lat = Double.parseDouble(itemlat);
                                 double lon = Double.parseDouble(itemlon);
                                 double distance = 0.0;
@@ -270,6 +271,7 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                     item.setItemPrice(price.floatValue());
                                     item.setItemImageList(imgs);
+                                    item.setItemAddress(itemaddress);
                                     itemsList.add(item);
                                 }
                             }
@@ -301,6 +303,7 @@ public class MainActivity extends AppCompatActivity {
                                 updateItemPage.putExtra("itemprice", item.getItemPrice());
                                 updateItemPage.putExtra("itemimage", item.getItemImage());
                                 updateItemPage.putExtra("itemimagelist", item.getItemImageList());
+                                updateItemPage.putExtra("itemaddress", item.getItemAddress());
                                 startActivity(updateItemPage);
                             } else {
                                 Intent itemPage = new Intent(MainActivity.this, ItemActivity.class);
@@ -311,6 +314,7 @@ public class MainActivity extends AppCompatActivity {
                                 itemPage.putExtra("itemprice", item.getItemPrice());
                                 itemPage.putExtra("itemimage", item.getItemImage());
                                 itemPage.putExtra("itemimagelist", item.getItemImageList());
+                                itemPage.putExtra("itemaddress", item.getItemAddress());
                                 startActivity(itemPage);
                             }
                         }

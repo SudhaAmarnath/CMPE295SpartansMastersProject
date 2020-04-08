@@ -68,6 +68,7 @@ public class AddItem extends AppCompatActivity {
     private static String paypalid = "";
     private static String latitude = "";
     private static String longitude = "";
+    private static String address = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +97,7 @@ public class AddItem extends AppCompatActivity {
                             AddItem.paypalid = task.getResult().get("paypalid").toString();
                             AddItem.latitude = task.getResult().get("latitude").toString();
                             AddItem.longitude = task.getResult().get("longitude").toString();
+                            AddItem.address = task.getResult().get("address").toString();
                             Log.v("sudha", AddItem.paypalid + "," + AddItem.latitude + "," + AddItem.longitude);
                         }
                     }
@@ -161,6 +163,7 @@ public class AddItem extends AppCompatActivity {
                                 dbitem.put("itempicked", false);
                                 dbitem.put("itemlatitude", AddItem.latitude);
                                 dbitem.put("itemlongitude", AddItem.longitude);
+                                dbitem.put("itemaddress", AddItem.address);
 
                                 db.collection("items")
                                         .add(dbitem)

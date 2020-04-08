@@ -18,6 +18,7 @@ public class Item {
     private boolean itemPicked;
     private String latitude;
     private String longitude;
+    private String itemAddress;
 
     public Item() {
 
@@ -152,5 +153,13 @@ public class Item {
 
     public void setLongitude(String longitude) {
         this.longitude = longitude;
+    }
+
+    public String getItemAddress() {
+        return itemAddress;
+    }
+
+    public void setItemAddress(String itemAddress) {
+        this.itemAddress = itemAddress;
     }
 }
