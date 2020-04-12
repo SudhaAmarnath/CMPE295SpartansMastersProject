@@ -90,6 +90,7 @@ public class PostedItems extends AppCompatActivity {
                                     price = (Double) myMap.get("itemprice");
                                     item.setItemPrice(price.floatValue());
                                     item.setItemImageList(imgs);
+                                    item.setItemCategory((String) myMap.get("itemcategory"));
                                     postedItemsList.add(item);
                                 }
                             }
@@ -120,6 +121,7 @@ public class PostedItems extends AppCompatActivity {
                             updateItemPage.putExtra("itemprice", item.getItemPrice());
                             updateItemPage.putExtra("itemimage", item.getItemImage());
                             updateItemPage.putExtra("itemimagelist", item.getItemImageList());
+                            updateItemPage.putExtra("itemcategory", item.getItemCategory());
                             startActivity(updateItemPage);
                         }
                     });

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/white"
+    android:elevation="0dp"
+    android:padding="0dp"
+    android:foreground="?attr/selectableItemBackgroundBorderless"
+    android:clickable="true"
+    android:layout_margin="2dp"
+    app:cardElevation="0dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:orientation="vertical">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="100dp"
+            android:layout_height="70dp"
+            app:cardCornerRadius="20dp">
+            <ImageView
+                android:id="@+id/layout_items_category_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/md_green_200"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_cat_clothes"/>
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/layout_items_category_text"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:fontFamily="@font/helvetica"
+            android:text="Item test image"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:textColor="@color/black"
+            android:textSize="12dp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

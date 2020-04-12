@@ -7,8 +7,10 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -69,6 +71,7 @@ public class AddItem extends AppCompatActivity {
     private static String latitude = "";
     private static String longitude = "";
     private static String address = "";
+    private static String category = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +123,20 @@ public class AddItem extends AppCompatActivity {
             }
         });
 
+        final Spinner category = (Spinner) findViewById(R.id.addItemCategory);
+        category.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Object cat = parent.getItemAtPosition(position);
+                AddItem.category = cat.toString();
+                Log.v("category", "selected" + AddItem.category);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
     }
 
     @Override
@@ -144,12 +161,12 @@ public class AddItem extends AppCompatActivity {
 
                             if (TextUtils.isEmpty(itemName) == false &&
                                     TextUtils.isEmpty(itemDesc) == false &&
-                                    TextUtils.isEmpty(itemPrice) == false) {
+                                    TextUtils.isEmpty(itemPrice) == false &&
+                                    AddItem.category.equals("Select Category") == false) {
 
                                 item = new Item(itemName, itemDesc, uID,
                                         Float.valueOf(itemPrice),
                                         uri.toString(), image);
-
 
                                 //Add item to the db
                                 Map<String, Object> dbitem = new HashMap<>();
@@ -164,6 +181,7 @@ public class AddItem extends AppCompatActivity {
                                 dbitem.put("itemlatitude", AddItem.latitude);
                                 dbitem.put("itemlongitude", AddItem.longitude);
                                 dbitem.put("itemaddress", AddItem.address);
+                                dbitem.put("itemcategory", AddItem.category);
 
                                 db.collection("items")
                                         .add(dbitem)

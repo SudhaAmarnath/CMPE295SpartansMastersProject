@@ -42,15 +42,19 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.spartans.grabon.adapters.ItemAdapter;
+import com.spartans.grabon.adapters.ItemCategoryAdapter;
 import com.spartans.grabon.adapters.ProductListAdapter;
 import com.spartans.grabon.cart.Cart;
 import com.spartans.grabon.fragments.BottomSheetNavigationFragment;
 import com.spartans.grabon.interfaces.ClickListenerItem;
+import com.spartans.grabon.interfaces.ClickListenerItemCategory;
 import com.spartans.grabon.interfaces.FileDataStatus;
+import com.spartans.grabon.item.Categories;
 import com.spartans.grabon.item.ItemActivity;
 import com.spartans.grabon.item.UpdateItem;
 import com.spartans.grabon.model.ApplicationToken;
 import com.spartans.grabon.model.Item;
+import com.spartans.grabon.model.ItemCategory;
 import com.spartans.grabon.model.ItemSummary;
 import com.spartans.grabon.model.SearchResponse;
 import com.spartans.grabon.services.EbayAPI;
@@ -81,12 +85,15 @@ public class MainActivity extends AppCompatActivity {
     public static final String TAG = "TAG";
     private Toolbar toolbar;
     private RecyclerView recyclerViewItems;
+    private RecyclerView recyclerViewItemCategories;
 //    private RecyclerView.adapter
     private RecyclerView.LayoutManager mLayoutManager;
     private FirebaseFirestore db;
 
     private ArrayList<Item> itemsList = new ArrayList<>();
     private ItemAdapter itemAdapter;
+    private ArrayList<ItemCategory> itemCategoriesList = new ArrayList<>();
+    private ItemCategoryAdapter itemCategoryAdapter;
     ArrayAdapter<String> adapter;
     private BottomAppBar bottomAppBar;
     private FloatingActionButton fabChat, fabCart;
@@ -120,6 +127,8 @@ public class MainActivity extends AppCompatActivity {
     private double userlon = 0;
     private double usermiles = 0;
 
+    public static String category = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
         conversationId = "";
         toolbar = findViewById(R.id.toolbar);
         recyclerViewItems = findViewById(R.id.HomeActivityItemsList);
+        recyclerViewItemCategories = findViewById(R.id.HomeActivityItemCategoriesList);
         db = Singleton.getDb();
         final AutocompleteSupportFragment address;
         address = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.MainActivityLocation);
@@ -184,10 +194,32 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //Context context;
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),
+                LinearLayoutManager.HORIZONTAL,false);
+        recyclerViewItemCategories.setLayoutManager(linearLayoutManager);
+        recyclerViewItemCategories.setHasFixedSize(true);
+        displayCategories();
+
         // show 2 items in grid layout
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
         recyclerViewItems.setLayoutManager(gridLayoutManager);
         recyclerViewItems.setNestedScrollingEnabled(false);
+        displayItems();
+
+        final SwipeRefreshLayout pullToRefresh = findViewById(R.id.MainItemPullToRefresh);
+        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                itemAdapter = null;
+                itemsList = new ArrayList<>();
+                GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
+                recyclerViewItems.setLayoutManager(gridLayoutManager);
+                recyclerViewItems.setNestedScrollingEnabled(false);
+                pullToRefresh.setRefreshing(false);
+                displayItems();
+            }
+        });
 
         fabChat = findViewById(R.id.fabChat);
         fabCart = findViewById(R.id.fabCart);
@@ -208,23 +240,42 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        displayItems();
-
-        final SwipeRefreshLayout pullToRefresh = findViewById(R.id.MainItemPullToRefresh);
-        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                itemAdapter = null;
-                itemsList = new ArrayList<>();
-                GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
-                recyclerViewItems.setLayoutManager(gridLayoutManager);
-                recyclerViewItems.setNestedScrollingEnabled(false);
-                pullToRefresh.setRefreshing(false);
-                displayItems();
-            }
-        });
 
     }
+
+    private void displayCategories () {
+
+        itemCategoriesList = new ArrayList<>();
+        ArrayList<String> catlist = new Categories().getItemCategoryList();
+        for (int i = 0; i < catlist.size(); i++) {
+            String catname = catlist.get(i);
+            ArrayList<String> catvalues = new Categories().getItemCategoryResource(catname);
+            int drawimg = getResources().getIdentifier(catvalues.get(0), "drawable", "com.spartans.grabon");
+            int colres = getResources().getIdentifier(catvalues.get(1), "color", "com.spartans.grabon");
+            ItemCategory ic = new ItemCategory(catname, drawimg, colres);
+            itemCategoriesList.add(ic);
+        }
+        if (itemCategoryAdapter == null) {
+            itemCategoryAdapter = new ItemCategoryAdapter(itemCategoriesList, MainActivity.this, new ClickListenerItemCategory() {
+                @Override
+                public void onClick(View view, ItemCategory itemCategory) {
+                    if (category == itemCategory.getCategoryName()) {
+                        Log.v("category", "unselect:" + category);
+                        category = "";
+                    } else {
+                        category = itemCategory.getCategoryName();
+                        Log.v("category", "select:" + category);
+                    }
+                }
+            });
+            recyclerViewItemCategories.setAdapter(itemCategoryAdapter);
+        } else {
+            itemCategoryAdapter.getItemCategories().clear();
+            itemCategoryAdapter.getItemCategories().addAll(itemCategoriesList);
+            itemCategoryAdapter.notifyDataSetChanged();
+        }
+    }
+
 
     private void getItems(final FileDataStatus fileDataStatus) {
 
@@ -240,6 +291,12 @@ public class MainActivity extends AppCompatActivity {
                                 String itemlat = (String) myMap.get("itemlatitude");
                                 String itemlon = (String) myMap.get("itemlongitude");
                                 String itemaddress = (String) myMap.get("itemaddress");
+                                String itemcategory = "";
+                                if (myMap.get("itemcategory") != null) {
+                                    itemcategory = (String) myMap.get("itemcategory");
+                                } else {
+                                    itemcategory = "OTHER";
+                                }
                                 double lat = Double.parseDouble(itemlat);
                                 double lon = Double.parseDouble(itemlon);
                                 double distance = 0.0;
@@ -247,33 +304,35 @@ public class MainActivity extends AppCompatActivity {
                                     distance = new DistanceCalculator().distance(userlat, userlon,
                                             lat, lon, 'M');
                                 }
-                                if ((boolean) myMap.get("itemordered") == false
-                                        && distance <= usermiles) {
+                                Double price = 0.0;
+                                Object priceFromDB = myMap.get("itemprice");
+                                if (priceFromDB.getClass() == Double.class) {
+                                    price = (Double) myMap.get("itemprice");
+                                }
+                                else if (priceFromDB.getClass() == Long.class) {
+                                    price = ((Long) myMap.get("itemprice")).doubleValue();
+                                }
+                                if (!(boolean) myMap.get("itemordered")
+                                        && distance <= usermiles
+                                        && (category.equals("") || category.equals(itemcategory) || (category.equals("Freebies") && price == 0))) {
+
                                     for (Map.Entry<String, Object> entry : myMap.entrySet()) {
                                         if (entry.getKey().equals("itemimagelist")) {
                                             for (Object s : (ArrayList) entry.getValue()) {
                                                 imgs.add((String) s);
                                             }
                                             Log.v("TagImg", entry.getValue().toString());
-
                                         }
                                     }
                                     Item item = new Item();
-                                    Double price = 0.0;
                                     item.setItemID(document.getId());
                                     item.setItemSellerUID((String) myMap.get("selleruid"));
                                     item.setItemName((String) myMap.get("itemname"));
                                     item.setItemDescription((String) myMap.get("itemdesc"));
-                                    Object priceFromDB = myMap.get("itemprice");
-                                    if (priceFromDB.getClass() == Double.class) {
-                                        price = (Double) myMap.get("itemprice");
-                                    }
-                                    else if (priceFromDB.getClass() == Long.class) {
-                                        price = ((Long) myMap.get("itemprice")).doubleValue();
-                                    }
                                     item.setItemPrice(price.floatValue());
                                     item.setItemImageList(imgs);
                                     item.setItemAddress(itemaddress);
+                                    item.setItemCategory(itemcategory);
                                     itemsList.add(item);
                                 }
                             }
@@ -306,6 +365,7 @@ public class MainActivity extends AppCompatActivity {
                                 updateItemPage.putExtra("itemimage", item.getItemImage());
                                 updateItemPage.putExtra("itemimagelist", item.getItemImageList());
                                 updateItemPage.putExtra("itemaddress", item.getItemAddress());
+                                updateItemPage.putExtra("itemcategory", item.getItemCategory());
                                 startActivity(updateItemPage);
                             } else {
                                 Intent itemPage = new Intent(MainActivity.this, ItemActivity.class);
@@ -317,6 +377,7 @@ public class MainActivity extends AppCompatActivity {
                                 itemPage.putExtra("itemimage", item.getItemImage());
                                 itemPage.putExtra("itemimagelist", item.getItemImageList());
                                 itemPage.putExtra("itemaddress", item.getItemAddress());
+                                itemPage.putExtra("itemcategory", item.getItemCategory());
                                 startActivity(itemPage);
                             }
                         }

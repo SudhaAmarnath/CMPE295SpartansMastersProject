@@ -7,8 +7,10 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -63,6 +65,7 @@ public class UpdateItem extends AppCompatActivity {
     private String itemDesc;
     private float  itemPrice;
     private String itemImage;
+    private String itemCategory;
     private ArrayList itemImageList;
     private ImageButton updateItemImage;
     private EditText updateItemName;
@@ -70,6 +73,7 @@ public class UpdateItem extends AppCompatActivity {
     private EditText updateItemPrice;
     private FancyButton updateItemButton, deleteItemButton;
     public static String docid=null;
+    private static String category = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,11 +92,11 @@ public class UpdateItem extends AppCompatActivity {
         storage = Singleton.getStorage();
         storageReference = storage.getReference();
 
-
         itemID = (String) getIntent().getSerializableExtra("itemid");
         itemSellerUID = (String) getIntent().getSerializableExtra("selleruid");
         itemName = (String) getIntent().getSerializableExtra("itemname");
         itemDesc = (String) getIntent().getSerializableExtra("itemdesc");
+        itemCategory = (String) getIntent().getSerializableExtra("itemcategory");
         itemPrice = (float) getIntent().getSerializableExtra("itemprice");
         itemImage = (String) getIntent().getSerializableExtra("itemimage");
         itemImageList = (ArrayList) getIntent().getSerializableExtra("itemimagelist");
@@ -109,6 +113,21 @@ public class UpdateItem extends AppCompatActivity {
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 Log.v("sudha", "add image start");
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
+            }
+        });
+
+        final Spinner category = (Spinner) findViewById(R.id.updateItemCategory);
+        category.setSelection(getIndex(category, itemCategory));
+        category.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Object cat = parent.getItemAtPosition(position);
+                UpdateItem.category = cat.toString();
+                Log.v("category", "selected" + UpdateItem.category);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
@@ -334,6 +353,15 @@ public class UpdateItem extends AppCompatActivity {
             }
         });
 
+    }
+
+    private int getIndex(Spinner spinner, String myString){
+        for (int i=0;i<spinner.getCount();i++){
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)){
+                return i;
+            }
+        }
+        return 0;
     }
 
 }

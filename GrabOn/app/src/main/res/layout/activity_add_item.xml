@@ -55,7 +55,7 @@
                 android:id="@+id/addItemName"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginBottom="15dp"
+                android:layout_marginBottom="12dp"
                 android:layout_weight="1"
                 android:background="@drawable/background_drawable_edit"
                 android:padding="10dp"
@@ -65,10 +65,41 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/addItemCategoryLabel"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/addItemNameLabel"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Category"
+                android:textColor="@color/md_black_1000"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/addItemCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/background_drawable_edit"
+                android:entries="@array/categories"
+                android:gravity="center"
+                android:padding="10dp"
+                android:popupBackground="@color/colorPrimaryLight"
+                android:prompt="@string/category_prompt"
+                android:textColor="@color/black"
+                android:textSize="14dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/addItemDescLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/addItemNameLabel"
+            android:layout_below="@+id/addItemCategoryLabel"
             android:orientation="vertical">
 
             <TextView
@@ -83,18 +114,19 @@
                 android:id="@+id/addItemDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
+                android:layout_marginBottom="12dp"
                 android:background="@drawable/background_drawable_edit"
                 android:gravity="top|start"
                 android:inputType="textMultiLine"
-                android:lines="8"
-                android:minLines="6"
+                android:lines="10"
+                android:minLines="4"
                 android:padding="10dp"
                 android:scrollbars="vertical"
                 android:singleLine="true"
                 android:textColor="@color/md_black_1000"
                 android:textColorHint="@color/md_purple_50" />
         </LinearLayout>
+
 
         <LinearLayout
             android:id="@+id/addItemPriceLabel"
@@ -116,7 +148,7 @@
                 android:id="@+id/addItemPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
+                android:layout_marginBottom="2dp"
                 android:layout_weight="1"
                 android:background="@drawable/background_drawable_edit"
                 android:gravity="top|start"

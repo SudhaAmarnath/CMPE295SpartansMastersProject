@@ -6,12 +6,6 @@
     <string name="email_id">Email ID</string>
     <string name="password">Password</string>
 
-    <!--
-    <string name="gmail_log_in"> Sign in with Google  </string>
-    <string name="log_in"> Sign in with Email      </string>
-    <string name="facebook_log_in"> Sign in with Facebook</string>
-    -->
-
     <!-- activity_register -->
     <string name="new_user_signup">New User Signup</string>
     <string name="first_name">First Name</string>
@@ -43,7 +37,6 @@
     <string name="notification">Notification</string>
 
     <string name="distance_prompt">In Miles</string>
-
     <string-array name="distance">
         <item>mi</item>
         <item>1</item>
@@ -52,6 +45,23 @@
         <item>25</item>
         <item>50</item>
         <item>100</item>
+    </string-array>
+
+    <string name="category_prompt">Select Category</string>
+    <string-array name="categories">
+        <item>Select Category</item>
+        <item>Appliances</item>
+        <item>Automobiles</item>
+        <item>Electronics</item>
+        <item>Fashion</item>
+        <item>Freebies</item>
+        <item>Furniture</item>
+        <item>Home &amp; Garden</item>
+        <item>Movies &amp; Music</item>
+        <item>Office</item>
+        <item>Other</item>
+        <item>Sports</item>
+        <item>Toys &amp; Games</item>
     </string-array>
 
 

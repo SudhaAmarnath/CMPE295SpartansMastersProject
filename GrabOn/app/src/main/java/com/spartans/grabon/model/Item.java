@@ -19,6 +19,7 @@ public class Item {
     private String latitude;
     private String longitude;
     private String itemAddress;
+    private String itemCategory;
 
     public Item() {
 
@@ -161,5 +162,13 @@ public class Item {
 
     public void setItemAddress(String itemAddress) {
         this.itemAddress = itemAddress;
+    }
+
+    public String getItemCategory() {
+        return itemCategory;
+    }
+
+    public void setItemCategory(String itemCategory) {
+        this.itemCategory = itemCategory;
     }
 }

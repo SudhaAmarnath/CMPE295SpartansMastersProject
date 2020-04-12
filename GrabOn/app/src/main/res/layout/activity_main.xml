@@ -115,6 +115,13 @@
                     android:orientation="vertical">
 
                     <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/HomeActivityItemCategoriesList"
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginBottom="0dp"
+                        android:layout_height="wrap_content"/>
+
+                    <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/HomeActivityItemsList"
                         android:layout_width="match_parent"
                         android:layout_marginTop="15dp"
