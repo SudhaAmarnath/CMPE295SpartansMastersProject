@@ -290,6 +290,7 @@ public class MainActivity extends AppCompatActivity {
                     if (category == itemCategory.getCategoryName()) {
                         Log.v("category", "unselect:" + category);
                         searchRecycleView.setVisibility(View.GONE);
+                        recyclerViewItems.setVisibility(View.VISIBLE);
                         category = "";
                     } else {
                         category = itemCategory.getCategoryName();
