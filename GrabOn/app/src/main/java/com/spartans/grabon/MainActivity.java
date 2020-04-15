@@ -128,6 +128,34 @@ public class MainActivity extends AppCompatActivity {
     private double usermiles = 0;
 
     public static String category = "";
+    /*
+     *   Appliance = 20710
+     *   Automobiles = 6024
+     *   Electronics = 58058
+     *   Fashion = 1059
+     *   Freebies =
+     *   Furniture = 3197
+     *   Home Garden = 159912
+     *   Movies & Music = 11232
+     *   Office = 58271
+     *   Sports = 20863
+     *   Toys & Games= 2540
+     */
+    private static Map<String, String> CategoryKeywordToCategoryIdMap = new HashMap<>();
+    static {
+        CategoryKeywordToCategoryIdMap.put("Appliances", "20710");
+        CategoryKeywordToCategoryIdMap.put("Automobiles", "6024");
+        CategoryKeywordToCategoryIdMap.put("Electronics", "58058");
+        CategoryKeywordToCategoryIdMap.put("Fashion", "1059");
+        CategoryKeywordToCategoryIdMap.put("Furniture", "3197");
+        CategoryKeywordToCategoryIdMap.put("Home & Garden", "159912");
+        CategoryKeywordToCategoryIdMap.put("Movies & Music", "11232");
+        CategoryKeywordToCategoryIdMap.put("Office", "58271");
+        CategoryKeywordToCategoryIdMap.put("Sports", "20863");
+        CategoryKeywordToCategoryIdMap.put("Toys & Games", "2540");
+        CategoryKeywordToCategoryIdMap.put("Other","172008");
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -261,10 +289,13 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View view, ItemCategory itemCategory) {
                     if (category == itemCategory.getCategoryName()) {
                         Log.v("category", "unselect:" + category);
+                        searchRecycleView.setVisibility(View.GONE);
                         category = "";
                     } else {
                         category = itemCategory.getCategoryName();
                         Log.v("category", "select:" + category);
+                        recyclerViewItems.setVisibility(View.GONE);
+                        getSearchResultFromEbay( category, false);
                     }
                 }
             });
@@ -410,7 +441,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 recyclerViewItems.setVisibility(View.GONE);
-                getSearchResultFromEbay(query);
+                getSearchResultFromEbay(query, true);
                 return false;
             }
 
@@ -510,7 +541,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private List<ItemSummary> getSearchResultFromEbay(final String query) {
+    private List<ItemSummary> getSearchResultFromEbay(final String query, final boolean searchByQuery) {
+        recyclerViewItems.setVisibility(View.GONE);
         Call<ApplicationToken> call = EbayAPI.getClientTokenService().getApplicationToken(basicAuthToken, "client_credentials",
                 EbayAPI.RuName, EbayAPI.APPLICATION_ACCESS_TOKEN_SCOPE);
         call.enqueue(new Callback<ApplicationToken>() {
@@ -518,7 +550,12 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<ApplicationToken> call, Response<ApplicationToken> response) {
                 applictionToken = response.body().getAccess_token();
                 String authorization = "Bearer " + applictionToken;
-                Call<SearchResponse> callComputer = EbayAPI.getService().getSearchResult(authorization, query, 15);
+                Call<SearchResponse> callComputer = null;
+                if (searchByQuery) {
+                    callComputer = EbayAPI.getService().getSearchResultByQuery(authorization, query, 15);
+                } else {
+                    callComputer = EbayAPI.getService().getSearchResultByCategory(authorization, CategoryKeywordToCategoryIdMap.get(query), 15);
+                }
                 callComputer.enqueue(new Callback<SearchResponse>() {
                     @Override
                     public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
