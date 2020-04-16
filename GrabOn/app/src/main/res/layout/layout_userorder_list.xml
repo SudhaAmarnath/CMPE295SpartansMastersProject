@@ -29,12 +29,12 @@
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Order ID       : "
-                    android:textStyle="bold"
+                    android:layout_height="match_parent"
                     android:fontFamily="@font/helvetica"
+                    android:text="Order ID     : "
                     android:textColor="@color/colorPrimaryDark"
-                    android:textSize="16dp" />
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
                 <TextView
                     android:id="@+id/layout_userorder_id"
                     android:layout_width="match_parent"
@@ -46,34 +46,6 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Order Status : "
-                    android:textStyle="bold"
-                    android:fontFamily="@font/helvetica"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="16dp" />
-                <TextView
-                    android:id="@+id/layout_userorder_status"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/helvetica"
-                    android:text="Item Picked"
-                    android:textColor="@color/black"
-                    android:textSize="16dp" />
-
-            </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/layout_userorder_itemslist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -137,16 +109,62 @@
                     android:id="@+id/layout_userorder_total"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="$1.00"
                     android:fontFamily="@font/helvetica"
+                    android:text="$1.00"
                     android:textColor="@color/black"
-                    android:textSize="16dp"/>
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
 
 
             </LinearLayout>
 
-        </LinearLayout>
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/layout_userorder_itemslist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Order Status : "
+                    android:textStyle="bold"
+                    android:fontFamily="@font/helvetica"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="16dp" />
+
+                <TextView
+                    android:id="@+id/layout_userorder_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica"
+                    android:text="Item Picked"
+                    android:textColor="@color/black"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/layout_userorder_modify"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/helvetica"
+                android:text="Modify Order ? "
+                android:textAlignment="center"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18dp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

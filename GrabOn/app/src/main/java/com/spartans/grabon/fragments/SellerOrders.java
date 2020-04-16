@@ -131,7 +131,8 @@ public class SellerOrders extends Fragment {
                                             itemArrayList,
                                             order_total,
                                             orderstatus,
-                                            ordertime
+                                            ordertime,
+                                            ""
                                     );
 
                                     orderArrayList.add(order);

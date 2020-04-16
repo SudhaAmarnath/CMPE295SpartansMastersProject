@@ -67,6 +67,7 @@ public class Cart extends AppCompatActivity {
     private static double shippingTotal = 0;
     private static double totalbeforetax = 0;
     private static double totaltax = 0;
+    private static double grandtotal = 0;
     private static CountDownLatch done;
     private static int i=0;
     private FirebaseAuth auth;
@@ -236,6 +237,7 @@ public class Cart extends AppCompatActivity {
                         cartItemsShippingFees.setText("$"+String.format("%.2f",shippingTotal));
                         cartItemsTotalBeforeTax.setText("$"+String.format("%.2f",totalbeforetax));
                         cartItemsTotalTax.setText("$"+String.format("%.2f",totaltax));
+                        grandtotal = totalbeforetax + totaltax;
                         cartItemsGrandTotal.setText("$"+String.format("%.2f",totalbeforetax + totaltax));
                         cartProceedForPayment.setClickable(true);
                     } else {
@@ -272,9 +274,10 @@ public class Cart extends AppCompatActivity {
         dborder.put("user_id", user.getUid());
         dborder.put("seller_id", itemsList.get(0).getItemSellerUID());
         dborder.put("items", itemsList);
-        dborder.put("ordertotal", Cart.totalPrice);
+        dborder.put("ordertotal", grandtotal);
         dborder.put("orderstatus", "In Progress");
         dborder.put("ordertime", orderTime);
+        dborder.put("ordermodifytime", "");
 
         db.collection("orders")
                 .add(dborder)

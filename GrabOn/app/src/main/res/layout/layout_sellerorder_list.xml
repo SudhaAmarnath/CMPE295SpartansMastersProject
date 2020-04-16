@@ -59,6 +59,7 @@
                     android:fontFamily="@font/helvetica"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="16dp" />
+
                 <TextView
                     android:id="@+id/layout_sellerorder_status"
                     android:layout_width="match_parent"
@@ -66,7 +67,8 @@
                     android:fontFamily="@font/helvetica"
                     android:text="Item Picked"
                     android:textColor="@color/black"
-                    android:textSize="16dp" />
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -136,10 +138,11 @@
                     android:id="@+id/layout_sellerorder_total"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="$1.00"
                     android:fontFamily="@font/helvetica"
+                    android:text="$1.00"
                     android:textColor="@color/black"
-                    android:textSize="18dp"/>
+                    android:textSize="18dp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 

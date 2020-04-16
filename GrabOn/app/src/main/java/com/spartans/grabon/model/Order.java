@@ -14,10 +14,11 @@ public class Order {
     private double orderTotal;
     private String orderStatus;
     private String orderTime;
+    private String orderModifyTime;
 
     public Order (String orderID, String userID, String itemSellerUID,
                   ArrayList<Item> items, double orderTotal,
-                  String orderStatus, String orderTime) {
+                  String orderStatus, String orderTime, String orderModifyTime) {
 
         this.orderID = orderID;
         this.userID = userID;
@@ -26,6 +27,7 @@ public class Order {
         this.orderTotal = orderTotal;
         this.orderStatus = orderStatus;
         this.orderTime = orderTime;
+        this.orderModifyTime = orderModifyTime;
 
     }
 
@@ -83,5 +85,13 @@ public class Order {
 
     public void setOrderTime(String orderTime) {
         this.orderTime = orderTime;
+    }
+
+    public String getOrderModifyTime() {
+        return orderModifyTime;
+    }
+
+    public void setOrderModifyTime(String orderModifyTime) {
+        this.orderModifyTime = orderModifyTime;
     }
 }
