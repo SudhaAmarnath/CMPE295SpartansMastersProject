@@ -29,53 +29,23 @@
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Order ID     : "
-                    android:textStyle="bold"
+                    android:layout_height="match_parent"
                     android:fontFamily="@font/helvetica"
+                    android:text="Order ID     : "
                     android:textColor="@color/colorPrimaryDark"
-                    android:textSize="18dp" />
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
                 <TextView
                     android:id="@+id/layout_sellerorder_id"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/helvetica"
-                    android:text="123456"
+                    android:text="abc123456"
                     android:textColor="@color/black"
-                    android:textSize="18dp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Order Status : "
-                    android:textStyle="bold"
-                    android:fontFamily="@font/helvetica"
-                    android:textColor="@color/colorPrimaryDark"
                     android:textSize="16dp" />
 
-                <TextView
-                    android:id="@+id/layout_sellerorder_status"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/helvetica"
-                    android:text="Item Picked"
-                    android:textColor="@color/black"
-                    android:textSize="16dp"
-                    android:textStyle="bold" />
-
             </LinearLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/layout_sellerorder_itemslist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -102,6 +72,7 @@
 
             </LinearLayout>
 
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -114,7 +85,7 @@
                     android:textStyle="bold"
                     android:fontFamily="@font/helvetica"
                     android:textColor="@color/colorPrimaryDark"
-                    android:textSize="18dp" />
+                    android:textSize="16dp" />
 
                 <TextView
                     android:id="@+id/layout_sellerorder_totalitems"
@@ -123,7 +94,7 @@
                     android:text="10"
                     android:fontFamily="@font/helvetica"
                     android:textColor="@color/black"
-                    android:textSize="18dp"/>
+                    android:textSize="16dp"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -131,7 +102,7 @@
                     android:fontFamily="@font/helvetica"
                     android:text="      Total Price : "
                     android:textColor="@color/colorPrimaryDark"
-                    android:textSize="18dp"
+                    android:textSize="16dp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -141,13 +112,59 @@
                     android:fontFamily="@font/helvetica"
                     android:text="$1.00"
                     android:textColor="@color/black"
-                    android:textSize="18dp"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/layout_sellerorder_itemslist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Order Status : "
+                    android:textStyle="bold"
+                    android:fontFamily="@font/helvetica"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="16dp" />
+
+                <TextView
+                    android:id="@+id/layout_sellerorder_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica"
+                    android:text="Item Picked"
+                    android:textColor="@color/black"
+                    android:textSize="16dp"
                     android:textStyle="bold" />
 
             </LinearLayout>
 
-        </LinearLayout>
+            <TextView
+                android:id="@+id/layout_sellerorder_modify"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/helvetica"
+                android:text="Modify Order ? "
+                android:textAlignment="center"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18dp"
+                android:textStyle="bold" />
 
+        </LinearLayout>
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

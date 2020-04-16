@@ -52,7 +52,6 @@ public class UserOrders extends Fragment {
     private FirebaseFirestore db = Singleton.getDb();
     private UserOrderAdapter userOrderAdapter;
     RecyclerView recyclerView;
-    private Context globalContext = null;
 
     public UserOrders() {
         // Required empty public constructor
@@ -64,7 +63,6 @@ public class UserOrders extends Fragment {
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
-        globalContext = this.getActivity();
 
         getUserOrdersList(new FileDataStatus() {
             @Override
@@ -125,6 +123,7 @@ public class UserOrders extends Fragment {
                                     String orderstatus = documentSnapshot.get("orderstatus").toString();
                                     String ordertime = documentSnapshot.get("ordertime").toString();
                                     String ordermodifytime = documentSnapshot.get("ordermodifytime").toString();
+
                                     if (orderItems != null) {
                                         for (int i = 0; i < orderItems.size(); i++) {
                                             Item item = new Item();
