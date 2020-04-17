@@ -104,7 +104,7 @@ public class SellerOrderAdapter extends RecyclerView.Adapter<SellerOrderAdapter.
                         order.getOrderStatus().matches("Delivered")) {
                     orderStatus.setText(order.getOrderStatus() + " - " + order.getOrderModifyTime());
                     orderStatus.setTextColor(Color.parseColor("#4CAF50"));
-                    orderModify.setText("Cancel Order? Return Eligible till ..");
+                    orderModify.setText("Return Eligible till ..");
                 } else if (order.getOrderStatus().matches("Expired") ||
                         order.getOrderStatus().matches("Cancelled")) {
                     orderStatus.setText(order.getOrderStatus() + " - " + order.getOrderModifyTime());

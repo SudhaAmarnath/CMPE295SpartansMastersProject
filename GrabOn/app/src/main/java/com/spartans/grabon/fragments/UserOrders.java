@@ -166,66 +166,35 @@ public class UserOrders extends Fragment {
     private static String neworderstatus = null;
     private void updateOrder(final Order order) {
 
-        boolean updateorder = false;
-        String alertmessage = null;
+
         String orderstatus = order.getOrderStatus();
 
         if (orderstatus.equals("In Progress")) {
-            updateorder = true;
-            alertmessage = "Pickup this order?";
-            neworderstatus = "Picked Up";
-        } else if (orderstatus.equals("Picked Up")) {
-            updateorder = true;
-            alertmessage = "Cancel this order?";
-            neworderstatus = "Cancelled";
-        }
-
-        if (updateorder) {
 
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(UserOrders.this.getContext());
             alertDialogBuilder.setTitle("Order ID: " + order.getOrderID());
             alertDialogBuilder
-                    .setMessage(alertmessage)
+                    .setMessage("Modify this order?")
                     .setCancelable(false)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    .setPositiveButton("Cancel Order?", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
-                            String orderModifyTime = java.text.DateFormat
-                                    .getDateTimeInstance()
-                                    .format(Calendar.getInstance().getTime());
-
-                            order.setOrderStatus(neworderstatus);
-                            order.setOrderModifyTime(orderModifyTime);
-
-                            Map<String, Object> dbitem = new HashMap<>();
-                            dbitem.put("orderstatus",order.getOrderStatus());
-                            dbitem.put("ordermodifytime",order.getOrderModifyTime());
-
-                            DocumentReference updateOrder = db.collection("orders")
-                                    .document(order.getOrderID());
-                            updateOrder.update(dbitem)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Log.v("updateOrder", "Update Order Success:" + order.getOrderID());
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.v("updateOrder", "Update Order Failed" + order.getOrderID());
-                                }
-                            });
-
-                            Toast.makeText(UserOrders.this.getContext(), "Order " + neworderstatus, Toast.LENGTH_LONG).show();
-
-                            Intent intent = new Intent(UserOrders.this.getContext(), OrdersActivity.class);
-                            UserOrders.this.getActivity().finish();
-                            startActivity(intent);
+                            neworderstatus = "Cancelled";
+                            alertUpdate(order);
 
                         }
                     })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    .setNeutralButton("Pickup Order?", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            neworderstatus = "Picked Up";
+                            alertUpdate(order);
+
+                        }
+                    })
+                    .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
@@ -234,9 +203,67 @@ public class UserOrders extends Fragment {
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
 
+
+        } else if (orderstatus.equals("Picked Up")) {
+
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(UserOrders.this.getContext());
+            alertDialogBuilder.setTitle("Order ID: " + order.getOrderID());
+            alertDialogBuilder
+                    .setMessage("Cancel this order?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            neworderstatus = "Cancelled";
+                            alertUpdate(order);
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+
         }
 
 
+    }
+
+    private void alertUpdate(final Order order) {
+        String orderModifyTime = java.text.DateFormat
+                .getDateTimeInstance()
+                .format(Calendar.getInstance().getTime());
+
+        order.setOrderStatus(neworderstatus);
+        order.setOrderModifyTime(orderModifyTime);
+
+        Map<String, Object> dbitem = new HashMap<>();
+        dbitem.put("orderstatus",order.getOrderStatus());
+        dbitem.put("ordermodifytime",order.getOrderModifyTime());
+
+        DocumentReference updateOrder = db.collection("orders")
+                .document(order.getOrderID());
+        updateOrder.update(dbitem)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.v("updateOrder", "Update Order Success:" + order.getOrderID());
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.v("updateOrder", "Update Order Failed" + order.getOrderID());
+            }
+        });
+
+        Toast.makeText(UserOrders.this.getContext(), "Order " + neworderstatus, Toast.LENGTH_LONG).show();
+
+        Intent intent = new Intent(UserOrders.this.getContext(), OrdersActivity.class);
+        UserOrders.this.getActivity().finish();
+        startActivity(intent);
     }
 
 }
