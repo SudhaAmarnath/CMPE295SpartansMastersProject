@@ -33,10 +33,10 @@ import com.spartans.grabon.interfaces.FileDataStatus;
 import com.spartans.grabon.model.Item;
 import com.spartans.grabon.model.Order;
 import com.spartans.grabon.order.OrdersActivity;
+import com.spartans.grabon.utils.DateUtilities;
 import com.spartans.grabon.utils.Singleton;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -196,9 +196,8 @@ public class SellerOrders extends Fragment {
     }
 
     private void alertUpdate(final Order order) {
-        String orderModifyTime = java.text.DateFormat
-                .getDateTimeInstance()
-                .format(Calendar.getInstance().getTime());
+
+        String orderModifyTime = new DateUtilities().getCurrentTimeInMillis();
 
         order.setOrderStatus(neworderstatus);
         order.setOrderModifyTime(orderModifyTime);

@@ -2,6 +2,7 @@ package com.spartans.grabon.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,11 +12,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.spartans.grabon.R;
 import com.spartans.grabon.interfaces.ClickListnerOrder;
 import com.spartans.grabon.model.Order;
+import com.spartans.grabon.utils.DateUtilities;
+import com.spartans.grabon.utils.Singleton;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Author : Sudha Amarnath on 2020-03-26
@@ -25,6 +34,7 @@ public class UserOrderAdapter extends RecyclerView.Adapter<UserOrderAdapter.View
     private Context context;
     private ArrayList<Order> orders;
     private ClickListnerOrder orderClickListener;
+    private FirebaseFirestore db = Singleton.getDb();
 
     public UserOrderAdapter(ArrayList<Order> orders, Context context, ClickListnerOrder orderClickListener) {
         this.context = context;
@@ -95,20 +105,56 @@ public class UserOrderAdapter extends RecyclerView.Adapter<UserOrderAdapter.View
                 orderTotalItems.setText(String.valueOf(orderItems.size()));
                 orderTotal.setText("$"+String.format("%.2f", order.getOrderTotal()));
                 orderStatus.setText(order.getOrderStatus());
+
                 if (order.getOrderStatus().matches("In Progress")) {
-                    orderModify.setText("Pickup Order?");
-                }else if (order.getOrderStatus().matches("Picked Up") ||
+                    if (new DateUtilities().orderExpired(order.getOrderTime())) {
+                        order.setOrderStatus("Expired");
+                        String expiredtime = new DateUtilities().getPostTimeInMillis(order.getOrderTime(), 7);
+                        order.setOrderModifyTime(expiredtime);
+                        Map<String, Object> dbitem = new HashMap<>();
+                        dbitem.put("orderstatus",order.getOrderStatus());
+                        dbitem.put("ordermodifytime",order.getOrderModifyTime());
+                        DocumentReference updateOrder = db.collection("orders")
+                                .document(order.getOrderID());
+                        updateOrder.update(dbitem)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.v("updateOrder", "Update Order Success:");
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.v("updateOrder", "Update Order Failed");
+                            }
+                        });
+                    } else {
+                        orderModify.setText("Pickup/ Modify Order?");
+                    }
+                } else if (order.getOrderStatus().matches("Picked Up") ||
                         order.getOrderStatus().matches("Delivered")) {
-                    orderStatus.setText(order.getOrderStatus() + " - " + order.getOrderModifyTime());
+                    String ordermodifytime = new DateUtilities().getDateAndTime(order.getOrderModifyTime());
+                    orderStatus.setText(order.getOrderStatus() + " - " + ordermodifytime);
                     orderStatus.setTextColor(Color.parseColor("#4CAF50"));
-                    orderModify.setText("Cancel Order? Return Eligible till ..");
-                } else if (order.getOrderStatus().matches("Expired") ||
-                        order.getOrderStatus().matches("Cancelled")) {
-                    orderStatus.setText(order.getOrderStatus() + " - " + order.getOrderModifyTime());
+                    String cancelallowedtill = new DateUtilities().getPostTimeInMillis(order.getOrderTime(), 30);
+                    if (new DateUtilities().orderCanBeCancelled(order.getOrderTime())) {
+                        cancelallowedtill = new DateUtilities().getDateAndTime(cancelallowedtill);
+                        orderModify.setText("Cancel Order? Eligible till " + cancelallowedtill);
+                    } else {
+                        orderModify.setVisibility(View.GONE);
+                    }
+                } else if (order.getOrderStatus().matches("Cancelled")) {
+                    String ordermodifytime = new DateUtilities().getDateAndTime(order.getOrderModifyTime());
+                    orderStatus.setText(order.getOrderStatus() + " - " + ordermodifytime);
+                    orderStatus.setTextColor(Color.parseColor("#F44336"));
+                    orderModify.setVisibility(View.GONE);
+                } else if (order.getOrderStatus().matches("Expired")) {
+                    String ordermodifytime = new DateUtilities().getDateAndTime(order.getOrderModifyTime());
+                    orderStatus.setText(order.getOrderStatus() + " - " + ordermodifytime + " Order Not picked in 7 days. Refund In Progress");
                     orderStatus.setTextColor(Color.parseColor("#F44336"));
                     orderModify.setVisibility(View.GONE);
                 }
-                orderTime.setText(order.getOrderTime());
+                orderTime.setText(new DateUtilities().getDateAndTime(order.getOrderTime()));
             }
         }
 
@@ -118,5 +164,6 @@ public class UserOrderAdapter extends RecyclerView.Adapter<UserOrderAdapter.View
 
 
     }
+
 
 }

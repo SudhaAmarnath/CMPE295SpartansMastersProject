@@ -33,10 +33,10 @@ import com.spartans.grabon.interfaces.FileDataStatus;
 import com.spartans.grabon.model.Item;
 import com.spartans.grabon.model.Order;
 import com.spartans.grabon.order.OrdersActivity;
+import com.spartans.grabon.utils.DateUtilities;
 import com.spartans.grabon.utils.Singleton;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -169,6 +169,8 @@ public class UserOrders extends Fragment {
 
         String orderstatus = order.getOrderStatus();
 
+
+
         if (orderstatus.equals("In Progress")) {
 
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(UserOrders.this.getContext());
@@ -204,7 +206,8 @@ public class UserOrders extends Fragment {
             alertDialog.show();
 
 
-        } else if (orderstatus.equals("Picked Up")) {
+        } else if (orderstatus.equals("Picked Up") &&
+                new DateUtilities().orderCanBeCancelled(order.getOrderTime())) {
 
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(UserOrders.this.getContext());
             alertDialogBuilder.setTitle("Order ID: " + order.getOrderID());
@@ -233,9 +236,8 @@ public class UserOrders extends Fragment {
     }
 
     private void alertUpdate(final Order order) {
-        String orderModifyTime = java.text.DateFormat
-                .getDateTimeInstance()
-                .format(Calendar.getInstance().getTime());
+
+        String orderModifyTime = new DateUtilities().getCurrentTimeInMillis();
 
         order.setOrderStatus(neworderstatus);
         order.setOrderModifyTime(orderModifyTime);
