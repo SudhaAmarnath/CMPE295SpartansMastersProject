@@ -6,9 +6,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.facebook.login.LoginManager;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -64,12 +67,18 @@ public class Logout extends AppCompatActivity {
                     documentRefRegistration.remove();
                     Log.v("Logout", "Document Reference unregister successful");
                 }
-                Log.v("Logout", "Now logging out user");
+                Log.v("Logout", "Now logging out from firebase instance");
                 FirebaseAuth.getInstance().signOut();
                 if (providerID.equals("google.com")) {
-                    Login.mGoogleSignInClient.signOut();
+                    Login.mGoogleSignInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            Log.v("Logout", "Logged out gmail user");
+                        }
+                    });
                 } else if (providerID.equals("facebook.com")) {
                     LoginManager.getInstance().logOut();
+                    Log.v("Logout", "Logged out fb user");
                 }
                 Kommunicate.logout(getApplicationContext(), new KMLogoutHandler() {
                     @Override
