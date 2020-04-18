@@ -149,6 +149,13 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(null);
         getSupportActionBar().setSubtitle(null);
 
+        firebaseAuth = FirebaseAuth.getInstance ();
+        loggedinUser = firebaseAuth.getCurrentUser();
+
+        if (loggedinUser == null) {
+            Log.e("Login", "Logged in user is null");
+        }
+
         String apiKey = getString(R.string.google_maps_key);
         if (!Places.isInitialized()) {
             Places.initialize(MainActivity.this, apiKey);
@@ -223,8 +230,6 @@ public class MainActivity extends AppCompatActivity {
 
         fabChat = findViewById(R.id.fabChat);
         fabCart = findViewById(R.id.fabCart);
-        firebaseAuth = FirebaseAuth.getInstance ();
-        loggedinUser = firebaseAuth.getCurrentUser();
 
         fabChat.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -239,7 +244,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), Cart.class));
             }
         });
-
 
     }
 

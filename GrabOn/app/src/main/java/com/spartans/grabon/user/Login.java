@@ -36,6 +36,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.spartans.grabon.MainActivity;
 import com.spartans.grabon.R;
@@ -59,11 +60,8 @@ public class Login extends AppCompatActivity {
     private TextView loginCreateUser;
     private FirebaseFirestore db;
     private String uID;
-    //a constant for detecting the login intent result
     private static final int RC_SIGN_IN = 9001;
-    //Tag for the logs optional
     private static final String TAG = "GrabOn";
-    //creating a GoogleSignInClient object
     public static GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager;
 
@@ -80,17 +78,14 @@ public class Login extends AppCompatActivity {
         loginGmailButton = findViewById(R.id.LoginGmailButton);
         loginFacebookButton = findViewById(R.id.LoginFacebookButton);
 
-        auth = Singleton.getAuth();
+        auth = FirebaseAuth.getInstance();
         db = Singleton.getDb();
 
-        //Then we need a GoogleSignInOptions object
-        //And we need to build it as below
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
 
-        //Then we will get the GoogleSignInClient object from GoogleSignIn class
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         logoutPreviousUser();
@@ -139,23 +134,22 @@ public class Login extends AppCompatActivity {
             }
         });
 
-        //Now we will attach a click listener to the sign_in_button
-        //and inside onClick() method we are calling the signIn() method that will open
-        //google sign in intent
         loginGmailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                loginProgressBar.setVisibility(View.VISIBLE);
                 signInGoogle();
             }
         });
 
-        // Initialize Facebook Login button
         mCallbackManager = CallbackManager.Factory.create();
 
         loginFacebookButton.setReadPermissions("email", "public_profile");
         loginFacebookButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+
             @Override
             public void onSuccess(LoginResult loginResult) {
+                loginProgressBar.setVisibility(View.VISIBLE);
                 Log.d(TAG, "facebook:onSuccess:" + loginResult);
                 handleFacebookAccessToken(loginResult.getAccessToken());
             }
@@ -163,13 +157,11 @@ public class Login extends AppCompatActivity {
             @Override
             public void onCancel() {
                 Log.d(TAG, "facebook:onCancel");
-                // ...
             }
 
             @Override
             public void onError(FacebookException error) {
                 Log.d(TAG, "facebook:onError", error);
-                // ...
             }
         });
     }
@@ -178,66 +170,56 @@ public class Login extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data)
+                    .addOnCompleteListener(new OnCompleteListener<GoogleSignInAccount>() {
+                        @Override
+                        public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
+                            Log.v(TAG, "getSignedInAccountFromIntent task complete");
+                        }
+                    });
             handleSignInResult(task);
         } else {
-            // Pass the activity result back to the Facebook SDK
             mCallbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
 
-    //this method is called on click
     private void signInGoogle() {
-        //getting the google signin intent
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-
-        //starting the activity for result
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount  googleAccount = completedTask.getResult(ApiException.class);
-
-            //authenticating with firebase
             firebaseAuthWithGoogle(googleAccount);
-
-            // Signed in successfully, show authenticated UI.
-            Toast.makeText(Login.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(getApplicationContext(),MainActivity.class));
         } catch (ApiException e) {
+
         }
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
-        //getting the auth credential
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
 
-        //Now using firebase we are signing in the user here
         auth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            loginProgressBar.setVisibility(View.GONE);
                             Log.d(TAG, "signInWithCredential:success");
+                            Toast.makeText(Login.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
                             FirebaseUser user = auth.getCurrentUser();
                             AddUserToFirebaseDB();
-                            Toast.makeText(Login.this, "User Signed In", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         } else {
-                            // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(Login.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
 
                         }
-
-                        // ...
                     }
                 });
     }
@@ -251,21 +233,18 @@ public class Login extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
+                            loginProgressBar.setVisibility(View.GONE);
                             Log.d(TAG, "signInWithCredential:success");
+                            Toast.makeText(Login.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
                             FirebaseUser user = auth.getCurrentUser();
                             AddUserToFirebaseDB();
                             startActivity(new Intent(getApplicationContext(),MainActivity.class));
-                            //updateUI(user);
                         } else {
-                            // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(Login.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            //updateUI(null);
                         }
 
-                        // ...
                     }
                 });
     }
@@ -275,32 +254,44 @@ public class Login extends AppCompatActivity {
         if(loggedinUser!=null) {
             uID = loggedinUser.getUid();
             if(uID != null) {
-                String emptyVal = "";
-                DocumentReference documentReference = db.collection("users").document(uID);
-                Map<String, Object> user = new HashMap<>();
+                final Map<String, Object> user = new HashMap<>();
                 user.put("firstname", loggedinUser.getDisplayName());
-                user.put("lastname", emptyVal);
+                user.put("lastname", "");
                 user.put("email", loggedinUser.getEmail());
-                user.put("password", emptyVal);
+                user.put("password", "");
                 user.put("paypalid", "");
                 user.put("address", "");
                 user.put("apt", "");
                 user.put("phone", "");
                 user.put("latitude", "");
                 user.put("longitude", "");
-                documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+
+                final DocumentReference documentReference = db.collection("users").document(uID);
+                documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "onSuccess: User Profile is created for " + uID);
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "onFailure: " + e.toString());
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot documentSnapshot = task.getResult();
+                            if (documentSnapshot.exists()) {
+                                Log.d(TAG, "User is already added in db:" + uID);
+                            } else {
+                                documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "User is added in db:" + uID);
+                                        Toast.makeText(Login.this, "User Registered", Toast.LENGTH_SHORT).show();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d(TAG, "onFailure: " + e.toString());
+                                    }
+                                });
+                            }
+                        }
+
                     }
                 });
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                Toast.makeText(Login.this, "User Registered", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -308,12 +299,19 @@ public class Login extends AppCompatActivity {
     private void logoutPreviousUser() {
         FirebaseUser user = auth.getCurrentUser();
         if (user != null) {
-            String providerID = user.getProviderData().get(1).getProviderId();
+            String providerID = user.getProviderId();
+            Log.v(TAG, "Logging out from previous firebase instance");
             FirebaseAuth.getInstance().signOut();
             if (providerID.equals("google.com")) {
-                Login.mGoogleSignInClient.signOut();
+                Login.mGoogleSignInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.v(TAG, "Logged out previous gmail user");
+                    }
+                });
             } else if (providerID.equals("facebook.com")) {
                 LoginManager.getInstance().logOut();
+                Log.v(TAG, "Logged out previous fb user");
             }
         }
     }
