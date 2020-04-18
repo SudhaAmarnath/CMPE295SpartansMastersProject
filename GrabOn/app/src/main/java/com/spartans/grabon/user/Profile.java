@@ -1,9 +1,14 @@
 package com.spartans.grabon.user;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
@@ -16,10 +21,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -27,19 +36,32 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.spartans.grabon.MainActivity;
 import com.spartans.grabon.R;
+import com.spartans.grabon.interfaces.FileDataImageStatus;
+import com.spartans.grabon.item.AddItem;
+import com.spartans.grabon.model.Item;
 import com.spartans.grabon.utils.Singleton;
 
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -48,11 +70,17 @@ import javax.annotation.Nullable;
  */
 public class Profile extends AppCompatActivity {
 
-    public static final String TAG = "TAG";
+    private static final int SELECT_PICTURE = 1;
+    public static final String TAG = "User Profile";
     private ListenerRegistration documentRefRegistration;
     private FirebaseUser loggedinUser;
     private String providerID;
+    private FirebaseStorage storage;
+    private StorageReference storageReference;
+
     private FirebaseFirestore db = Singleton.getDb();
+    private FirebaseAuth auth;
+    ArrayList image = new ArrayList();
 
     private static String edittxtaddrline = null;
     private static String addressline = null;
@@ -63,7 +91,14 @@ public class Profile extends AppCompatActivity {
     private static String pincode = null;
     private static String latitude = null;
     private static String longitude = null;
+    private static ImageView addprofilepic= null;
+    private static ImageView addImage= null;
+
     PlacesClient placesClient;
+
+    private Uri filePath;
+
+    int TAKE_IMAGE_CODE = 10001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +111,8 @@ public class Profile extends AppCompatActivity {
         final FirebaseAuth firebaseAuth;
         FirebaseFirestore firebaseFirestore;
         final String uID;
+        final StorageReference profilePic;
+
 
         name = findViewById(R.id.profile_username);
         email = findViewById(R.id.Email);
@@ -87,10 +124,16 @@ public class Profile extends AppCompatActivity {
         addressbutton = findViewById(R.id.profile_address_edit);
         apt = findViewById(R.id.profile_addressapt);
         aptbutton = findViewById(R.id.profile_addressapt_edit);
+        addprofilepic = findViewById(R.id.ImgUserV);
+        addImage = findViewById(R.id.addImage);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
         loggedinUser = firebaseAuth.getCurrentUser();
+        auth = FirebaseAuth.getInstance();
+        storage = Singleton.getStorage();
+        storageReference = storage.getReference();
+
 
         String apiKey = getString(R.string.google_maps_key);
         if (!Places.isInitialized()) {
@@ -106,8 +149,8 @@ public class Profile extends AppCompatActivity {
         if (loggedinUser != null) {
             providerID = loggedinUser.getProviderData().get(1).getProviderId();
             uID = loggedinUser.getUid();
-
-
+            profilePic = storageReference.child("profileImages/" + loggedinUser.getUid());
+            Log.v("uploadProfileImage", " For the User On Create " +  profilePic.getDownloadUrl().toString());
                 DocumentReference documentReference = firebaseFirestore.collection("users").document(uID);
                 documentRefRegistration = documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
                     @Override
@@ -119,10 +162,25 @@ public class Profile extends AppCompatActivity {
                         phone.setText(documentSnapshot.getString("phone"));
                         address.setText(documentSnapshot.getString("address"));
                         paypalid.setText(documentSnapshot.getString("paypalid"));
-
                     }
                 });
 
+
+                if(profilePic != null){
+                    profilePic.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            Log.v("uploadProfileImage", " Downloaded URI  " +  uri.toString());
+                            Glide.with(Profile.this).load(uri).into(addprofilepic);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle any errors
+                            Log.v("uploadProfileImage", " Unable to download image");
+                        }
+                    });
+                }
         }
 
         phonebutton.setOnClickListener(new View.OnClickListener() {
@@ -309,6 +367,17 @@ public class Profile extends AppCompatActivity {
             }
         });
 
+        addImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                Log.d(TAG, "add image start");
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
+            }
+        });
+
     }
 
     public static boolean isValidEmail(CharSequence target) {
@@ -379,5 +448,108 @@ public class Profile extends AppCompatActivity {
 
     }
 
+    public void uploadProfileImageClick(View view) {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        if(intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, TAKE_IMAGE_CODE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @androidx.annotation.Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            filePath = data.getData();
+
+            uploadImage(new FileDataImageStatus() {
+                @Override
+                public void onSuccess(final Uri uri) {
+
+                    Glide.with(Profile.this).load(uri).into(addprofilepic);
+                    addprofilepic.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                                Toast.makeText(Profile.this, "Item Added", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        }
+                    });
+
+                }
+
+                @Override
+                public void onError(String e) {
+
+                }
+            });
+
+        }
+
+    }
+
+    private void uploadImage(final FileDataImageStatus fileDataImageStatus) {
+
+        if (filePath != null) {
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle("Uploading Image...");
+            progressDialog.show();
+
+            final StorageReference ref = storageReference.child("profileImages/" + loggedinUser.getUid());
+
+            ref.putFile(filePath)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressDialog.dismiss();
+                            Log.v("uploadProfileImage", ref.getDownloadUrl().toString());
+
+                            UploadTask uploadTask = ref.putFile(filePath);
+
+                            Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                                @Override
+                                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                                    if (!task.isSuccessful()) {
+                                        throw task.getException();
+                                    }
+                                    Log.v("uploadProfileImage", ref.getDownloadUrl().toString());
+                                    return ref.getDownloadUrl();
+                                }
+
+                            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Uri> task) {
+                                    if (task.isSuccessful()) {
+                                        Uri downloadUri = task.getResult();
+                                        fileDataImageStatus.onSuccess(downloadUri);
+                                        image.add(downloadUri.toString());
+                                        Log.v("uploadProfileImage", "During Upload Image "+downloadUri.toString());
+                                    } else {
+                                        Toast.makeText(Profile.this, "Error in fileDataImageStatus", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            fileDataImageStatus.onError("Error");
+                            Toast.makeText(Profile.this, "Image Upload Failed " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot
+                                    .getTotalByteCount());
+                            progressDialog.setMessage("Image Uploaded " + (int) progress + "%");
+                        }
+                    });
+        }
+    }
 
 }
