@@ -59,7 +59,7 @@ public class Register extends AppCompatActivity {
         registerAlreadyLogin = findViewById(R.id.RegisterAlreadyLogin);
         registerProgressBar = findViewById(R.id.RegisterProgressBar);
 
-        auth = Singleton.getAuth();
+        auth = FirebaseAuth.getInstance();
         db = Singleton.getDb();
 
         /*
