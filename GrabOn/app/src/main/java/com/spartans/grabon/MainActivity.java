@@ -532,16 +532,18 @@ public class MainActivity extends AppCompatActivity {
                         searchRecycleView.setVisibility(View.VISIBLE);
                         searchRecycleView.setHasFixedSize(true);
                         searchRecycleViewLayoutManager = new LinearLayoutManager(getApplicationContext());
-                        searchRecycleViewAdapter = new ProductListAdapter(itemList);
+                        Log.v("itemsList","items"+itemsList);
+                        ArrayList<Item> filteredList = searchGrabOnItemsByQuery(itemsList, query);
+                        searchRecycleViewAdapter = new ProductListAdapter(itemList, filteredList);
                         searchRecycleView.setLayoutManager(searchRecycleViewLayoutManager);
                         searchRecycleView.setAdapter(searchRecycleViewAdapter);
                         searchRecycleViewAdapter.setOnItemClickListener(new ProductListAdapter.OnItemClickListener() {
                             @Override
                             public void OnItemClickListener(int position) {
-                                itemList.get(position);
-                                Intent browserIntent = new Intent(Intent.ACTION_VIEW);
-                                browserIntent.setData(Uri.parse(itemList.get(position).getItemWebUrl()));
-                                startActivity(new Intent(browserIntent));
+                                if(position < 15)
+                                    openBrowserActivity(itemList.get(position));
+                                else
+                                    openItemActivity(itemsList.get(position-15));
                             }
                         });
                     }
@@ -560,4 +562,32 @@ public class MainActivity extends AppCompatActivity {
         return itemList;
     }
 
+    private void openItemActivity(Item item) {
+        Intent itemPage = new Intent(MainActivity.this, ItemActivity.class);
+        itemPage.putExtra("itemid", item.getItemID());
+        itemPage.putExtra("selleruid",item.getItemSellerUID());
+        itemPage.putExtra("itemname",item.getItemName());
+        itemPage.putExtra("itemdesc", item.getItemDescription());
+        itemPage.putExtra("itemprice", item.getItemPrice());
+        itemPage.putExtra("itemimage", item.getItemImage());
+        itemPage.putExtra("itemimagelist", item.getItemImageList());
+        itemPage.putExtra("itemaddress", item.getItemAddress());
+        itemPage.putExtra("itemcategory", item.getItemCategory());
+        startActivity(itemPage);
+    }
+
+    private void openBrowserActivity(ItemSummary item) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW);
+        browserIntent.setData(Uri.parse(item.getItemWebUrl()));
+        startActivity(new Intent(browserIntent));
+    }
+
+    private ArrayList<Item> searchGrabOnItemsByQuery(ArrayList<Item> itemsList, final String query) {
+        ArrayList<Item> filteredItems = new ArrayList<>();
+        for (Item item : itemsList) {
+            if (item.getItemName().toLowerCase().contains(query.toLowerCase()))
+                filteredItems.add(item);
+        }
+        return filteredItems;
+    }
 }

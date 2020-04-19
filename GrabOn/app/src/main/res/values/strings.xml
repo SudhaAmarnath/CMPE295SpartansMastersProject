@@ -23,7 +23,7 @@
 
     <!-- activity_paypal_payment_client -->
     <string name="paypal_payment">Paypal payment method</string>
-    <string name="click_to_pay">Please click the button to pay 10$</string>
+    <string name="click_to_pay">Amount Due: </string>
     <string name="pay_now">Pay Now</string>
 
     <!--

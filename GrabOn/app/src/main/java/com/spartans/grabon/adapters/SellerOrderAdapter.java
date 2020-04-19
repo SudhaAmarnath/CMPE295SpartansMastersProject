@@ -131,7 +131,7 @@ public class SellerOrderAdapter extends RecyclerView.Adapter<SellerOrderAdapter.
                             }
                         });
                     } else {
-                        orderModify.setText("Pickup Order?");
+                        orderModify.setText("Buyer Picked Order?");
                     }
                 }else if (order.getOrderStatus().matches("Picked Up") ||
                         order.getOrderStatus().matches("Delivered")) {
@@ -140,7 +140,7 @@ public class SellerOrderAdapter extends RecyclerView.Adapter<SellerOrderAdapter.
                     orderStatus.setTextColor(Color.parseColor("#4CAF50"));
                     String cancelallowedtill = new DateUtilities().getPostTimeInMillis(order.getOrderTime(), 30);
                     cancelallowedtill = new DateUtilities().getDateAndTime(cancelallowedtill);
-                    orderModify.setText("Cancel Order? Eligible till " + cancelallowedtill);
+                    orderModify.setText("Cancel Eligible till " + cancelallowedtill);
                 } else if (order.getOrderStatus().matches("Cancelled")) {
                     String ordermodifytime = new DateUtilities().getDateAndTime(order.getOrderModifyTime());
                     orderStatus.setText(order.getOrderStatus() + " - " + ordermodifytime);

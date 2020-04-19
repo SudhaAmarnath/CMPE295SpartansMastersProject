@@ -29,19 +29,18 @@
             android:id="@+id/textViewPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/textViewName"
+            android:layout_below="@+id/vendor_view"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             android:textStyle="bold" />
 
         <ImageView
-            android:id="@+id/ebay_view"
+            android:id="@+id/vendor_view"
             android:layout_width="49dp"
             android:layout_height="58dp"
             android:layout_marginStart="235dp"
             android:layout_marginBottom="10dp"
-            android:layout_toEndOf="@+id/textViewPrice"
-            android:src="@drawable/ebay" />
+            android:layout_toEndOf="@+id/textViewPrice"/>
 
 
     </RelativeLayout>

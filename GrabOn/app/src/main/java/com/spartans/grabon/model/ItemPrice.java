@@ -11,4 +11,9 @@ public class ItemPrice {
     public String getCurrency() {
         return currency;
     }
+
+    public ItemPrice(String value, String currency) {
+        this.value = value;
+        this.currency = currency;
+    }
 }

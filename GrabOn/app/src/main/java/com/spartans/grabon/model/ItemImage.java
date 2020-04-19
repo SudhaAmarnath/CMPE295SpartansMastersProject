@@ -16,4 +16,8 @@ public class ItemImage {
     public int getWidth() {
         return width;
     }
+
+    public ItemImage(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }

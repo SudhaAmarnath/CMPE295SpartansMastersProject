@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,12 +15,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.mukesh.tinydb.TinyDB;
 import com.spartans.grabon.MainActivity;
@@ -29,6 +33,7 @@ import com.spartans.grabon.interfaces.ClickListenerItem;
 import com.spartans.grabon.interfaces.FileDataStatus;
 import com.spartans.grabon.item.ItemActivity;
 import com.spartans.grabon.model.Item;
+import com.spartans.grabon.order.OrdersActivity;
 import com.spartans.grabon.payment.PaypalPaymentClient;
 import com.spartans.grabon.utils.DateUtilities;
 import com.spartans.grabon.utils.SalesTaxCalculator;
@@ -68,6 +73,8 @@ public class Cart extends AppCompatActivity {
     private static double totalbeforetax = 0;
     private static double totaltax = 0;
     private static double grandtotal = 0;
+    private static String recepient = null;
+    private static String recepientuid = null;
     private static CountDownLatch done;
     private static int i=0;
     private FirebaseAuth auth;
@@ -75,6 +82,10 @@ public class Cart extends AppCompatActivity {
     private static FancyButton backToItems, cartProceedForPayment;
     private static RadioGroup radioGroup;
     private static boolean pickup = true;
+    private static int PAYMENT_REQUEST_CODE = 1;
+    private static int PAYPAL_TO_CART_SUCCESS_CODE = 1;
+    private static int PAYPAL_TO_CART_FAILURE_CODE = 0;
+    private static String paymentID = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +112,6 @@ public class Cart extends AppCompatActivity {
         recyclerViewItems.setLayoutManager(linearLayoutManager);
         recyclerViewItems.setHasFixedSize(true);
 
-
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -121,7 +131,6 @@ public class Cart extends AppCompatActivity {
             }
         });
 
-
         backToItems.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -132,10 +141,10 @@ public class Cart extends AppCompatActivity {
         cartProceedForPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createOrderInDb();
-                setItemOrderedInDb();
-                startActivity(new Intent(getApplicationContext(), PaypalPaymentClient.class));
-                finish();
+                Intent paypal = new Intent(getApplicationContext(), PaypalPaymentClient.class);
+                paypal.putExtra("grandtotal", grandtotal);
+                paypal.putExtra("recepient", recepient);
+                startActivityForResult(paypal, PAYMENT_REQUEST_CODE);
             }
         });
 
@@ -157,6 +166,24 @@ public class Cart extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PAYMENT_REQUEST_CODE) {
+            if (resultCode == PAYPAL_TO_CART_SUCCESS_CODE) {
+                paymentID = data.getStringExtra("paymentid");
+                Log.v("Cart", "Payment successful. Paypal paymentId:" + paymentID);
+                setItemOrderedInDb();
+                createOrderInDb();
+                Toast.makeText(getApplicationContext(), "Redirecting to the Orders Page", Toast.LENGTH_LONG).show();
+            } else {
+                Log.v("Cart", "Payment Not done");
+            }
+        } else {
+            Log.v("Cart", "request not matched");
+        }
     }
 
     private void getItems(final FileDataStatus fileDataStatus) {
@@ -215,7 +242,6 @@ public class Cart extends AppCompatActivity {
                         for (i = 0; i < itemsList.size(); i++) {
                             Item item = itemsList.get(i);
                             String address = item.getItemAddress();
-                            Log.v("sales", address);
                             String pattern = ", ([a-zA-Z]+) (\\d+),";
                             Pattern r = Pattern.compile(pattern);
                             Matcher m = r.matcher(address);
@@ -230,16 +256,30 @@ public class Cart extends AppCompatActivity {
                                 double itemtax = itemtotal * taxrate / 100;
                                 totaltax += itemtax;
                                 totalPrice += item.getItemPrice();
+                                recepientuid = item.getItemSellerUID();
                             }
 
                         }
+
+                        db.collection("users")
+                                .document(recepientuid)
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            recepient = task.getResult().get("paypalid").toString();
+                                            cartProceedForPayment.setClickable(true);
+                                        }
+                                    }
+                                });
                         cartsItemsTotal.setText("$"+String.format("%.2f",totalPrice));
                         cartItemsShippingFees.setText("$"+String.format("%.2f",shippingTotal));
                         cartItemsTotalBeforeTax.setText("$"+String.format("%.2f",totalbeforetax));
                         cartItemsTotalTax.setText("$"+String.format("%.2f",totaltax));
                         grandtotal = totalbeforetax + totaltax;
                         cartItemsGrandTotal.setText("$"+String.format("%.2f",totalbeforetax + totaltax));
-                        cartProceedForPayment.setClickable(true);
+
                     } else {
                         cartsItemsTotal.setVisibility(View.GONE);
                         cartItemsShippingFees.setVisibility(View.GONE);
@@ -263,44 +303,13 @@ public class Cart extends AppCompatActivity {
 
     }
 
-    public void createOrderInDb() {
-
-
-        String orderTime = new DateUtilities().getCurrentTimeInMillis();
-
-        Map<String, Object> dborder = new HashMap<>();
-        dborder.put("user_id", user.getUid());
-        dborder.put("seller_id", itemsList.get(0).getItemSellerUID());
-        dborder.put("items", itemsList);
-        dborder.put("ordertotal", grandtotal);
-        dborder.put("orderstatus", "In Progress");
-        dborder.put("ordertime", orderTime);
-        dborder.put("ordermodifytime", "");
-
-        db.collection("orders")
-                .add(dborder)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.v("Order:", documentReference.getId() + " successfully added");
-                        tinyDB.remove(user.getUid());
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                        Log.v("Order:", "Create failed");
-                    }
-                });
-
-    }
-
 
     public void setItemOrderedInDb() {
 
         for(int i=0; i < itemsList.size(); i++) {
 
             Cart.itemID = itemsList.get(i).getItemID();
+            itemsList.get(i).setItemOrdered(true);
             DocumentReference updateItem = db.collection("items")
                     .document(Cart.itemID);
 
@@ -320,5 +329,46 @@ public class Cart extends AppCompatActivity {
         }
 
     }
+
+    public void createOrderInDb() {
+
+
+        String orderTime = new DateUtilities().getCurrentTimeInMillis();
+
+        DocumentReference documentReference = db.collection("orders").document(paymentID);
+        Map<String, Object> dborder = new HashMap<>();
+        dborder.put("user_id", user.getUid());
+        dborder.put("seller_id", recepientuid);
+        dborder.put("items", itemsList);
+        dborder.put("ordertotal", grandtotal);
+        dborder.put("orderstatus", "In Progress");
+        dborder.put("ordertime", orderTime);
+        dborder.put("ordermodifytime", "");
+
+        documentReference.set(dborder).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    task.addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.v("Order:", paymentID + " successfully added");
+                            tinyDB.remove(user.getUid());
+                            startActivity(new Intent(getApplicationContext(), OrdersActivity.class));
+                            finish();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.v("Order:", "Create failed");
+                        }
+                    });
+                }
+            }
+        });
+
+    }
+
+
 
 }
