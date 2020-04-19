@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -176,17 +177,7 @@ public class Cart extends AppCompatActivity {
                 Log.v("Cart", "Payment successful. Paypal paymentId:" + paymentID);
                 setItemOrderedInDb();
                 createOrderInDb();
-                /*
-                try {
-                    Toast.makeText(getApplicationContext(), "Redirecting to the Orders Page", Toast.LENGTH_LONG).show();
-                    Thread.sleep(3000);
-                    startActivity(new Intent(getApplicationContext(), OrdersActivity.class));
-                    finish();
-                } catch (Exception e) {
-
-                }
-
-                 */
+                Toast.makeText(getApplicationContext(), "Redirecting to the Orders Page", Toast.LENGTH_LONG).show();
             } else {
                 Log.v("Cart", "Payment Not done");
             }
@@ -251,7 +242,6 @@ public class Cart extends AppCompatActivity {
                         for (i = 0; i < itemsList.size(); i++) {
                             Item item = itemsList.get(i);
                             String address = item.getItemAddress();
-                            Log.v("sales", address);
                             String pattern = ", ([a-zA-Z]+) (\\d+),";
                             Pattern r = Pattern.compile(pattern);
                             Matcher m = r.matcher(address);
@@ -319,6 +309,7 @@ public class Cart extends AppCompatActivity {
         for(int i=0; i < itemsList.size(); i++) {
 
             Cart.itemID = itemsList.get(i).getItemID();
+            itemsList.get(i).setItemOrdered(true);
             DocumentReference updateItem = db.collection("items")
                     .document(Cart.itemID);
 
