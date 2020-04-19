@@ -171,4 +171,23 @@ public class Item {
     public void setItemCategory(String itemCategory) {
         this.itemCategory = itemCategory;
     }
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "itemID='" + itemID + '\'' +
+                ", itemName='" + itemName + '\'' +
+                ", itemDescription='" + itemDescription + '\'' +
+                ", itemSellerUID='" + itemSellerUID + '\'' +
+                ", itemPrice=" + itemPrice +
+                ", itemImage='" + itemImage + '\'' +
+                ", itemImageList=" + itemImageList +
+                ", itemOrdered=" + itemOrdered +
+                ", itemPicked=" + itemPicked +
+                ", latitude='" + latitude + '\'' +
+                ", longitude='" + longitude + '\'' +
+                ", itemAddress='" + itemAddress + '\'' +
+                ", itemCategory='" + itemCategory + '\'' +
+                '}';
+    }
 }

@@ -100,4 +100,34 @@ public class ItemSummary {
     public boolean isAdultOnly() {
         return adultOnly;
     }
+
+    public ItemSummary(String title, ItemImage image, ItemPrice price) {
+        this.title = title;
+        this.image = image;
+        this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return "ItemSummary{" +
+                "itemId='" + itemId + '\'' +
+                ", title='" + title + '\'' +
+                ", itemGroupHref='" + itemGroupHref + '\'' +
+                ", image=" + image +
+                ", price=" + price +
+                ", itemGroupType='" + itemGroupType + '\'' +
+                ", itemHref='" + itemHref + '\'' +
+                ", seller=" + seller +
+                ", condition='" + condition + '\'' +
+                ", conditionId='" + conditionId + '\'' +
+                ", thumbnailImages=" + thumbnailImages +
+                ", shippingOptions=" + shippingOptions +
+                ", buyingOptions=" + buyingOptions +
+                ", itemAffiliateWebUrl='" + itemAffiliateWebUrl + '\'' +
+                ", itemWebUrl='" + itemWebUrl + '\'' +
+                ", itemLocation=" + itemLocation +
+                ", categories=" + categories +
+                ", adultOnly=" + adultOnly +
+                '}';
+    }
 }
