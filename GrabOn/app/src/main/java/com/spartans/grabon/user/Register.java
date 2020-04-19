@@ -1,7 +1,9 @@
 package com.spartans.grabon.user;
 
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -14,6 +16,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -22,6 +25,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.spartans.grabon.MainActivity;
 import com.spartans.grabon.R;
 import com.spartans.grabon.utils.Singleton;
@@ -134,6 +141,7 @@ public class Register extends AppCompatActivity {
                                     Log.d(TAG, "onFailure: " + e.toString());
                                 }
                             });
+                            //saveProfileImgToStorage(uID);
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                             Toast.makeText(Register.this,"User Registered", Toast.LENGTH_SHORT).show();
                         } else {
@@ -154,4 +162,61 @@ public class Register extends AppCompatActivity {
         });
 
     }
+
+    private void saveProfileImgToStorage(final String uID) {
+
+        final Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+                "://" + getResources().getResourcePackageName(R.drawable.grabonwallpaper)
+                + '/' + getResources().getResourceTypeName(R.drawable.grabonwallpaper)
+                + '/' + getResources().getResourceEntryName(R.drawable.grabonwallpaper) );
+
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        final StorageReference ref = storageRef.child("profileImages/" + uID);
+
+        ref.putFile(imageUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Log.v("uploadProfileImage", ref.getDownloadUrl().toString());
+                        UploadTask uploadTask = ref.putFile(imageUri);
+                        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                            @Override
+                            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                                if (!task.isSuccessful()) {
+                                    throw task.getException();
+                                }
+                                Log.v("uploadProfileImage", ref.getDownloadUrl().toString());
+                                return ref.getDownloadUrl();
+                            }
+
+                        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Uri> task) {
+                                if (task.isSuccessful()) {
+                                    Uri downloadUri = task.getResult();
+                                    Log.v("uploadProfileImage", "During Upload Image "+downloadUri.toString());
+                                } else {
+                                    Toast.makeText(Register.this, "Error in fileDataImageStatus", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(Register.this, "Image Upload Failed " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                        double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot
+                                .getTotalByteCount());
+                    }
+                });
+
+    }
+
 }
