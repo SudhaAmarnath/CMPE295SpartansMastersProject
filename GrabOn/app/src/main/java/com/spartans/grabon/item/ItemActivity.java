@@ -7,10 +7,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.mukesh.tinydb.TinyDB;
 import com.smarteist.autoimageslider.DefaultSliderView;
@@ -41,6 +45,9 @@ public class ItemActivity extends AppCompatActivity {
     private TextView viewItemName;
     private TextView viewItemDesc;
     private TextView viewItemPrice;
+    private TextView sellerEmail;
+    private TextView sellerPh;
+    private TextView sellerAddress;
     private FancyButton viewAddToCart;
     private boolean cartClicked;
     private SliderLayout sliderLayout;
@@ -70,6 +77,9 @@ public class ItemActivity extends AppCompatActivity {
         viewItemName = findViewById(R.id.ItemName);
         viewItemDesc = findViewById(R.id.ItemDescription);
         viewItemPrice = findViewById(R.id.ItemPrice);
+        sellerEmail = findViewById(R.id.ItemSellerID);
+        sellerPh = findViewById(R.id.ItemSellerPhone);
+        sellerAddress = findViewById(R.id.ItemSellerAddress);
         viewAddToCart = findViewById(R.id.ItemToCart);
         sliderLayout = findViewById(R.id.ItemImage);
         sliderLayout.setScrollTimeInSec(5);
@@ -77,6 +87,20 @@ public class ItemActivity extends AppCompatActivity {
         viewItemName.setText(itemName);
         viewItemDesc.setText(itemDesc);
         viewItemPrice.setText("$"+ itemPrice);
+
+        db.collection("users")
+                .document(itemSellerUID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            sellerEmail.setText(task.getResult().get("email").toString());
+                            sellerPh.setText(task.getResult().get("phone").toString());
+                            sellerAddress.setText(task.getResult().get("address").toString());
+                        }
+                    }
+                });
 
         if (itemInTinyDB(itemID, tinyDB)) {
             cartClicked = true;

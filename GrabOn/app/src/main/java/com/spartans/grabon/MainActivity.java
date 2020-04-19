@@ -295,12 +295,8 @@ public class MainActivity extends AppCompatActivity {
                                 String itemlat = (String) myMap.get("itemlatitude");
                                 String itemlon = (String) myMap.get("itemlongitude");
                                 String itemaddress = (String) myMap.get("itemaddress");
-                                String itemcategory = "";
-                                if (myMap.get("itemcategory") != null) {
-                                    itemcategory = (String) myMap.get("itemcategory");
-                                } else {
-                                    itemcategory = "OTHER";
-                                }
+                                String itemcategory = (String) myMap.get("itemcategory");
+
                                 double lat = Double.parseDouble(itemlat);
                                 double lon = Double.parseDouble(itemlon);
                                 double distance = 0.0;
