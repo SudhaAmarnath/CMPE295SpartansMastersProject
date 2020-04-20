@@ -92,6 +92,18 @@
                 android:textColor="@color/black"
                 android:textSize="16dp"/>
 
+            <TextView
+                android:id="@+id/layout_cartitems_price_DB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_marginLeft="10dp"
+                android:fontFamily="@font/helvetica"
+                android:text="$1.00"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="16dp"/>
+
         </LinearLayout>
 
         <TextView

@@ -35,7 +35,7 @@ public class Item {
         this.itemSellerUID = itemSellerUID;
         this.itemPrice = itemPrice;
         this.itemImageList = itemImageList;
-
+        this.itemPriceFromDB = itemPrice;
     }
 
     public Item(String itemName, String itemDescription, String itemSellerUID, float itemPrice, String itemImage, ArrayList itemImageList) {
@@ -46,7 +46,7 @@ public class Item {
         this.itemPrice = itemPrice;
         this.itemImage = itemImage;
         this.itemImageList = itemImageList;
-
+        this.itemPriceFromDB = itemPrice;
     }
 
     public Item(String itemID, String itemName, String itemDescription, float itemPrice, String itemImage) {
@@ -57,7 +57,7 @@ public class Item {
         this.itemSellerUID = itemSellerUID;
         this.itemPrice = itemPrice;
         this.itemImage = itemImage;
-
+        this.itemPriceFromDB = itemPrice;
     }
 
     public Item(String itemID, String itemName, String itemDescription, float itemPrice, ArrayList itemImageList) {
@@ -67,7 +67,7 @@ public class Item {
         this.itemDescription = itemDescription;
         this.itemPrice = itemPrice;
         this.itemImageList = itemImageList;
-
+        this.itemPriceFromDB = itemPrice;
     }
 
     public String getItemID() {

@@ -1,6 +1,8 @@
 package com.spartans.grabon.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.internal.VisibilityAwareImageButton;
 import com.spartans.grabon.R;
 import com.spartans.grabon.interfaces.ClickListenerItem;
 import com.spartans.grabon.model.Item;
@@ -59,6 +62,7 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.ViewHo
         Item item;
         TextView itemName;
         TextView itemPrice;
+        TextView itemPriceDB;
         ImageView itemImage;
         TextView itemSoldMsg;
 
@@ -66,6 +70,7 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.ViewHo
             super(v);
             itemName = itemView.findViewById(R.id.layout_cartitems_text);
             itemPrice = itemView.findViewById(R.id.layout_cartitems_price);
+            itemPriceDB = itemView.findViewById(R.id.layout_cartitems_price_DB);
             itemImage = itemView.findViewById(R.id.layout_cartitems_image);
             itemSoldMsg = itemView.findViewById(R.id.itemAlreadySold);
             v.setOnClickListener(this);
@@ -74,7 +79,16 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.ViewHo
         void bindModel(Item items) {
             this.item = items;
             itemName.setText(item.getItemName());
-            itemPrice.setText("$"+String.format("%.2f", item.getItemPrice()));
+            if (items.getItemPrice() != items.getItemPriceFromDB()) {
+                itemPriceDB.setVisibility(View.VISIBLE);
+                itemPrice.setText("$" + String.format("%.2f", item.getItemPrice()));
+                itemPrice.setTextColor(Color.RED);
+                itemPrice.setPaintFlags(itemPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                itemPriceDB.setText("$" + String.format("%.2f", item.getItemPriceFromDB()));
+            } else {
+                itemPrice.setText("$" + String.format("%.2f", item.getItemPrice()));
+                itemPriceDB.setVisibility(View.GONE);
+            }
             Glide.with(context).load(item.getItemImageList().get(0)).into(itemImage);
             if (item.isItemOrderedFromDB()) {
                 itemSoldMsg.setVisibility(View.VISIBLE);

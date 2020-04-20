@@ -299,7 +299,7 @@ public class Cart extends AppCompatActivity {
                             Matcher m = r.matcher(address);
                             if (m.find()) {
                                 state = m.group(1);
-                                double itemprice = item.getItemPrice();
+                                double itemprice = item.getItemPriceFromDB();
                                 double itemshippingfees = shippingFees;
                                 shippingTotal += shippingFees;
                                 double itemtotal = itemprice + itemshippingfees;
@@ -307,7 +307,7 @@ public class Cart extends AppCompatActivity {
                                 double taxrate = new SalesTaxCalculator().getSalesTax(state);
                                 double itemtax = itemtotal * taxrate / 100;
                                 totaltax += itemtax;
-                                totalPrice += item.getItemPrice();
+                                totalPrice += item.getItemPriceFromDB();
                                 recepientuid = item.getItemSellerUID();
                             }
 
