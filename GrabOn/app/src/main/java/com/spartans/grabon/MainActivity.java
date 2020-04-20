@@ -1,6 +1,8 @@
 package com.spartans.grabon;
 
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
@@ -63,10 +65,12 @@ import com.spartans.grabon.utils.Singleton;
 
 import org.w3c.dom.NodeList;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import io.kommunicate.KmConversationBuilder;
@@ -129,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
     private double userlat = 0;
     private double userlon = 0;
     private double usermiles = 0;
+    private String userZipcode = "";
 
     public static String category = "";
 
@@ -179,6 +184,18 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                 final LatLng latLng = place.getLatLng();
                 userlat = latLng.latitude;
                 userlon = latLng.longitude;
+
+                Geocoder geocoder = new Geocoder(MainActivity.this, Locale.ENGLISH);
+                try {
+                    List<Address> addresses = geocoder.getFromLocation(userlat, userlon, 1);
+                    if (addresses != null && addresses.size() > 0) {
+                        if(addresses.get(0).getPostalCode()!=null){
+                            userZipcode = addresses.get(0).getPostalCode();
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -410,8 +427,8 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                 pullToRefresh.setEnabled(false);
 
                 //execute the async task
-                String distance = "";
-                String postalCode = "";
+                String distance = Double.toString(usermiles);
+                String postalCode = userZipcode;
                 String queryURL = "https://sfbay.craigslist.org/search/sss?format=rss&query=";
                 queryURL = queryURL + query;
                 if(distance != "" && postalCode != "") {

@@ -137,7 +137,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
     private void convertCraigslistToEbayFormat(List<ItemSummary> itemSummariesList, NodeList nodeList) {
         Log.v("convert","convertCraigslistToEbayFormat called");
 
-        int numberOfItems = nodeList.getLength() > 10 ? 10 : nodeList.getLength();
+        int numberOfItems = nodeList.getLength() > 15 ? 15 : nodeList.getLength();
         for (int i = 0; i < numberOfItems; i++) {
 
             Node node = nodeList.item(i);
