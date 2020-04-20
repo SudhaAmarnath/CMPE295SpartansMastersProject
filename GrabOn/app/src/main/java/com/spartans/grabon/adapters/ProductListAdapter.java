@@ -16,6 +16,10 @@ import com.spartans.grabon.model.ItemPrice;
 import com.spartans.grabon.model.ItemSummary;
 import com.squareup.picasso.Picasso;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,8 +28,9 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
     private List<ItemSummary> itemSummaries;
     private OnItemClickListener mListener;
 
-    private static int GRAB_ON = 1;
-    private static int EBAY = 2;
+    public static int GRAB_ON = 1;
+    public static int EBAY = 0;
+    public static  int CRAIGSLIST = 2;
     public interface OnItemClickListener {
         void OnItemClickListener(int position);
     }
@@ -61,9 +66,13 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         }
     }
 
-    public ProductListAdapter(List<ItemSummary> itemSummariesList, List<Item> grabOnItems) {
+    public ProductListAdapter(List<ItemSummary> itemSummariesList, List<Item> grabOnItems, NodeList craigslistItems) {
         if (grabOnItems != null)
-        convertGrabOnToEbayFormat(itemSummariesList, grabOnItems);
+            convertGrabOnToEbayFormat(itemSummariesList, grabOnItems);
+
+        if (craigslistItems != null)
+            convertCraigslistToEbayFormat(itemSummariesList, craigslistItems);
+
         itemSummaries = itemSummariesList;
     }
 
@@ -78,36 +87,37 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
     }
 
     @Override
-    public int getItemViewType(int position) {
-        if (position >= 15) {
-            return GRAB_ON;
-        } else {
-            return EBAY;
-        }
-    }
-
-    @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        if (getItemViewType(position) == GRAB_ON) {
-            Log.v("onBindViewHolder","onBindViewHolder called for grabon"+itemSummaries.get(position));
-            ItemSummary currentItem = itemSummaries.get(position);
-            if(currentItem!= null && currentItem.getImage()!= null && currentItem.getImage().getImageUrl()!= null) {
-                Picasso.get().load(currentItem.getImage().getImageUrl()).resize(160, 140).error(R.mipmap.ic_launcher).into(holder.imageView);
-            }
-            holder.textViewName.setText(currentItem.getTitle());
-            holder.textViewPrice.setText(currentItem.getPrice().getValue() + " " + currentItem.getPrice().getCurrency());
-            holder.vendorImageView.setImageResource(R.drawable.ic_launcher_grabon);
-        } else {
-            Log.v("onBindViewHolder","onBindViewHolder called for ebay"+itemSummaries.get(position));
-            ItemSummary currentItem = itemSummaries.get(position);
-            if(currentItem!= null && currentItem.getImage()!= null && currentItem.getImage().getImageUrl()!= null) {
-                Picasso.get().load(currentItem.getImage().getImageUrl()).resize(160,140).error(R.mipmap.ic_launcher).into(holder.imageView);
-            }
-            holder.textViewName.setText(currentItem.getTitle());
-            holder.textViewPrice.setText(currentItem.getPrice().getValue() + " " + currentItem.getPrice().getCurrency());
-            holder.vendorImageView.setImageResource(R.drawable.ic_launcher_ebay);
-        }
+        ItemSummary currentItem = itemSummaries.get(position);
+        if (currentItem != null) {
+            if (currentItem.getVendorID() == GRAB_ON) {
+                Log.v("onBindViewHolder", "onBindViewHolder called for grabon" + itemSummaries.get(position));
+                if (currentItem != null && currentItem.getImage() != null && currentItem.getImage().getImageUrl() != null) {
+                    Picasso.get().load(currentItem.getImage().getImageUrl()).resize(160, 140).error(R.mipmap.ic_launcher).into(holder.imageView);
+                }
+                holder.textViewName.setText(currentItem.getTitle());
+                holder.textViewPrice.setText(currentItem.getPrice().getValue() + " " + currentItem.getPrice().getCurrency());
+                holder.vendorImageView.setImageResource(R.drawable.ic_launcher_grabon);
+            } else if (currentItem.getVendorID() == EBAY) {
+                Log.v("onBindViewHolder", "onBindViewHolder called for ebay" + itemSummaries.get(position));
 
+                if (currentItem != null && currentItem.getImage() != null && currentItem.getImage().getImageUrl() != null) {
+                    Picasso.get().load(currentItem.getImage().getImageUrl()).resize(160, 140).error(R.mipmap.ic_launcher).into(holder.imageView);
+                }
+                holder.textViewName.setText(currentItem.getTitle());
+                holder.textViewPrice.setVisibility(View.VISIBLE);
+                holder.textViewPrice.setText(currentItem.getPrice().getValue() + " " + currentItem.getPrice().getCurrency());
+                holder.vendorImageView.setImageResource(R.drawable.ic_launcher_ebay);
+            } else if (currentItem.getVendorID() == CRAIGSLIST) {
+                Log.v("onBindViewHolder", "onBindViewHolder called for Craigslist" + itemSummaries.get(position));
+                if (currentItem != null && currentItem.getImage() != null && currentItem.getImage().getImageUrl() != null) {
+                    Picasso.get().load(currentItem.getImage().getImageUrl()).resize(160, 140).error(R.mipmap.ic_launcher).into(holder.imageView);
+                }
+                holder.textViewName.setText(currentItem.getTitle());
+                holder.textViewPrice.setVisibility(View.INVISIBLE);
+                holder.vendorImageView.setImageResource(R.drawable.craigslist_logo);
+            }
+        }
     }
 
     @Override
@@ -118,8 +128,49 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
     private void convertGrabOnToEbayFormat(List<ItemSummary> itemSummariesList, List<Item> grabOnItems) {
         Log.v("convert","convertGrabOnToEbayFormat called");
         for (Item item : grabOnItems) {
-            ItemSummary itemSummary = new ItemSummary(item.getItemName(), new ItemImage(item.getItemImageList().get(0).toString()), new ItemPrice(String. valueOf(item.getItemPrice()),"USD"));
+            ItemSummary itemSummary = new ItemSummary(GRAB_ON, item.getItemName(), new ItemImage(item.getItemImageList().get(0).toString()),
+                    new ItemPrice(String. valueOf(item.getItemPrice()),"USD"), item.getItemID());
             itemSummariesList.add(itemSummary);
+        }
+    }
+
+    private void convertCraigslistToEbayFormat(List<ItemSummary> itemSummariesList, NodeList nodeList) {
+        Log.v("convert","convertCraigslistToEbayFormat called");
+
+        int numberOfItems = nodeList.getLength() > 10 ? 10 : nodeList.getLength();
+        for (int i = 0; i < numberOfItems; i++) {
+
+            Node node = nodeList.item(i);
+
+            Element itemElement = (Element) node;
+            String itemName = "", itemLink = "", itemImage = "";
+
+            Node itemNameNode = itemElement.getElementsByTagName("title").item(0);
+            if (itemNameNode != null) {
+                itemName = ((Element) itemNameNode).getTextContent();
+                itemName = itemName.replace("&#x0024;", "$");
+            }
+
+            Node itemLinkNode = itemElement.getElementsByTagName("link").item(0);
+            if (itemLinkNode != null) {
+                itemLink = ((Element) itemLinkNode).getTextContent();
+            }
+
+            Node itemImageNode = itemElement.getElementsByTagName("enc:enclosure").item(0);
+            if (itemImageNode != null) {
+                itemImage = ((Element) itemImageNode).getAttribute("resource");
+            }
+
+            ItemSummary itemSummary = null;
+            if (itemImage != null && itemImage != "") {
+                itemSummary = new ItemSummary(CRAIGSLIST, itemName, new ItemImage(itemImage), itemLink);
+            } else {
+                itemSummary = new ItemSummary(CRAIGSLIST, itemName, itemLink);
+            }
+
+            if (itemSummary != null) {
+                itemSummariesList.add(itemSummary);
+            }
         }
     }
 }
