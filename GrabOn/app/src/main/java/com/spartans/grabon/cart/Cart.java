@@ -22,9 +22,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.mukesh.tinydb.TinyDB;
 import com.spartans.grabon.MainActivity;
 import com.spartans.grabon.R;
@@ -192,13 +195,61 @@ public class Cart extends AppCompatActivity {
 
         ArrayList<Object> savedObjects;
         savedObjects = tinyDB.getListObject(user.getUid(), Item.class);
-        ArrayList<Item> items = new ArrayList<>();
-        for(Object objs : savedObjects){
+        final ArrayList<Item> items = new ArrayList<>();
+        for (Object objs : savedObjects) {
             items.add((Item) objs);
         }
-        itemsList = items;
-        fileDataStatus.onSuccess(itemsList);
 
+        final DocumentReference documentReference = db.collection("cart").document(user.getUid());
+        final ArrayList<String> itemsListFromDB = new ArrayList<>();
+
+        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Map<String, Object> myMap = document.getData();
+                        for (Map.Entry<String, Object> entry : myMap.entrySet()) {
+                            if (entry.getKey().equals("items")) {
+                                for (Object s : (ArrayList) entry.getValue()) {
+                                    itemsListFromDB.add((String) s);
+                                }
+                                Log.v("TagImg", entry.getValue().toString());
+                            }
+                        }
+
+                        db.collection("items")
+                                .whereIn(com.google.firebase.firestore.FieldPath.documentId(), itemsListFromDB)
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                                Log.d("DB", document.getId() + " => " + document.getData());
+                                                Map<String, Object> myMap = document.getData();
+                                                for (Item itemInstance : items) {
+                                                    if (itemInstance.getItemID().equals(document.getId())) {
+                                                        Double price = (Double) myMap.get("itemprice");
+                                                        itemInstance.setItemPriceFromDB(price.floatValue());
+                                                        itemInstance.setItemOrderedFromDB((boolean)myMap.get("itemordered"));
+                                                        break;
+                                                    }
+                                                }
+                                            }
+
+                                            itemsList = items;
+                                            fileDataStatus.onSuccess(itemsList);
+                                        } else {
+                                            Log.d("DB", "Error getting documents: ", task.getException());
+                                        }
+                                    }
+                                });
+                    }
+                }
+            }
+        });
     }
 
     private void displayCartItems () {
@@ -239,6 +290,7 @@ public class Cart extends AppCompatActivity {
                             shippingFees = 2;
                         }
 
+                        boolean alreadySoldItemExists = false;
                         for (i = 0; i < itemsList.size(); i++) {
                             Item item = itemsList.get(i);
                             String address = item.getItemAddress();
@@ -259,8 +311,12 @@ public class Cart extends AppCompatActivity {
                                 recepientuid = item.getItemSellerUID();
                             }
 
+                            if (!alreadySoldItemExists){
+                                alreadySoldItemExists = item.isItemOrderedFromDB();
+                            }
                         }
 
+                        final boolean finalAlreadySoldItemExists = alreadySoldItemExists;
                         db.collection("users")
                                 .document(recepientuid)
                                 .get()
@@ -269,7 +325,7 @@ public class Cart extends AppCompatActivity {
                                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                         if (task.isSuccessful()) {
                                             recepient = task.getResult().get("paypalid").toString();
-                                            cartProceedForPayment.setClickable(true);
+                                            cartProceedForPayment.setClickable(!finalAlreadySoldItemExists);
                                         }
                                     }
                                 });

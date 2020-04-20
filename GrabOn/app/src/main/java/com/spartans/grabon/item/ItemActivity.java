@@ -1,5 +1,6 @@
 package com.spartans.grabon.item;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,21 +12,31 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.mukesh.tinydb.TinyDB;
 import com.smarteist.autoimageslider.DefaultSliderView;
 import com.smarteist.autoimageslider.SliderLayout;
 import com.smarteist.autoimageslider.SliderView;
 import com.spartans.grabon.R;
 import com.spartans.grabon.model.Item;
+import com.spartans.grabon.order.OrdersActivity;
+import com.spartans.grabon.utils.DateUtilities;
+import com.spartans.grabon.utils.DistanceCalculator;
 import com.spartans.grabon.utils.Singleton;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import mehdi.sakout.fancybuttons.FancyButton;
 
@@ -123,11 +134,13 @@ public class ItemActivity extends AppCompatActivity {
                 item.setItemAddress(itemAddress);
                 if(cartClicked == false) {
                     addItemToTinyDB(item, tinyDB);
+                    addItemToCartInDb(item);
                     viewAddToCart.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
                     cartClicked = true;
                     Toast.makeText(ItemActivity.this, "Item added", Toast.LENGTH_SHORT).show();
                 } else {
                     removeItemFromTinyDB(item, tinyDB);
+                    removeItemFromCartInDb(item);
                     viewAddToCart.setBackgroundColor(getResources().getColor(R.color.black));
                     cartClicked = false;
                     Toast.makeText(ItemActivity.this, "Item removed", Toast.LENGTH_SHORT).show();
@@ -149,6 +162,37 @@ public class ItemActivity extends AppCompatActivity {
 
     }
 
+    public void addItemToCartInDb(final Item itemToAdd) {
+
+        DocumentReference documentReference = db.collection("cart").document(user.getUid());
+        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    ArrayList<String> itemsList = new ArrayList<>();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        Map<String, Object> myMap = document.getData();
+                        for (Map.Entry<String, Object> entry : myMap.entrySet()) {
+                            if (entry.getKey().equals("items")) {
+                                for (Object s : (ArrayList) entry.getValue()) {
+                                    itemsList.add((String) s);
+                                }
+                                Log.v("TagImg", entry.getValue().toString());
+                            }
+                        }
+                    }
+
+                    itemsList.add(itemToAdd.getItemID());
+                    updateCartInDB(itemsList);
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+    }
+
     public void removeItemFromTinyDB(Item item, TinyDB tinyDB) {
 
         if (itemInTinyDB(item.getItemID(), tinyDB)) {
@@ -165,6 +209,66 @@ public class ItemActivity extends AppCompatActivity {
             tinyDB.putListObject(user.getUid(), savedObjects);
         }
 
+    }
+
+    public void removeItemFromCartInDb(final Item itemToRemove) {
+
+        final DocumentReference documentReference = db.collection("cart").document(user.getUid());
+        final ArrayList<String> itemsList = new ArrayList<>();
+
+        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        Map<String, Object> myMap = document.getData();
+                        for (Map.Entry<String, Object> entry : myMap.entrySet()) {
+                            if (entry.getKey().equals("items")) {
+                                for (Object s : (ArrayList) entry.getValue()) {
+                                    itemsList.add((String) s);
+                                }
+                                Log.v("TagImg", entry.getValue().toString());
+                            }
+                        }
+
+                        itemsList.remove(itemToRemove.getItemID());
+                        updateCartInDB(itemsList);
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+    }
+
+    private void updateCartInDB(ArrayList<String> itemsList) {
+        Map<String, Object> cartItem = new HashMap<>();
+        cartItem.put("items", itemsList);
+
+        DocumentReference documentReference = db.collection("cart").document(user.getUid());
+        documentReference.set(cartItem).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    task.addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.v("Cart","DB - Item successfully added to cart.");
+                            finish();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.v("Cart","DB - Adding item to cart failed.");
+                        }
+                    });
+                }
+            }
+        });
     }
 
     public boolean itemInTinyDB(String itemID, TinyDB tinyDB) {

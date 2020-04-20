@@ -20,6 +20,8 @@ public class Item {
     private String longitude;
     private String itemAddress;
     private String itemCategory;
+    private float  itemPriceFromDB;
+    private boolean itemOrderedFromDB;
 
     public Item() {
 
@@ -170,6 +172,22 @@ public class Item {
 
     public void setItemCategory(String itemCategory) {
         this.itemCategory = itemCategory;
+    }
+
+    public float getItemPriceFromDB() {
+        return itemPriceFromDB;
+    }
+
+    public void setItemPriceFromDB(float itemPrice) {
+        this.itemPriceFromDB = itemPrice;
+    }
+
+    public boolean isItemOrderedFromDB () {
+        return itemOrderedFromDB;
+    }
+
+    public void setItemOrderedFromDB (boolean itemOrdered) {
+        this.itemOrderedFromDB = itemOrdered;
     }
 
     @Override

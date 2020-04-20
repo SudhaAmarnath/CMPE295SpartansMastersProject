@@ -76,7 +76,7 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.ViewHo
             itemName.setText(item.getItemName());
             itemPrice.setText("$"+String.format("%.2f", item.getItemPrice()));
             Glide.with(context).load(item.getItemImageList().get(0)).into(itemImage);
-            if (item.isItemOrdered()) {
+            if (item.isItemOrderedFromDB()) {
                 itemSoldMsg.setVisibility(View.VISIBLE);
             } else {
                 itemSoldMsg.setVisibility(View.INVISIBLE);
