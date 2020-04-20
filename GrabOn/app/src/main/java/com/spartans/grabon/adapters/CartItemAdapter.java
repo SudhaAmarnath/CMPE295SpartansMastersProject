@@ -60,12 +60,14 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.ViewHo
         TextView itemName;
         TextView itemPrice;
         ImageView itemImage;
+        TextView itemSoldMsg;
 
         ViewHolder(View v) {
             super(v);
             itemName = itemView.findViewById(R.id.layout_cartitems_text);
             itemPrice = itemView.findViewById(R.id.layout_cartitems_price);
             itemImage = itemView.findViewById(R.id.layout_cartitems_image);
+            itemSoldMsg = itemView.findViewById(R.id.itemAlreadySold);
             v.setOnClickListener(this);
         }
 
@@ -74,6 +76,11 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.ViewHo
             itemName.setText(item.getItemName());
             itemPrice.setText("$"+String.format("%.2f", item.getItemPrice()));
             Glide.with(context).load(item.getItemImageList().get(0)).into(itemImage);
+            if (item.isItemOrdered()) {
+                itemSoldMsg.setVisibility(View.VISIBLE);
+            } else {
+                itemSoldMsg.setVisibility(View.INVISIBLE);
+            }
         }
 
         public void onClick(View view) {
