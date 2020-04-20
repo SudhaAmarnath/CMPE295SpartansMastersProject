@@ -51,7 +51,6 @@ import com.spartans.grabon.interfaces.ClickListenerItemCategory;
 import com.spartans.grabon.interfaces.FileDataStatus;
 import com.spartans.grabon.item.Categories;
 import com.spartans.grabon.item.ItemActivity;
-import com.spartans.grabon.item.UpdateItem;
 import com.spartans.grabon.model.ApplicationToken;
 import com.spartans.grabon.model.Item;
 import com.spartans.grabon.model.ItemCategory;
@@ -355,31 +354,17 @@ public class MainActivity extends AppCompatActivity {
                     itemAdapter = new ItemAdapter(itemsList, MainActivity.this, new ClickListenerItem() {
                         @Override
                         public void onClick(View view, Item item) {
-                            if (loggedinUser.getUid().matches(item.getItemSellerUID())) {
-                                Intent updateItemPage = new Intent(MainActivity.this, UpdateItem.class);
-                                updateItemPage.putExtra("itemid", item.getItemID());
-                                updateItemPage.putExtra("selleruid",item.getItemSellerUID());
-                                updateItemPage.putExtra("itemname",item.getItemName());
-                                updateItemPage.putExtra("itemdesc", item.getItemDescription());
-                                updateItemPage.putExtra("itemprice", item.getItemPrice());
-                                updateItemPage.putExtra("itemimage", item.getItemImage());
-                                updateItemPage.putExtra("itemimagelist", item.getItemImageList());
-                                updateItemPage.putExtra("itemaddress", item.getItemAddress());
-                                updateItemPage.putExtra("itemcategory", item.getItemCategory());
-                                startActivity(updateItemPage);
-                            } else {
-                                Intent itemPage = new Intent(MainActivity.this, ItemActivity.class);
-                                itemPage.putExtra("itemid", item.getItemID());
-                                itemPage.putExtra("selleruid",item.getItemSellerUID());
-                                itemPage.putExtra("itemname",item.getItemName());
-                                itemPage.putExtra("itemdesc", item.getItemDescription());
-                                itemPage.putExtra("itemprice", item.getItemPrice());
-                                itemPage.putExtra("itemimage", item.getItemImage());
-                                itemPage.putExtra("itemimagelist", item.getItemImageList());
-                                itemPage.putExtra("itemaddress", item.getItemAddress());
-                                itemPage.putExtra("itemcategory", item.getItemCategory());
-                                startActivity(itemPage);
-                            }
+                            Intent itemPage = new Intent(MainActivity.this, ItemActivity.class);
+                            itemPage.putExtra("itemid", item.getItemID());
+                            itemPage.putExtra("selleruid",item.getItemSellerUID());
+                            itemPage.putExtra("itemname",item.getItemName());
+                            itemPage.putExtra("itemdesc", item.getItemDescription());
+                            itemPage.putExtra("itemprice", item.getItemPrice());
+                            itemPage.putExtra("itemimage", item.getItemImage());
+                            itemPage.putExtra("itemimagelist", item.getItemImageList());
+                            itemPage.putExtra("itemaddress", item.getItemAddress());
+                            itemPage.putExtra("itemcategory", item.getItemCategory());
+                            startActivity(itemPage);
                         }
                     });
                     recyclerViewItems.setAdapter(itemAdapter);

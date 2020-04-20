@@ -82,11 +82,17 @@ public class ItemActivity extends AppCompatActivity {
         sellerAddress = findViewById(R.id.ItemSellerAddress);
         viewAddToCart = findViewById(R.id.ItemToCart);
         sliderLayout = findViewById(R.id.ItemImage);
-        sliderLayout.setScrollTimeInSec(5);
+        sliderLayout.setScrollTimeInSec(4);
 
         viewItemName.setText(itemName);
         viewItemDesc.setText(itemDesc);
         viewItemPrice.setText("$"+ itemPrice);
+
+        if (user.getUid().equals(itemSellerUID)) {
+            viewAddToCart.setVisibility(View.GONE);
+        } else {
+            viewAddToCart.setVisibility(View.VISIBLE);
+        }
 
         db.collection("users")
                 .document(itemSellerUID)
