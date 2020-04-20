@@ -88,8 +88,7 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
     private Toolbar toolbar;
     private RecyclerView recyclerViewItems;
     private RecyclerView recyclerViewItemCategories;
-//    private RecyclerView.adapter
-    private RecyclerView.LayoutManager mLayoutManager;
+    private SwipeRefreshLayout pullToRefresh;
     private FirebaseFirestore db;
 
     private ArrayList<Item> itemsList = new ArrayList<>();
@@ -218,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
         recyclerViewItems.setNestedScrollingEnabled(false);
         displayItems();
 
-        final SwipeRefreshLayout pullToRefresh = findViewById(R.id.MainItemPullToRefresh);
+        pullToRefresh = findViewById(R.id.MainItemPullToRefresh);
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -274,6 +273,14 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                         category = itemCategory.getCategoryName();
                         Log.v("category", "select:" + category);
                     }
+
+                    itemAdapter = null;
+                    itemsList = new ArrayList<>();
+                    GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
+                    recyclerViewItems.setLayoutManager(gridLayoutManager);
+                    recyclerViewItems.setNestedScrollingEnabled(false);
+                    displayItems();
+
                 }
             });
             recyclerViewItemCategories.setAdapter(itemCategoryAdapter);
@@ -400,6 +407,8 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
             @Override
             public boolean onQueryTextSubmit(String query) {
                 recyclerViewItems.setVisibility(View.GONE);
+                pullToRefresh.setEnabled(false);
+
                 //execute the async task
                 String distance = "";
                 String postalCode = "";
@@ -425,6 +434,7 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
             public boolean onClose() {
                 recyclerViewItems.setVisibility(View.VISIBLE);
                 searchRecycleView.setVisibility(View.GONE);
+                pullToRefresh.setEnabled(true);
                 return false;
             }
         });
