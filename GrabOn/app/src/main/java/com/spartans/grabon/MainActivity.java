@@ -59,7 +59,10 @@ import com.spartans.grabon.model.ItemSummary;
 import com.spartans.grabon.model.SearchResponse;
 import com.spartans.grabon.services.EbayAPI;
 import com.spartans.grabon.utils.DistanceCalculator;
+import com.spartans.grabon.utils.RetrieveFeedTask;
 import com.spartans.grabon.utils.Singleton;
+
+import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -80,7 +83,7 @@ import retrofit2.Response;
 /**
  * Author : Sudha Amarnath on 2020-01-29
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.AsyncResponse {
 
     public static final String TAG = "TAG";
     private Toolbar toolbar;
@@ -121,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager searchRecycleViewLayoutManager;
 
     private SearchView searchView;
+
+    private NodeList craigslistItemsList;
 
     PlacesClient placesClient;
     private double userlat = 0;
@@ -410,6 +415,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 recyclerViewItems.setVisibility(View.GONE);
+                //execute the async task
+                String distance = "";
+                String postalCode = "";
+                String queryURL = "https://sfbay.craigslist.org/search/sss?format=rss&query=";
+                queryURL = queryURL + query;
+                if(distance != "" && postalCode != "") {
+                    queryURL = queryURL + "&search_distance=" + distance + "&postal=" + postalCode;
+                }
+                String[] urlToRssFeed = {queryURL};
+                new RetrieveFeedTask(MainActivity.this).execute(urlToRssFeed);
                 getSearchResultFromEbay(query);
                 return false;
             }
@@ -523,23 +538,35 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
                         SearchResponse searchResponse = response.body();
-                        itemList = searchResponse.getItemSummaries();
+                        itemList.clear();
                         searchRecycleView = findViewById(R.id.searchRecycleView);
                         searchRecycleView.setVisibility(View.VISIBLE);
                         searchRecycleView.setHasFixedSize(true);
                         searchRecycleViewLayoutManager = new LinearLayoutManager(getApplicationContext());
                         Log.v("itemsList","items"+itemsList);
                         ArrayList<Item> filteredList = searchGrabOnItemsByQuery(itemsList, query);
-                        searchRecycleViewAdapter = new ProductListAdapter(itemList, filteredList);
+                        searchRecycleViewAdapter = new ProductListAdapter(itemList, filteredList, craigslistItemsList);
                         searchRecycleView.setLayoutManager(searchRecycleViewLayoutManager);
                         searchRecycleView.setAdapter(searchRecycleViewAdapter);
+                        for (ItemSummary itemEbay : searchResponse.getItemSummaries()) {
+                            if (itemEbay != null) {
+                                itemList.add(itemEbay);
+                            }
+                        }
+
                         searchRecycleViewAdapter.setOnItemClickListener(new ProductListAdapter.OnItemClickListener() {
                             @Override
                             public void OnItemClickListener(int position) {
-                                if(position < 15)
-                                    openBrowserActivity(itemList.get(position));
+                                ItemSummary currentItem = itemList.get(position);
+                                if (currentItem.getVendorID() == ProductListAdapter.GRAB_ON)
+                                    for(Item itemGrabOn : itemsList) {
+                                        if(itemGrabOn.getItemID().equals(currentItem.getItemId())) {
+                                            openItemActivity(itemGrabOn);
+                                            break;
+                                        }
+                                    }
                                 else
-                                    openItemActivity(itemsList.get(position-15));
+                                    openBrowserActivity(currentItem);
                             }
                         });
                     }
@@ -585,5 +612,10 @@ public class MainActivity extends AppCompatActivity {
                 filteredItems.add(item);
         }
         return filteredItems;
+    }
+
+    @Override
+    public void processFinish(NodeList output) {
+        craigslistItemsList = output;
     }
 }

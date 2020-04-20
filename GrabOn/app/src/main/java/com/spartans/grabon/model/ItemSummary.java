@@ -31,6 +31,7 @@ public class ItemSummary {
 
     private boolean adultOnly;
 
+    private int vendorID = 0;
 
     public String getItemId() {
         return itemId;
@@ -101,10 +102,27 @@ public class ItemSummary {
         return adultOnly;
     }
 
-    public ItemSummary(String title, ItemImage image, ItemPrice price) {
+    public int getVendorID() { return vendorID; }
+
+    public ItemSummary(int vendorID, String title, ItemImage image, ItemPrice price, String itemID) {
         this.title = title;
         this.image = image;
         this.price = price;
+        this.vendorID = vendorID;
+        this.itemId = itemID;
+    }
+
+    public ItemSummary(int vendorID, String title, ItemImage image, String itemLink) {
+        this.title = title;
+        this.image = image;
+        this.itemWebUrl = itemLink;
+        this.vendorID = vendorID;
+    }
+
+    public ItemSummary(int vendorID, String title, String itemLink) {
+        this.title = title;
+        this.itemWebUrl = itemLink;
+        this.vendorID = vendorID;
     }
 
     @Override
