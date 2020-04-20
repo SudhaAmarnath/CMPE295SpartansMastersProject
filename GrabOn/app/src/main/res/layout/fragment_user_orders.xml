@@ -17,7 +17,7 @@
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
             android:fontFamily="@font/helvetica"
-            android:text="Your Placed Orders"
+            android:text="Your have not placed any order yet. Please make a purchase to start building your purchase history."
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="20dp"
@@ -27,7 +27,7 @@
             android:id="@+id/UserOrdersFragmentRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/UserOrdersHeader" />
+            android:layout_marginTop="10dp" />
 
     </RelativeLayout>
 

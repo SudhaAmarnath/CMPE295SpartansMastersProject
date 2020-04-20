@@ -131,6 +131,12 @@ public class PostedItems extends AppCompatActivity {
                     postedItemAdapter.getItems().addAll(postedItemsList);
                     postedItemAdapter.notifyDataSetChanged();
                 }
+
+                if (list.size() > 0) {
+                    findViewById(R.id.NoPostedItems).setVisibility(View.INVISIBLE);
+                } else {
+                    findViewById(R.id.NoPostedItems).setVisibility(View.VISIBLE);
+                }
             }
 
             @Override

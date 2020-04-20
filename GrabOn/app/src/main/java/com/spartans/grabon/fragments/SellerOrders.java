@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -53,6 +54,7 @@ public class SellerOrders extends Fragment {
     private FirebaseFirestore db = Singleton.getDb();
     private SellerOrderAdapter sellerOrderAdapter;
     RecyclerView recyclerView;
+    TextView sellerOrderTextView;
 
     public SellerOrders() {
         // Required empty public constructor
@@ -82,6 +84,12 @@ public class SellerOrders extends Fragment {
                     sellerOrderAdapter.getItems().addAll(orderArrayList);
                     sellerOrderAdapter.notifyDataSetChanged();
                 }
+
+                if (list.size() > 0) {
+                    sellerOrderTextView.setVisibility(View.INVISIBLE);
+                } else {
+                    sellerOrderTextView.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -98,6 +106,7 @@ public class SellerOrders extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_seller_orders, container, false);
         recyclerView = view.findViewById(R.id.SellerOrdersFragmentRecyclerView);
+        sellerOrderTextView = view.findViewById(R.id.SellerOrdersHeader);
         Context context;
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false);
