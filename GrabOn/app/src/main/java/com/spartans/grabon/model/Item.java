@@ -20,8 +20,6 @@ public class Item {
     private String longitude;
     private String itemAddress;
     private String itemCategory;
-    private float  itemPriceFromDB;
-    private boolean itemOrderedFromDB;
 
     public Item() {
 
@@ -35,7 +33,7 @@ public class Item {
         this.itemSellerUID = itemSellerUID;
         this.itemPrice = itemPrice;
         this.itemImageList = itemImageList;
-        this.itemPriceFromDB = itemPrice;
+
     }
 
     public Item(String itemName, String itemDescription, String itemSellerUID, float itemPrice, String itemImage, ArrayList itemImageList) {
@@ -46,7 +44,7 @@ public class Item {
         this.itemPrice = itemPrice;
         this.itemImage = itemImage;
         this.itemImageList = itemImageList;
-        this.itemPriceFromDB = itemPrice;
+
     }
 
     public Item(String itemID, String itemName, String itemDescription, float itemPrice, String itemImage) {
@@ -57,7 +55,7 @@ public class Item {
         this.itemSellerUID = itemSellerUID;
         this.itemPrice = itemPrice;
         this.itemImage = itemImage;
-        this.itemPriceFromDB = itemPrice;
+
     }
 
     public Item(String itemID, String itemName, String itemDescription, float itemPrice, ArrayList itemImageList) {
@@ -67,7 +65,7 @@ public class Item {
         this.itemDescription = itemDescription;
         this.itemPrice = itemPrice;
         this.itemImageList = itemImageList;
-        this.itemPriceFromDB = itemPrice;
+
     }
 
     public String getItemID() {
@@ -172,22 +170,6 @@ public class Item {
 
     public void setItemCategory(String itemCategory) {
         this.itemCategory = itemCategory;
-    }
-
-    public float getItemPriceFromDB() {
-        return itemPriceFromDB;
-    }
-
-    public void setItemPriceFromDB(float itemPrice) {
-        this.itemPriceFromDB = itemPrice;
-    }
-
-    public boolean isItemOrderedFromDB () {
-        return itemOrderedFromDB;
-    }
-
-    public void setItemOrderedFromDB (boolean itemOrdered) {
-        this.itemOrderedFromDB = itemOrdered;
     }
 
     @Override

@@ -93,10 +93,6 @@ public class Profile extends AppCompatActivity {
     private static String longitude = null;
     private static ImageView addprofilepic= null;
     private static ImageView addImage= null;
-    private static ImageView saveAll = null;
-
-    private EditText name = null, email = null, phone = null, paypalid = null, apt = null;
-    private AutocompleteSupportFragment address;
 
     PlacesClient placesClient;
 
@@ -109,7 +105,9 @@ public class Profile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        final EditText name, email, phone, paypalid, apt;
         final ImageView phonebutton, paypalidbutton, addressbutton, aptbutton;
+        final AutocompleteSupportFragment address;
         final FirebaseAuth firebaseAuth;
         FirebaseFirestore firebaseFirestore;
         final String uID;
@@ -128,7 +126,6 @@ public class Profile extends AppCompatActivity {
         aptbutton = findViewById(R.id.profile_addressapt_edit);
         addprofilepic = findViewById(R.id.ImgUserV);
         addImage = findViewById(R.id.addImage);
-        saveAll = findViewById(R.id.saveAll);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
@@ -165,7 +162,6 @@ public class Profile extends AppCompatActivity {
                         phone.setText(documentSnapshot.getString("phone"));
                         address.setText(documentSnapshot.getString("address"));
                         paypalid.setText(documentSnapshot.getString("paypalid"));
-                        apt.setText(documentSnapshot.getString("apt"));
                     }
                 });
 
@@ -190,14 +186,69 @@ public class Profile extends AppCompatActivity {
         phonebutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                savePhoneToDB();
+
+                String ph = phone.getText().toString();
+
+                if (isValidPhone(ph)) {
+                    //Update item to the db
+                    Map<String, Object> dbitem = new HashMap<>();
+                    dbitem.put("phone", ph);
+
+                    DocumentReference updateUser = db.collection("users")
+                            .document(loggedinUser.getUid());
+
+                    updateUser.update(dbitem)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.v("updateProfile", "Update Phone No. Success: ");
+                                    Toast.makeText(Profile.this, "Update Phone No. Success:", Toast.LENGTH_SHORT).show();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.v("updateProfile", "Update Phone No. Failed: ");
+                            Toast.makeText(Profile.this, "Update Phone No. Failed:", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                }
+
             }
         });
 
         paypalidbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                savePaypalIDToDB();
+
+                String id = paypalid.getText().toString();
+
+                if (isValidEmail(id)) {
+                        //Update item to the db
+                        Map<String, Object> dbitem = new HashMap<>();
+                        dbitem.put("paypalid", paypalid.getText().toString());
+
+                        DocumentReference updateUser = db.collection("users")
+                                .document(loggedinUser.getUid());
+
+                        updateUser.update(dbitem)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.v("updateProfile", "Update Paypal ID Success: ");
+                                        Toast.makeText(Profile.this, "Update Paypal ID Success:", Toast.LENGTH_SHORT).show();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.v("updateProfile", "Update Paypal ID Failed: ");
+                                Toast.makeText(Profile.this, "Update Paypal ID Failed:", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                } else {
+                    paypalid.setError("Invalid Email Address");
+                }
+
             }
         });
 
@@ -248,7 +299,41 @@ public class Profile extends AppCompatActivity {
         addressbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveAddressToDB();
+
+                if (isValidAddress()) {
+
+                    //Update item to the db
+                    Map<String, Object> dbitem = new HashMap<>();
+                    dbitem.put("address", Profile.addressline);
+                    dbitem.put("latitude", Profile.latitude);
+                    dbitem.put("longitude", Profile.longitude);
+                    DocumentReference updateUser = db.collection("users")
+                            .document(loggedinUser.getUid());
+
+                    updateUser.update(dbitem)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.v("updateProfile", "Update Address Success: ");
+                                    Toast.makeText(Profile.this, "Update Address Success:", Toast.LENGTH_SHORT).show();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.v("updateProfile", "Update Address Failed: ");
+                            Toast.makeText(Profile.this, "Update Address Failed:", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                } else {
+                    address.setText("");
+                    address.setHint("Enter shipping address");
+                    Toast toast2 = Toast.makeText(Profile.this, "Enter shipping address", Toast.LENGTH_SHORT);
+                    TextView toastMessage= toast2.getView().findViewById(android.R.id.message);
+                    toastMessage.setTextColor(Color.RED);
+                    toast2.show();
+
+                }
             }
         });
 
@@ -256,7 +341,29 @@ public class Profile extends AppCompatActivity {
         aptbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveAptToDB();
+
+                //Update item to the db
+                Map<String, Object> dbitem = new HashMap<>();
+                dbitem.put("apt", apt.getText().toString());
+
+                DocumentReference updateUser = db.collection("users")
+                        .document(loggedinUser.getUid());
+
+                updateUser.update(dbitem)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.v("updateProfile", "Update Apt Success: ");
+                                Toast.makeText(Profile.this,"Update Apt Success:", Toast.LENGTH_SHORT).show();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.v("updateProfile", "Update Apt Failed: ");
+                        Toast.makeText(Profile.this,"Update Apt Failed:", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
             }
         });
 
@@ -271,135 +378,6 @@ public class Profile extends AppCompatActivity {
             }
         });
 
-        saveAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                savePhoneToDB();
-                savePaypalIDToDB();
-                saveAddressToDB();
-                saveAptToDB();
-            }
-        });
-    }
-
-    private void savePhoneToDB() {
-        String ph = phone.getText().toString();
-
-        if (isValidPhone(ph)) {
-            //Update item to the db
-            Map<String, Object> dbitem = new HashMap<>();
-            dbitem.put("phone", ph);
-
-            DocumentReference updateUser = db.collection("users")
-                    .document(loggedinUser.getUid());
-
-            updateUser.update(dbitem)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.v("updateProfile", "Update Phone No. Success: ");
-                            Toast.makeText(Profile.this, "Update Phone No. Success:", Toast.LENGTH_SHORT).show();
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.v("updateProfile", "Update Phone No. Failed: ");
-                    Toast.makeText(Profile.this, "Update Phone No. Failed:", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-        }
-    }
-
-    private void savePaypalIDToDB() {
-        String id = paypalid.getText().toString();
-
-        if (isValidEmail(id)) {
-            //Update item to the db
-            Map<String, Object> dbitem = new HashMap<>();
-            dbitem.put("paypalid", paypalid.getText().toString());
-
-            DocumentReference updateUser = db.collection("users")
-                    .document(loggedinUser.getUid());
-
-            updateUser.update(dbitem)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.v("updateProfile", "Update Paypal ID Success: ");
-                            Toast.makeText(Profile.this, "Update Paypal ID Success:", Toast.LENGTH_SHORT).show();
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.v("updateProfile", "Update Paypal ID Failed: ");
-                    Toast.makeText(Profile.this, "Update Paypal ID Failed:", Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            paypalid.setError("Invalid Email Address");
-        }
-    }
-
-    private void saveAddressToDB() {
-        if (isValidAddress()) {
-
-            //Update item to the db
-            Map<String, Object> dbitem = new HashMap<>();
-            dbitem.put("address", Profile.addressline);
-            dbitem.put("latitude", Profile.latitude);
-            dbitem.put("longitude", Profile.longitude);
-            DocumentReference updateUser = db.collection("users")
-                    .document(loggedinUser.getUid());
-
-            updateUser.update(dbitem)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.v("updateProfile", "Update Address Success: ");
-                            Toast.makeText(Profile.this, "Update Address Success:", Toast.LENGTH_SHORT).show();
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.v("updateProfile", "Update Address Failed: ");
-                    Toast.makeText(Profile.this, "Update Address Failed:", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-        } else {
-            address.setText("");
-            address.setHint("Enter shipping address");
-            Toast toast2 = Toast.makeText(Profile.this, "Enter shipping address", Toast.LENGTH_SHORT);
-            TextView toastMessage= toast2.getView().findViewById(android.R.id.message);
-            toastMessage.setTextColor(Color.RED);
-            toast2.show();
-
-        }
-    }
-
-    private void saveAptToDB() {
-        //Update item to the db
-        Map<String, Object> dbitem = new HashMap<>();
-        dbitem.put("apt", apt.getText().toString());
-
-        DocumentReference updateUser = db.collection("users")
-                .document(loggedinUser.getUid());
-
-        updateUser.update(dbitem)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.v("updateProfile", "Update Apt Success: ");
-                        Toast.makeText(Profile.this,"Update Apt Success:", Toast.LENGTH_SHORT).show();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.v("updateProfile", "Update Apt Failed: ");
-                Toast.makeText(Profile.this,"Update Apt Failed:", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     public static boolean isValidEmail(CharSequence target) {

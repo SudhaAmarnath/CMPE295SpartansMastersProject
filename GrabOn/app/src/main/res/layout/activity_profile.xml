@@ -92,18 +92,6 @@
             android:scaleType="centerInside"
             android:src="@drawable/ic_edit" />
 
-        <ImageView
-            android:id="@+id/saveAll"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignParentRight="false"
-            android:layout_marginTop="15dp"
-            android:layout_marginRight="15dp"
-            android:adjustViewBounds="true"
-            android:scaleType="centerInside"
-            android:src="@drawable/applozic_ic_action_message_delivered"
-            android:tooltipText="Save All"/>
-
 
     </RelativeLayout>
 
