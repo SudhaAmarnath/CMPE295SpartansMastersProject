@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.common.util.VisibleForTesting;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -49,7 +50,7 @@ import mehdi.sakout.fancybuttons.FancyButton;
  * Author : Sudha Amarnath on 2020-02-23
  */
 public class AddItem extends AppCompatActivity {
-
+    @VisibleForTesting
     private static final int SELECT_PICTURE = 1;
     private FirebaseStorage storage;
     private StorageReference storageReference;

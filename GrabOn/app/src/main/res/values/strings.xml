@@ -48,6 +48,7 @@
     </string-array>
 
     <string name="category_prompt">Select Category</string>
+    <string name="TOAST_STRING" />
     <string-array name="categories">
         <item>Select Category</item>
         <item>Appliances</item>

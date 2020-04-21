@@ -3,7 +3,9 @@ package com.spartans.grabon.fragments;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,7 +15,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -23,6 +28,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.spartans.grabon.R;
 import com.spartans.grabon.cart.Cart;
 import com.spartans.grabon.item.AddItem;
@@ -46,7 +53,9 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
     private String paypalid = "";
     private String latitude = "";
     private String longitude = "";
-
+    private FirebaseStorage storage;
+    private StorageReference storageReference;
+    private StorageReference profilePic;
 
     public static BottomSheetNavigationFragment newInstance() {
 
@@ -54,6 +63,7 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
 
         BottomSheetNavigationFragment fragment = new BottomSheetNavigationFragment();
         fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -80,6 +90,8 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
     };
 
     private ImageView closeButton;
+    private static ImageView addprofilepic= null;
+
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -95,9 +107,27 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         uID = auth.getCurrentUser().getUid();
-
+        storage = Singleton.getStorage();
+        storageReference = storage.getReference();
         username = contentView.findViewById(R.id.user_name);
         emailid = contentView.findViewById(R.id.user_email);
+        addprofilepic = contentView.findViewById(R.id.profile_image);
+        profilePic = storageReference.child("profileImages/" + uID);
+        if(profilePic != null) {
+            profilePic.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Log.v("uploadProfileImage", " Downloaded URI  " + uri.toString());
+                    Glide.with(BottomSheetNavigationFragment.this).load(uri).into(addprofilepic);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                    Log.v("uploadProfileImage", " Unable to download image");
+                }
+            });
+        }
 
         db.collection("users")
                 .document(user.getUid())
