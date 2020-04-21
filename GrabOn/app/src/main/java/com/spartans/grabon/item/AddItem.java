@@ -27,7 +27,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -189,7 +188,7 @@ public class AddItem extends AppCompatActivity {
                                             @Override
                                             public void onSuccess(DocumentReference documentReference) {
                                                 AddItem.docid = documentReference.getId();
-                                                documentReference.update("itemid", FieldValue.arrayUnion(AddItem.docid));
+                                                documentReference.update("itemid", AddItem.docid);
                                                 Log.v("addItem", "Add Item Success, Document ID : " + AddItem.docid);
                                             }
                                         }).addOnFailureListener(new OnFailureListener() {

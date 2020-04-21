@@ -324,6 +324,7 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                                 String itemlon = (String) myMap.get("itemlongitude");
                                 String itemaddress = (String) myMap.get("itemaddress");
                                 String itemcategory = (String) myMap.get("itemcategory");
+                                boolean itemordered = (boolean) myMap.get("itemordered");
 
                                 double lat = Double.parseDouble(itemlat);
                                 double lon = Double.parseDouble(itemlon);
@@ -361,6 +362,7 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                                     item.setItemImageList(imgs);
                                     item.setItemAddress(itemaddress);
                                     item.setItemCategory(itemcategory);
+                                    item.setItemOrdered(itemordered);
                                     itemsList.add(item);
                                 }
                             }
@@ -393,6 +395,7 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                             itemPage.putExtra("itemimagelist", item.getItemImageList());
                             itemPage.putExtra("itemaddress", item.getItemAddress());
                             itemPage.putExtra("itemcategory", item.getItemCategory());
+                            itemPage.putExtra("itemordered", item.isItemOrdered());
                             startActivity(itemPage);
                         }
                     });
@@ -608,6 +611,7 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
         itemPage.putExtra("itemimagelist", item.getItemImageList());
         itemPage.putExtra("itemaddress", item.getItemAddress());
         itemPage.putExtra("itemcategory", item.getItemCategory());
+        itemPage.putExtra("itemordered", item.isItemOrdered());
         startActivity(itemPage);
     }
 

@@ -1,5 +1,6 @@
 package com.spartans.grabon.item;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +21,7 @@ import com.mukesh.tinydb.TinyDB;
 import com.smarteist.autoimageslider.DefaultSliderView;
 import com.smarteist.autoimageslider.SliderLayout;
 import com.smarteist.autoimageslider.SliderView;
+import com.spartans.grabon.MainActivity;
 import com.spartans.grabon.R;
 import com.spartans.grabon.model.Item;
 import com.spartans.grabon.utils.Singleton;
@@ -42,6 +44,7 @@ public class ItemActivity extends AppCompatActivity {
     private String itemImage;
     private String itemAddress;
     private ArrayList itemImageList;
+    private boolean itemOrdered;
     private TextView viewItemName;
     private TextView viewItemDesc;
     private TextView viewItemPrice;
@@ -73,6 +76,7 @@ public class ItemActivity extends AppCompatActivity {
         itemPrice = (float) getIntent().getSerializableExtra("itemprice");
         itemImageList = (ArrayList) getIntent().getSerializableExtra("itemimagelist");
         itemAddress = (String) getIntent().getSerializableExtra("itemaddress");
+        itemOrdered = (boolean) getIntent().getSerializableExtra("itemordered");
 
         viewItemName = findViewById(R.id.ItemName);
         viewItemDesc = findViewById(R.id.ItemDescription);
@@ -121,6 +125,7 @@ public class ItemActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Item item = new Item(itemID, itemName, itemDesc, itemSellerUID, itemPrice, itemImageList);
                 item.setItemAddress(itemAddress);
+                item.setItemOrdered(itemOrdered);
                 if(cartClicked == false) {
                     addItemToTinyDB(item, tinyDB);
                     viewAddToCart.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
@@ -132,6 +137,8 @@ public class ItemActivity extends AppCompatActivity {
                     cartClicked = false;
                     Toast.makeText(ItemActivity.this, "Item removed", Toast.LENGTH_SHORT).show();
                 }
+                startActivity(new Intent(ItemActivity.this, MainActivity.class));
+                finish();
             }
         });
 

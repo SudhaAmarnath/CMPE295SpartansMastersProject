@@ -25,11 +25,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.mukesh.tinydb.TinyDB;
 import com.spartans.grabon.MainActivity;
 import com.spartans.grabon.R;
 import com.spartans.grabon.adapters.CartItemAdapter;
 import com.spartans.grabon.interfaces.ClickListenerItem;
+import com.spartans.grabon.interfaces.DataCallback;
 import com.spartans.grabon.interfaces.FileDataStatus;
 import com.spartans.grabon.item.ItemActivity;
 import com.spartans.grabon.model.Item;
@@ -86,6 +89,7 @@ public class Cart extends AppCompatActivity {
     private static int PAYPAL_TO_CART_SUCCESS_CODE = 1;
     private static int PAYPAL_TO_CART_FAILURE_CODE = 0;
     private static String paymentID = null;
+    private static boolean isCartItemsChanged = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +116,7 @@ public class Cart extends AppCompatActivity {
         recyclerViewItems.setLayoutManager(linearLayoutManager);
         recyclerViewItems.setHasFixedSize(true);
 
+        radioGroup.setVisibility(View.GONE);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -141,10 +146,57 @@ public class Cart extends AppCompatActivity {
         cartProceedForPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent paypal = new Intent(getApplicationContext(), PaypalPaymentClient.class);
-                paypal.putExtra("grandtotal", grandtotal);
-                paypal.putExtra("recepient", recepient);
-                startActivityForResult(paypal, PAYMENT_REQUEST_CODE);
+                updateItemsInTinDB(new DataCallback() {
+                    @Override
+                    public void onCallback(String value) {
+                        if (!Boolean.parseBoolean(value)) {
+                            Intent paypal = new Intent(getApplicationContext(), PaypalPaymentClient.class);
+                            paypal.putExtra("grandtotal", grandtotal);
+                            paypal.putExtra("recepient", recepient);
+                            startActivityForResult(paypal, PAYMENT_REQUEST_CODE);
+                        } else {
+                            tinyDB.remove(user.getUid());
+                            for (i = 0; i < newItemList.size(); i++) {
+                                Item item = newItemList.get(i);
+                                addItemToTinyDB(item, tinyDB);
+                            }
+                            Toast.makeText(Cart.this, "Some items price changed or no longer available", Toast.LENGTH_LONG).show();
+                            cartItemAdapter = null;
+                            itemsList = new ArrayList<>();
+                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Cart.this,
+                                    LinearLayoutManager.VERTICAL,
+                                    false);
+                            recyclerViewItems.setLayoutManager(linearLayoutManager);
+                            recyclerViewItems.setHasFixedSize(true);
+                            displayCartItems();
+                        }
+                    }
+                });
+            }
+        });
+
+        updateItemsInTinDB(new DataCallback() {
+            @Override
+            public void onCallback(String value) {
+                if (Boolean.parseBoolean(value)) {
+
+                    tinyDB.remove(user.getUid());
+                    for (i = 0; i < newItemList.size(); i++) {
+                        Item item = newItemList.get(i);
+                        addItemToTinyDB(item, tinyDB);
+                    }
+
+                    Toast.makeText(Cart.this, "Some items price changed or no longer available", Toast.LENGTH_LONG).show();
+                    cartItemAdapter = null;
+                    itemsList = new ArrayList<>();
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Cart.this,
+                            LinearLayoutManager.VERTICAL,
+                            false);
+                    recyclerViewItems.setLayoutManager(linearLayoutManager);
+                    recyclerViewItems.setHasFixedSize(true);
+                    displayCartItems();
+                }
+
             }
         });
 
@@ -194,10 +246,110 @@ public class Cart extends AppCompatActivity {
         savedObjects = tinyDB.getListObject(user.getUid(), Item.class);
         ArrayList<Item> items = new ArrayList<>();
         for(Object objs : savedObjects){
+            Item item = (Item) objs;
             items.add((Item) objs);
         }
         itemsList = items;
         fileDataStatus.onSuccess(itemsList);
+
+    }
+
+    private static ArrayList<Item> newItemList = new ArrayList<Item>();
+    public void updateItemsInTinDB (final DataCallback dataCallback) {
+
+        tinyDB = new TinyDB(Cart.this);
+        ArrayList<Object> savedObjects;
+        savedObjects = tinyDB.getListObject(user.getUid(), Item.class);
+
+        final ArrayList<String> itemidList = new ArrayList<>();
+        final ArrayList<Double> itempriceList = new ArrayList<>();
+        for(Object objs : savedObjects) {
+            Item tinydbitem = (Item) objs;
+            String tinydbitemid = tinydbitem.getItemID();
+            Double tinydbitemprice = Double.parseDouble(Float.toString(tinydbitem.getItemPrice()));
+            itemidList.add(tinydbitemid);
+            itempriceList.add(tinydbitemprice);
+            Log.v("tinydb begin", tinydbitemid + ":"+ String.valueOf(tinydbitemprice));
+        }
+
+        db.collection("items")
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    isCartItemsChanged = false;
+                    newItemList = new ArrayList<Item>();
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Map<String, Object> myMap = document.getData();
+                        String itemid = (String) myMap.get("itemid");
+                        int index = itemidList.indexOf(itemid);
+
+                        if (index >= 0) {
+                            Double tinydbitemprice = itempriceList.get(index);
+                            boolean itemordered = (boolean) myMap.get("itemordered");
+                            Double price = 0.0;
+                            Object priceFromDB = myMap.get("itemprice");
+                            if (priceFromDB.getClass() == Double.class) {
+                                price = (Double) myMap.get("itemprice");
+                            } else if (priceFromDB.getClass() == Long.class) {
+                                price = ((Long) myMap.get("itemprice")).doubleValue();
+                            }
+                            ArrayList<String> imgs = new ArrayList<>();
+
+                            for (Map.Entry<String, Object> entry : myMap.entrySet()) {
+                                if (entry.getKey().equals("itemimagelist")) {
+                                    for (Object s : (ArrayList) entry.getValue()) {
+                                        imgs.add((String) s);
+                                    }
+                                    Log.v("TagImg", entry.getValue().toString());
+                                }
+                            }
+                            Double pricediff = price - tinydbitemprice;
+
+                            if (itemordered) {
+                                isCartItemsChanged = true;
+                                Log.v("tinydb", "itemordered true");
+                            } else if (pricediff > 0.01 || pricediff < -0.01) {
+                                isCartItemsChanged = true;
+                                Log.v("tinydb", "price diff change");
+                                Item item = new Item();
+                                item.setItemID(itemid);
+                                item.setItemSellerUID((String) myMap.get("selleruid"));
+                                item.setItemName((String) myMap.get("itemname"));
+                                item.setItemDescription((String) myMap.get("itemdesc"));
+                                item.setItemPrice(Float.parseFloat(String.format("%.2f",price)));
+                                item.setItemOrdered(itemordered);
+                                item.setItemImageList(imgs);
+                                item.setItemAddress((String) myMap.get("itemaddress"));
+                                newItemList.add(item);
+                            } else {
+                                Item item = new Item();
+                                item.setItemID(itemid);
+                                item.setItemSellerUID((String) myMap.get("selleruid"));
+                                item.setItemName((String) myMap.get("itemname"));
+                                item.setItemDescription((String) myMap.get("itemdesc"));
+                                item.setItemPrice(Float.parseFloat(String.format("%.2f",price)));
+                                item.setItemOrdered(itemordered);
+                                item.setItemImageList(imgs);
+                                item.setItemAddress((String) myMap.get("itemaddress"));
+                                newItemList.add(item);
+                            }
+                        }
+                    }
+                    dataCallback.onCallback(String.valueOf(isCartItemsChanged));
+                }
+            }
+        });
+
+    }
+
+    public void addItemToTinyDB(Item item, TinyDB tinyDB) {
+
+        ArrayList<Object> savedObjects = tinyDB.getListObject(user.getUid(), Item.class);
+        // Add item as object to the tinyDB
+        savedObjects.add((Object) item);
+        tinyDB.putListObject(user.getUid(), savedObjects);
+        Log.v("TinDB Add", "Item:" + item.getItemID() + " is added");
 
     }
 
@@ -219,6 +371,7 @@ public class Cart extends AppCompatActivity {
                                 itemPage.putExtra("itemimage", item.getItemImage());
                                 itemPage.putExtra("itemimagelist", item.getItemImageList());
                                 itemPage.putExtra("itemaddress", item.getItemAddress());
+                                itemPage.putExtra("itemordered", item.isItemOrdered());
                                 startActivity(itemPage);
                         }
                     });

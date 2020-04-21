@@ -82,12 +82,18 @@ public class PostedItems extends AppCompatActivity {
                                     }
 
                                     Item item = new Item();
-                                    Double price;
+                                    Double price = 0.0;
+                                    Object priceFromDB = myMap.get("itemprice");
+                                    if (priceFromDB.getClass() == Double.class) {
+                                        price = (Double) myMap.get("itemprice");
+                                    }
+                                    else if (priceFromDB.getClass() == Long.class) {
+                                        price = ((Long) myMap.get("itemprice")).doubleValue();
+                                    }
                                     item.setItemID(document.getId());
                                     item.setItemSellerUID((String) myMap.get("selleruid"));
                                     item.setItemName((String) myMap.get("itemname"));
                                     item.setItemDescription((String) myMap.get("itemdesc"));
-                                    price = (Double) myMap.get("itemprice");
                                     item.setItemPrice(price.floatValue());
                                     item.setItemImageList(imgs);
                                     item.setItemCategory((String) myMap.get("itemcategory"));
