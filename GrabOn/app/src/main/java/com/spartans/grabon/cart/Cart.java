@@ -150,6 +150,7 @@ public class Cart extends AppCompatActivity {
                     @Override
                     public void onCallback(String value) {
                         if (!Boolean.parseBoolean(value)) {
+                            setItemOrderedInDb(true);
                             Intent paypal = new Intent(getApplicationContext(), PaypalPaymentClient.class);
                             paypal.putExtra("grandtotal", grandtotal);
                             paypal.putExtra("recepient", recepient);
@@ -160,7 +161,6 @@ public class Cart extends AppCompatActivity {
                                 Item item = newItemList.get(i);
                                 addItemToTinyDB(item, tinyDB);
                             }
-                            Toast.makeText(Cart.this, "Some items price changed or no longer available", Toast.LENGTH_LONG).show();
                             cartItemAdapter = null;
                             itemsList = new ArrayList<>();
                             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Cart.this,
@@ -186,7 +186,6 @@ public class Cart extends AppCompatActivity {
                         addItemToTinyDB(item, tinyDB);
                     }
 
-                    Toast.makeText(Cart.this, "Some items price changed or no longer available", Toast.LENGTH_LONG).show();
                     cartItemAdapter = null;
                     itemsList = new ArrayList<>();
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Cart.this,
@@ -227,13 +226,15 @@ public class Cart extends AppCompatActivity {
             if (resultCode == PAYPAL_TO_CART_SUCCESS_CODE) {
                 paymentID = data.getStringExtra("paymentid");
                 Log.v("Cart", "Payment successful. Paypal paymentId:" + paymentID);
-                setItemOrderedInDb();
                 createOrderInDb();
+                setItemOrderedInDb(true);
                 Toast.makeText(getApplicationContext(), "Redirecting to the Orders Page", Toast.LENGTH_LONG).show();
             } else {
+                setItemOrderedInDb(false);
                 Log.v("Cart", "Payment Not done");
             }
         } else {
+            setItemOrderedInDb(false);
             Log.v("Cart", "request not matched");
         }
     }
@@ -317,7 +318,7 @@ public class Cart extends AppCompatActivity {
                                 item.setItemSellerUID((String) myMap.get("selleruid"));
                                 item.setItemName((String) myMap.get("itemname"));
                                 item.setItemDescription((String) myMap.get("itemdesc"));
-                                item.setItemPrice(Float.parseFloat(String.format("%.2f",price)));
+                                item.setItemPrice(Float.parseFloat(String.format("%.2f", price)));
                                 item.setItemOrdered(itemordered);
                                 item.setItemImageList(imgs);
                                 item.setItemAddress((String) myMap.get("itemaddress"));
@@ -328,12 +329,22 @@ public class Cart extends AppCompatActivity {
                                 item.setItemSellerUID((String) myMap.get("selleruid"));
                                 item.setItemName((String) myMap.get("itemname"));
                                 item.setItemDescription((String) myMap.get("itemdesc"));
-                                item.setItemPrice(Float.parseFloat(String.format("%.2f",price)));
+                                item.setItemPrice(Float.parseFloat(String.format("%.2f", price)));
                                 item.setItemOrdered(itemordered);
                                 item.setItemImageList(imgs);
                                 item.setItemAddress((String) myMap.get("itemaddress"));
                                 newItemList.add(item);
                             }
+                        }
+                    }
+
+                    if (newItemList.size() == 0) {
+                        isCartItemsChanged = true;
+                        Log.v("newitems", "is 0");
+                    } else {
+                        Log.v("newitems", "is not 0");
+                        if (isCartItemsChanged == true) {
+                            Toast.makeText(Cart.this, "Some items price changed or no longer available", Toast.LENGTH_LONG).show();
                         }
                     }
                     dataCallback.onCallback(String.valueOf(isCartItemsChanged));
@@ -457,16 +468,16 @@ public class Cart extends AppCompatActivity {
     }
 
 
-    public void setItemOrderedInDb() {
+    public void setItemOrderedInDb(boolean value) {
 
         for(int i=0; i < itemsList.size(); i++) {
 
             Cart.itemID = itemsList.get(i).getItemID();
-            itemsList.get(i).setItemOrdered(true);
+            itemsList.get(i).setItemOrdered(value);
             DocumentReference updateItem = db.collection("items")
                     .document(Cart.itemID);
 
-            updateItem.update("itemordered", true)
+            updateItem.update("itemordered", value)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {

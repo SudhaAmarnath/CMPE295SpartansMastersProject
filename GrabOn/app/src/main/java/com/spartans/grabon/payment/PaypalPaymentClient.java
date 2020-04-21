@@ -129,5 +129,12 @@ public class PaypalPaymentClient extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent r = new Intent(PaypalPaymentClient.this, Cart.class);
+        r.putExtra("paymentid", "");
+        setResult(PAYPAL_TO_CART_FAILURE_CODE, r);
+        finish();
+    }
 
 }

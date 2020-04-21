@@ -2,7 +2,6 @@ package com.spartans.grabon.user;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -36,11 +35,9 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -51,17 +48,13 @@ import com.google.firebase.storage.UploadTask;
 import com.spartans.grabon.MainActivity;
 import com.spartans.grabon.R;
 import com.spartans.grabon.interfaces.FileDataImageStatus;
-import com.spartans.grabon.item.AddItem;
-import com.spartans.grabon.model.Item;
 import com.spartans.grabon.utils.Singleton;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -392,8 +385,8 @@ public class Profile extends AppCompatActivity {
 
         if (Profile.country.equals("United States") || Profile.country.equals("Canada")) {
             if (!Profile.edittxtaddrline.startsWith(Profile.feature)
-                    || Profile.feature.equals("null") || Profile.street.equals("null")
-                    || Profile.city.equals("null") || Profile.pincode.equals("null")) {
+                    || Profile.feature.equals(null) || Profile.street.equals(null)
+                    || Profile.city.equals(null) || Profile.pincode.equals(null)) {
                 return false;
             } else {
                 return true;
