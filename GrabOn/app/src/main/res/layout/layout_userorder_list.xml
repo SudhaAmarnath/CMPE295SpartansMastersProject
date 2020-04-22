@@ -130,11 +130,38 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Pickup Address: "
+                    android:textStyle="bold"
+                    android:fontFamily="@font/helvetica"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="16dp" />
+
+                <TextView
+                    android:id="@+id/layout_userorder_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/helvetica"
+                    android:text="3000 Mission College Blvd, Santa Clara, CA 95054"
+                    android:textColor="@color/black"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Order Status : "
+                    android:text="Order Status    : "
                     android:textStyle="bold"
                     android:fontFamily="@font/helvetica"
                     android:textColor="@color/colorPrimaryDark"
@@ -151,6 +178,8 @@
                     android:textStyle="bold" />
 
             </LinearLayout>
+
+
 
             <TextView
                 android:id="@+id/layout_userorder_modify"

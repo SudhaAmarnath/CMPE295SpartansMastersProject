@@ -15,6 +15,7 @@ public class Order {
     private String orderStatus;
     private String orderTime;
     private String orderModifyTime;
+    private String orderAddress;
 
     public Order (String orderID, String userID, String itemSellerUID,
                   ArrayList<Item> items, double orderTotal,
@@ -93,5 +94,13 @@ public class Order {
 
     public void setOrderModifyTime(String orderModifyTime) {
         this.orderModifyTime = orderModifyTime;
+    }
+
+    public String getOrderAddress() {
+        return orderAddress;
+    }
+
+    public void setOrderAddress(String orderAddress) {
+        this.orderAddress = orderAddress;
     }
 }

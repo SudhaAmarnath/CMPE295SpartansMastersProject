@@ -78,6 +78,7 @@ public class Cart extends AppCompatActivity {
     private static double grandtotal = 0;
     private static String recepient = null;
     private static String recepientuid = null;
+    private static String recepientaddress = null;
     private static CountDownLatch done;
     private static int i=0;
     private FirebaseAuth auth;
@@ -421,6 +422,7 @@ public class Cart extends AppCompatActivity {
                                 totaltax += itemtax;
                                 totalPrice += item.getItemPrice();
                                 recepientuid = item.getItemSellerUID();
+                                recepientaddress = item.getItemAddress();
                             }
 
                         }
@@ -508,6 +510,7 @@ public class Cart extends AppCompatActivity {
         dborder.put("orderstatus", "In Progress");
         dborder.put("ordertime", orderTime);
         dborder.put("ordermodifytime", "");
+        dborder.put("orderaddress", recepientaddress);
 
         documentReference.set(dborder).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override

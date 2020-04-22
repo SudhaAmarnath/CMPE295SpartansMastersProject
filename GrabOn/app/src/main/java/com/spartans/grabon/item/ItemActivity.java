@@ -51,6 +51,7 @@ public class ItemActivity extends AppCompatActivity {
     private TextView sellerEmail;
     private TextView sellerPh;
     private TextView sellerAddress;
+    private TextView itemSellerDistance;
     private FancyButton viewAddToCart;
     private boolean cartClicked;
     private SliderLayout sliderLayout;
@@ -59,6 +60,8 @@ public class ItemActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseUser user;
     private FirebaseFirestore db = Singleton.getDb();
+    private double lat =0.0;
+    private double lng =0.0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +70,9 @@ public class ItemActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
+
+        itemSellerDistance = findViewById(R.id.ItemSellerDistance);
+
 
         tinyDB = new TinyDB(this);
         itemID = (String) getIntent().getSerializableExtra("itemid");

@@ -135,7 +135,10 @@ public class UserOrders extends Fragment {
                                     String orderstatus = documentSnapshot.get("orderstatus").toString();
                                     String ordertime = documentSnapshot.get("ordertime").toString();
                                     String ordermodifytime = documentSnapshot.get("ordermodifytime").toString();
-
+                                    String orderaddress = "3000 Mission College Blvd, Santa Clara, CA 95054";
+                                    if (documentSnapshot.get("orderaddress") != null) {
+                                        orderaddress = documentSnapshot.get("orderaddress").toString();
+                                    }
                                     if (orderItems != null) {
                                         for (int i = 0; i < orderItems.size(); i++) {
                                             Item item = new Item();
@@ -162,6 +165,7 @@ public class UserOrders extends Fragment {
                                                 ordertime,
                                                 ordermodifytime
                                         );
+                                    order.setOrderAddress(orderaddress);
 
                                     orderArrayList.add(order);
                                 }
@@ -180,7 +184,6 @@ public class UserOrders extends Fragment {
 
 
         String orderstatus = order.getOrderStatus();
-
 
 
         if (orderstatus.equals("In Progress")) {

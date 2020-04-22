@@ -289,8 +289,9 @@
 
                         <EditText
                             android:id="@+id/Phone"
-                            android:layout_width="280dp"
-                            android:layout_height="match_parent"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_weight="1"
                             android:background="@color/transparent"
                             android:fontFamily="sans-serif-light"
                             android:hint="Enter contact number"
@@ -300,11 +301,12 @@
 
                         <ImageView
                             android:id="@+id/profile_phone_edit"
-                            android:layout_width="30dp"
-                            android:layout_height="wrap_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
                             android:layout_alignParentRight="true"
                             android:layout_marginTop="0dp"
                             android:layout_marginRight="0dp"
+                            android:layout_weight="4"
                             android:adjustViewBounds="true"
                             android:scaleType="centerInside"
                             android:src="@drawable/ic_save_black_24dp" />
@@ -340,8 +342,9 @@
 
                         <EditText
                             android:id="@+id/profile_paypalid"
-                            android:layout_width="280dp"
-                            android:layout_height="match_parent"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_weight="1"
                             android:background="@color/transparent"
                             android:fontFamily="sans-serif-light"
                             android:hint="Enter valid paypal id"
@@ -352,8 +355,9 @@
 
                         <ImageView
                             android:id="@+id/profile_paypalid_edit"
-                            android:layout_width="30dp"
-                            android:layout_height="wrap_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_weight="4"
                             android:layout_alignParentRight="true"
                             android:layout_marginTop="0dp"
                             android:layout_marginRight="0dp"
@@ -395,8 +399,9 @@
                         <fragment
                             android:id="@+id/profile_address"
                             android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-                            android:layout_width="280dp"
-                            android:layout_height="30dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
                             android:background="@color/transparent"
                             android:fontFamily="sans-serif-light"
                             android:hint="Enter shipping/item postal address"
@@ -407,8 +412,9 @@
 
                         <ImageView
                             android:id="@+id/profile_address_edit"
-                            android:layout_width="30dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="40dp"
+                            android:layout_weight="4"
+                            android:layout_width="match_parent"
                             android:layout_alignParentRight="true"
                             android:layout_marginTop="0dp"
                             android:layout_marginRight="0dp"
@@ -447,8 +453,9 @@
 
                         <EditText
                             android:id="@+id/profile_addressapt"
-                            android:layout_width="280dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="40dp"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
                             android:background="@color/transparent"
                             android:fontFamily="sans-serif-light"
                             android:hint="Enter Apt/Suite"
@@ -457,8 +464,9 @@
 
                         <ImageView
                             android:id="@+id/profile_addressapt_edit"
-                            android:layout_width="30dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="40dp"
+                            android:layout_weight="4"
+                            android:layout_width="match_parent"
                             android:layout_alignParentRight="true"
                             android:layout_marginTop="0dp"
                             android:layout_marginRight="0dp"

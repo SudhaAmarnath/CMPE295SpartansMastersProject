@@ -72,6 +72,7 @@ public class UserOrderAdapter extends RecyclerView.Adapter<UserOrderAdapter.View
         TextView orderTotalItems;
         TextView orderStatus;
         TextView orderTime;
+        TextView orderAddress;
         TextView orderModify;
         RecyclerView orderItemsList;
 
@@ -84,6 +85,7 @@ public class UserOrderAdapter extends RecyclerView.Adapter<UserOrderAdapter.View
             orderStatus = itemView.findViewById(R.id.layout_userorder_status);
             orderTime = itemView.findViewById(R.id.layout_userorder_time);
             orderModify = itemView.findViewById(R.id.layout_userorder_modify);
+            orderAddress = itemView.findViewById(R.id.layout_userorder_address);
 
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context,
                     LinearLayoutManager.VERTICAL, false);
@@ -105,6 +107,7 @@ public class UserOrderAdapter extends RecyclerView.Adapter<UserOrderAdapter.View
                 orderTotalItems.setText(String.valueOf(orderItems.size()));
                 orderTotal.setText("$"+String.format("%.2f", order.getOrderTotal()));
                 orderStatus.setText(order.getOrderStatus());
+                orderAddress.setText(order.getOrderAddress());
 
                 if (order.getOrderStatus().matches("In Progress")) {
                     if (new DateUtilities().orderExpired(order.getOrderTime())) {
@@ -114,6 +117,7 @@ public class UserOrderAdapter extends RecyclerView.Adapter<UserOrderAdapter.View
                         Map<String, Object> dbitem = new HashMap<>();
                         dbitem.put("orderstatus",order.getOrderStatus());
                         dbitem.put("ordermodifytime",order.getOrderModifyTime());
+                        dbitem.put("orderaddress", order.getOrderAddress());
                         DocumentReference updateOrder = db.collection("orders")
                                 .document(order.getOrderID());
                         updateOrder.update(dbitem)
