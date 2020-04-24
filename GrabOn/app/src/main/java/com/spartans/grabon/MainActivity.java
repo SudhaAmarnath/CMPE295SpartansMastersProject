@@ -363,6 +363,8 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                                     item.setItemAddress(itemaddress);
                                     item.setItemCategory(itemcategory);
                                     item.setItemOrdered(itemordered);
+                                    item.setLatitude(itemlat);
+                                    item.setLongitude(itemlon);
                                     itemsList.add(item);
                                 }
                             }
@@ -396,6 +398,8 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                             itemPage.putExtra("itemaddress", item.getItemAddress());
                             itemPage.putExtra("itemcategory", item.getItemCategory());
                             itemPage.putExtra("itemordered", item.isItemOrdered());
+                            itemPage.putExtra("itemlatitude", item.getLatitude());
+                            itemPage.putExtra("itemlongitude", item.getLongitude());
                             startActivity(itemPage);
                         }
                     });
@@ -612,6 +616,8 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
         itemPage.putExtra("itemaddress", item.getItemAddress());
         itemPage.putExtra("itemcategory", item.getItemCategory());
         itemPage.putExtra("itemordered", item.isItemOrdered());
+        itemPage.putExtra("itemlatitude", item.getLatitude());
+        itemPage.putExtra("itemlongitude", item.getLongitude());
         startActivity(itemPage);
     }
 

@@ -105,6 +105,10 @@ public class Cart extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
+        //delete tinydb
+        //tinyDB = new TinyDB(Cart.this);
+        //tinyDB.remove(user.getUid());
+
         radioGroup = findViewById(R.id.CartItemsRadioGroup);
         setSupportActionBar(cartToolbar);
         backToItems = findViewById(R.id.CartBackToItems);
@@ -323,6 +327,8 @@ public class Cart extends AppCompatActivity {
                                 item.setItemOrdered(itemordered);
                                 item.setItemImageList(imgs);
                                 item.setItemAddress((String) myMap.get("itemaddress"));
+                                item.setLatitude((String) myMap.get("itemlatitude"));
+                                item.setLongitude((String) myMap.get("itemlongitude"));
                                 newItemList.add(item);
                             } else {
                                 Item item = new Item();
@@ -334,6 +340,8 @@ public class Cart extends AppCompatActivity {
                                 item.setItemOrdered(itemordered);
                                 item.setItemImageList(imgs);
                                 item.setItemAddress((String) myMap.get("itemaddress"));
+                                item.setLatitude((String) myMap.get("itemlatitude"));
+                                item.setLongitude((String) myMap.get("itemlongitude"));
                                 newItemList.add(item);
                             }
                         }
@@ -384,6 +392,8 @@ public class Cart extends AppCompatActivity {
                                 itemPage.putExtra("itemimagelist", item.getItemImageList());
                                 itemPage.putExtra("itemaddress", item.getItemAddress());
                                 itemPage.putExtra("itemordered", item.isItemOrdered());
+                                itemPage.putExtra("itemlatitude", item.getLatitude());
+                                itemPage.putExtra("itemlongitude", item.getLongitude());
                                 startActivity(itemPage);
                         }
                     });
