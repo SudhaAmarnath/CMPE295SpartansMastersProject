@@ -37,6 +37,7 @@ import com.spartans.grabon.MainActivity;
 import com.spartans.grabon.R;
 import com.spartans.grabon.interfaces.FileDataImageStatus;
 import com.spartans.grabon.model.Item;
+import com.spartans.grabon.utils.DateUtilities;
 import com.spartans.grabon.utils.Singleton;
 
 import java.util.ArrayList;
@@ -158,6 +159,7 @@ public class AddItem extends AppCompatActivity {
                             String itemName = addItemName.getText().toString();
                             String itemDesc = addItemDesc.getText().toString();
                             String itemPrice = addItemPrice.getText().toString();
+                            String itemCreateTime = new DateUtilities().getCurrentTimeInMillis();
 
                             if (TextUtils.isEmpty(itemName) == false &&
                                     TextUtils.isEmpty(itemDesc) == false &&
@@ -182,6 +184,7 @@ public class AddItem extends AppCompatActivity {
                                 dbitem.put("itemlongitude", AddItem.longitude);
                                 dbitem.put("itemaddress", AddItem.address);
                                 dbitem.put("itemcategory", AddItem.category);
+                                dbitem.put("itemcreatetime", itemCreateTime);
 
                                 db.collection("items")
                                         .add(dbitem)

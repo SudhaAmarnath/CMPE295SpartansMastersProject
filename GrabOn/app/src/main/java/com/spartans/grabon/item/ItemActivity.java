@@ -30,6 +30,7 @@ import com.smarteist.autoimageslider.SliderView;
 import com.spartans.grabon.MainActivity;
 import com.spartans.grabon.R;
 import com.spartans.grabon.model.Item;
+import com.spartans.grabon.utils.DateUtilities;
 import com.spartans.grabon.utils.DistanceCalculator;
 import com.spartans.grabon.utils.Singleton;
 
@@ -59,9 +60,11 @@ public class ItemActivity extends AppCompatActivity {
     private TextView viewItemName;
     private TextView viewItemDesc;
     private TextView viewItemPrice;
+    private TextView sellerName;
     private TextView sellerEmail;
     private TextView sellerPh;
     private TextView sellerAddress;
+    private TextView itemAddedTime;
     private TextView itemSellerDistanceText;
     private TextView itemSellerDistance;
     private FancyButton viewAddToCart;
@@ -103,6 +106,8 @@ public class ItemActivity extends AppCompatActivity {
         viewItemName = findViewById(R.id.ItemName);
         viewItemDesc = findViewById(R.id.ItemDescription);
         viewItemPrice = findViewById(R.id.ItemPrice);
+        itemAddedTime = findViewById(R.id.ItemAddedTime);
+        sellerName = findViewById(R.id.ItemSellerName);
         sellerEmail = findViewById(R.id.ItemSellerID);
         sellerPh = findViewById(R.id.ItemSellerPhone);
         sellerAddress = findViewById(R.id.ItemSellerAddress);
@@ -150,9 +155,29 @@ public class ItemActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
+                            sellerName.setText(task.getResult().get("firstname").toString()
+                            + " " + task.getResult().get("lastname").toString());
                             sellerEmail.setText(task.getResult().get("email").toString());
                             sellerPh.setText(task.getResult().get("phone").toString());
                             sellerAddress.setText(task.getResult().get("address").toString());
+                        }
+                    }
+                });
+
+        db.collection("items")
+                .document(itemID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            String itemCreateTime = "";
+                            if (task.getResult().get("itemcreatetime") == null) {
+                                itemCreateTime = "1586590726600";
+                            } else {
+                                itemCreateTime = task.getResult().get("itemcreatetime").toString();
+                            }
+                            itemAddedTime.setText(new DateUtilities().getDateAndTime(itemCreateTime));
                         }
                     }
                 });
@@ -195,7 +220,6 @@ public class ItemActivity extends AppCompatActivity {
 
     private void requestPermission() {
         ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 1);
-
     }
 
     public void addItemToTinyDB(Item item, TinyDB tinyDB) {

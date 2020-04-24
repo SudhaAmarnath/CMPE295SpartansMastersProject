@@ -20,6 +20,7 @@ public class Item {
     private String longitude;
     private String itemAddress;
     private String itemCategory;
+    private String itemCreateTime;
 
     public Item() {
 
@@ -170,6 +171,14 @@ public class Item {
 
     public void setItemCategory(String itemCategory) {
         this.itemCategory = itemCategory;
+    }
+
+    public String getItemCreateTime() {
+        return itemCreateTime;
+    }
+
+    public void setItemCreateTime(String itemCreateTime) {
+        this.itemCreateTime = itemCreateTime;
     }
 
     @Override
