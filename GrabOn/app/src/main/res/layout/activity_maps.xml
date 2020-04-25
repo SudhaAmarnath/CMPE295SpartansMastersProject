@@ -1,9 +1,64 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:map="http://schemas.android.com/apk/res-auto"
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:tools="http://schemas.android.com/tools"
-android:id="@+id/map"
-android:name="com.google.android.gms.maps.SupportMapFragment"
+xmlns:fancy="http://schemas.android.com/apk/res-auto"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
-tools:context=".maps.MapsActivity" />
+tools:context=".maps.MapsActivity" >
 
+<fragment xmlns:map="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/map"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:scrollbars="vertical"
+    class="com.google.android.gms.maps.SupportMapFragment"/>
+
+
+    <LinearLayout
+        android:id="@+id/MapButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@color/transparent"
+        android:gravity="center_vertical">
+
+        <mehdi.sakout.fancybuttons.FancyButton
+            android:id="@+id/MapShowAllButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="10dp"
+            fancy:fb_borderColor="#FFFFFF"
+            fancy:fb_borderWidth="1dp"
+            fancy:fb_defaultColor="@color/colorPrimaryDark"
+            fancy:fb_radius="6dp"
+            fancy:fb_text="All Items"
+            fancy:fb_textColor="#FFFFFF"
+            fancy:fb_textSize="18dp" />
+
+        <mehdi.sakout.fancybuttons.FancyButton
+            android:id="@+id/MapShowPickupButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="10dp"
+            android:text="Pickup Items"
+            fancy:fb_borderColor="#FFFFFF"
+            fancy:fb_borderWidth="1dp"
+            fancy:fb_defaultColor="@color/colorPrimaryDark"
+            fancy:fb_radius="6dp"
+            fancy:fb_textColor="#FFFFFF"
+            fancy:fb_textSize="18dp" />
+
+    </LinearLayout>
+
+</FrameLayout>

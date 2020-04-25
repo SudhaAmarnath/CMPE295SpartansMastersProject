@@ -21,6 +21,7 @@ public class Item {
     private String itemAddress;
     private String itemCategory;
     private String itemCreateTime;
+    private String itemBuyerId;
 
     public Item() {
 
@@ -179,6 +180,14 @@ public class Item {
 
     public void setItemCreateTime(String itemCreateTime) {
         this.itemCreateTime = itemCreateTime;
+    }
+
+    public String getItemBuyerId() {
+        return itemBuyerId;
+    }
+
+    public void setItemBuyerId(String itemBuyerId) {
+        this.itemBuyerId = itemBuyerId;
     }
 
     @Override

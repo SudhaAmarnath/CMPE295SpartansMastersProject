@@ -2,12 +2,12 @@ package com.spartans.grabon.maps;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,7 +27,6 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
@@ -43,18 +42,10 @@ import com.spartans.grabon.model.Item;
 import com.spartans.grabon.model.MapItem;
 import com.spartans.grabon.utils.Singleton;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import mehdi.sakout.fancybuttons.FancyButton;
 
 /**
  * Author : Sudha Amarnath on 2020-02-19
@@ -65,25 +56,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int PERMISSION_CODE = 99;
     private static final int LOCATION_REQUEST = 500;
     private GoogleMap mMap;
+    private View mapView;
     private GoogleApiClient mGoogleApiClient;
-    ArrayList<LatLng> markerPoints= new ArrayList<>();
     private ClusterManager<MapItem> mClusterManager;
     private ArrayList<Item> itemsList = new ArrayList<>();
     private FirebaseUser user;
     private FirebaseAuth auth;
     private FirebaseFirestore db = Singleton.getDb();
-
+    private FancyButton allItems;
+    private FancyButton pickupItems;
+    private static boolean showAllItems = true;
+    private static MarkerOptions markerOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        // requesting runtime permission above api 23
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
             ActivityCompat.requestPermissions(this,
@@ -96,34 +88,74 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
+        mapView = mapFragment.getView();
+
+        allItems = findViewById(R.id.MapShowAllButtons);
+        pickupItems = findViewById(R.id.MapShowPickupButtons);
+
+
+        allItems.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMap.clear();
+                mClusterManager.clearItems();
+                showAllItems = true;
+                mapFragment.getMapAsync(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(GoogleMap googleMap) {
+                        cluster(googleMap);
+                    }
+                });
+                mMap.addMarker(markerOptions);
+                Toast.makeText(MapsActivity.this, "Please zoom map to view all Grabon items", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        pickupItems.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMap.clear();
+                mClusterManager.clearItems();
+                showAllItems = false;
+                mapFragment.getMapAsync(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(GoogleMap googleMap) {
+                        cluster(googleMap);
+                    }
+                });
+                mMap.addMarker(markerOptions);
+                Toast.makeText(MapsActivity.this, "Please zoom map to view your pickup items", Toast.LENGTH_LONG).show();
+            }
+        });
+
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode == PERMISSION_CODE){
-            if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            {
+            if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if(ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                {
-                    buildGoogleApiClient(); // if permission granted then build api client
-                }
-                else
-                {
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    buildGoogleApiClient();
+                } else {
                     Toast.makeText(this, "Location permission needed", Toast.LENGTH_SHORT).show();
                 }
-            }
-            else
-            {
+            } else {
                 Toast.makeText(this, "Permission required to process", Toast.LENGTH_SHORT).show();
             }
-
         }
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
+        cluster(googleMap);
+
+    }
+
+    private void cluster(GoogleMap googleMap) {
+
         mMap = googleMap;
         mMap.getUiSettings().setZoomControlsEnabled(true);
         if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -145,64 +177,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mUiSettings.setTiltGesturesEnabled(true);
         mUiSettings.setRotateGesturesEnabled(true);
 
+        View locationButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+        RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_END, 0);
+        rlp.addRule(RelativeLayout.ALIGN_END, 0);
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        rlp.setMargins(30, 0, 0, 40);
 
         mClusterManager = new ClusterManager<>(this, mMap);
-
-        googleMap.setOnCameraIdleListener(mClusterManager);
-        googleMap.setOnMarkerClickListener(mClusterManager);
-        googleMap.setOnInfoWindowClickListener(mClusterManager);
-        displayItemsOnMap();
+        mMap.setOnCameraIdleListener(mClusterManager);
+        mMap.setOnMarkerClickListener(mClusterManager);
+        mMap.setOnInfoWindowClickListener(mClusterManager);
+        displayItemsOnMap(showAllItems);
         mClusterManager.cluster();
 
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-
-                if (markerPoints.size() > 1) {
-                    markerPoints.clear();
-                    mMap.clear();
-                }
-
-                // Adding new item to the ArrayList
-                markerPoints.add(latLng);
-
-                // Creating MarkerOptions
-                MarkerOptions options = new MarkerOptions();
-
-                // Setting the position of the marker
-                options.position(latLng);
-
-                if (markerPoints.size() == 1)
-                {
-                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-                    options.title("Starting Point");
-                }
-                else if (markerPoints.size() == 2)
-                {
-                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-                    options.title("Destination Point");
-                }
-
-                // Add new marker to the Google Map Android API V2
-                mMap.addMarker(options);
-
-                // Checks, whether start and end locations are captured
-                if (markerPoints.size() >= 2)
-                {
-                    LatLng origin = markerPoints.get(0);
-                    LatLng dest = markerPoints.get(1);
-
-                    // Getting URL to the Google Directions API
-                    String url = getDirectionsUrl(origin, dest);
-
-                    DownloadTask downloadTask = new DownloadTask();
-
-                    // Start downloading json data from Google Directions API
-                    downloadTask.execute(url);
-                }
-
-            }
-        });
 
     }
 
@@ -249,6 +241,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         item.setLatitude((String) myMap.get("itemlatitude"));
                                         item.setLongitude((String) myMap.get("itemlongitude"));
                                         item.setItemOrdered((boolean) myMap.get("itemordered"));
+                                        item.setItemPicked((boolean) myMap.get("itempicked"));
+                                        String itembuyerid = "";
+                                        if (myMap.get("itembuyerid") != null) {
+                                            itembuyerid = (String) myMap.get("itembuyerid");
+                                        }
+                                        item.setItemBuyerId(itembuyerid);
                                         itemsList.add(item);
 
                                     }
@@ -265,7 +263,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    private void displayItemsOnMap () {
+    private void displayItemsOnMap (final boolean allItems) {
+
+        itemsList = new ArrayList<>();
+        final String userid = user.getUid();
 
         getItems(new FileDataStatus() {
             @Override
@@ -275,10 +276,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Item item = itemsList.get(i);
                     String itemname = item.getItemName();
                     float itemprice = item.getItemPrice();
+                    String itembuyerid = item.getItemBuyerId();
                     boolean itemordered = item.isItemOrdered();
                     double itemlat = Double.parseDouble(item.getLatitude());
                     double itemlon = Double.parseDouble(item.getLongitude());
-                    mClusterManager.addItem(new MapItem(itemlat, itemlon, itemname, "Price: $" + String.valueOf(itemprice)));
+                    if (allItems) {
+                        if (itemordered) {
+                            if (userid.equals(itembuyerid)) {
+                                mClusterManager.addItem(new MapItem(itemlat, itemlon, itemname, "Price: $" + String.valueOf(itemprice)));
+                            }
+                        } else {
+                            mClusterManager.addItem(new MapItem(itemlat, itemlon, itemname, "Price: $" + String.valueOf(itemprice)));
+                        }
+                        Log.v("allitems", item.getItemName());
+                    } else {
+                        if (itemordered && userid.equals(itembuyerid)) {
+                            Log.v("pickupitems", item.getItemName() + "buyer:" + itembuyerid);
+                            mClusterManager.addItem(new MapItem(itemlat, itemlon, itemname, "Price: $" + String.valueOf(itemprice)));
+                        }
+                    }
 
                 }
 
@@ -291,154 +307,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
     }
-
-
-    private class DownloadTask extends AsyncTask<String,Void,String> {
-
-        @Override
-        protected String doInBackground(String... url) {
-
-            String data = "";
-
-            try {
-                data = downloadUrl(url[0]);
-            } catch (Exception e) {
-                Log.d("Background Task", e.toString());
-            }
-            return data;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            ParserTask parserTask = new ParserTask();
-            parserTask.execute(result);
-
-        }
-
-    }
-
-    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap>>> {
-
-        // Parsing the data in non-ui thread
-        @Override
-        protected List<List<HashMap>> doInBackground(String... jsonData) {
-
-            JSONObject jObject;
-            List<List<HashMap>> routes = null;
-
-            try {
-                jObject = new JSONObject(jsonData[0]);
-                DirectionsJSONParser parser = new DirectionsJSONParser();
-
-                routes = parser.parse(jObject);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return routes;
-        }
-
-        @Override
-        protected void onPostExecute(List<List<HashMap>> result) {
-            ArrayList<LatLng> points = null;
-            PolylineOptions lineOptions = null;
-            MarkerOptions markerOptions = new MarkerOptions();
-
-            for (int i = 0; i < result.size(); i++)
-            {
-                points = new ArrayList<>();
-                lineOptions = new PolylineOptions();
-
-                List<HashMap> path = result.get(i);
-
-                for (int j = 0; j < path.size(); j++)
-                {
-                    HashMap point = path.get(j);
-
-                    double lat = Double.parseDouble(String.valueOf(point.get("lat")));
-                    double lng = Double.parseDouble(String.valueOf(point.get("lng")));
-                    LatLng position = new LatLng(lat, lng);
-
-                    points.add(position);
-                }
-
-                lineOptions.addAll(points);
-                lineOptions.width(12);
-                lineOptions.color(Color.BLUE);
-                lineOptions.geodesic(true);
-
-            }
-
-            // Drawing polyline in the Google Map for the i-th route
-            if (lineOptions != null) {
-                mMap.addPolyline(lineOptions);
-            } else {
-                Toast.makeText(getApplicationContext(), "Directions not found", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private String getDirectionsUrl(LatLng origin, LatLng dest) {
-
-        // Origin of route
-        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
-
-        // Destination of route
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
-
-        // Sensor enabled
-        String sensor = "sensor=false";
-        String mode = "mode=driving";
-
-        // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + mode;
-
-        // Output format
-        String output = "json";
-
-        // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
-
-
-        return url;
-    }
-
-    private String downloadUrl(String strUrl) throws IOException {
-        String data = "";
-        InputStream iStream = null;
-        HttpURLConnection urlConnection = null;
-        try {
-            URL url = new URL(strUrl);
-
-            urlConnection = (HttpURLConnection) url.openConnection();
-
-            urlConnection.connect();
-
-            iStream = urlConnection.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
-
-            StringBuffer sb = new StringBuffer();
-
-            String line = "";
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-
-            data = sb.toString();
-
-            br.close();
-
-        } catch (Exception e) {
-            Log.d("Exception", e.toString());
-        } finally {
-            iStream.close();
-            urlConnection.disconnect();
-        }
-        return data;
-    }
-
 
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -453,15 +321,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onConnected(@Nullable Bundle bundle) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {
-            // When connected it will get your current location and display marker
             Location currentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-            MarkerOptions options = new MarkerOptions();
-            options.position(latLng);
-            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
-            options.title("Current Location");
-            options.draggable(true);
-            mMap.addMarker(options);
+            markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
+            markerOptions.title("Current Location");
+            markerOptions.draggable(true);
+            mMap.addMarker(markerOptions);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
         }
 

@@ -482,6 +482,11 @@ public class Cart extends AppCompatActivity {
 
     public void setItemOrderedInDb(boolean value) {
 
+        String buyerid = "";
+        if (value) {
+            buyerid = user.getUid();
+        }
+
         for(int i=0; i < itemsList.size(); i++) {
 
             Cart.itemID = itemsList.get(i).getItemID();
@@ -489,7 +494,7 @@ public class Cart extends AppCompatActivity {
             DocumentReference updateItem = db.collection("items")
                     .document(Cart.itemID);
 
-            updateItem.update("itemordered", value)
+            updateItem.update("itemordered", value, "itembuyerid", buyerid)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
