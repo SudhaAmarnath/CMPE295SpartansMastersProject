@@ -142,7 +142,7 @@ public class ItemActivity extends AppCompatActivity {
             itemSellerDistance.setVisibility(View.GONE);
         }
 
-        if (user.getUid().equals(itemSellerUID)) {
+        if (user.getUid().equals(itemSellerUID) || itemOrdered) {
             viewAddToCart.setVisibility(View.GONE);
         } else {
             viewAddToCart.setVisibility(View.VISIBLE);

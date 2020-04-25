@@ -83,8 +83,7 @@ public class UserOrders extends Fragment {
                     userOrderAdapter.getItems().addAll(orderArrayList);
                     userOrderAdapter.notifyDataSetChanged();
                 }
-
-                if (list.size() > 0) {
+                if (orderArrayList.size() > 0) {
                     userOrderTextView.setVisibility(View.INVISIBLE);
                 } else {
                     userOrderTextView.setVisibility(View.VISIBLE);
@@ -182,9 +181,7 @@ public class UserOrders extends Fragment {
     private static String neworderstatus = null;
     private void updateOrder(final Order order) {
 
-
         String orderstatus = order.getOrderStatus();
-
 
         if (orderstatus.equals("In Progress")) {
 
@@ -276,11 +273,33 @@ public class UserOrders extends Fragment {
             }
         });
 
+        if (neworderstatus.equals("Picked Up")) {
+            ArrayList<Item>  itemArrayList = order.getItems();
+            for (int i = 0; i < itemArrayList.size(); i++) {
+                final Item item = itemArrayList.get(i);
+                DocumentReference updateItem = db.collection("items")
+                        .document(item.getItemID());
+                updateItem.update("itempicked", true)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.v("itempicked", "Update Item Picked flag Success : " + item.getItemID());
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.v("itempicked", "Update Item Picked flag Failure: " + item.getItemID());
+                    }
+                });
+            }
+        }
+
         Toast.makeText(UserOrders.this.getContext(), "Order " + neworderstatus, Toast.LENGTH_LONG).show();
 
         Intent intent = new Intent(UserOrders.this.getContext(), OrdersActivity.class);
         UserOrders.this.getActivity().finish();
         startActivity(intent);
     }
+
 
 }

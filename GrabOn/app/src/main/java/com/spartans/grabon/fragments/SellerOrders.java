@@ -233,6 +233,27 @@ public class SellerOrders extends Fragment {
             }
         });
 
+        if (neworderstatus.equals("Picked Up")) {
+            ArrayList<Item>  itemArrayList = order.getItems();
+            for (int i = 0; i < itemArrayList.size(); i++) {
+                final Item item = itemArrayList.get(i);
+                DocumentReference updateItem = db.collection("items")
+                        .document(item.getItemID());
+                updateItem.update("itempicked", true)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.v("itempicked", "Update Item Picked flag Success : " + item.getItemID());
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.v("itempicked", "Update Item Picked flag Failure: " + item.getItemID());
+                    }
+                });
+            }
+        }
+
         Toast.makeText(SellerOrders.this.getContext(), "Order " + neworderstatus, Toast.LENGTH_LONG).show();
 
         Intent intent = new Intent(SellerOrders.this.getContext(), OrdersActivity.class);

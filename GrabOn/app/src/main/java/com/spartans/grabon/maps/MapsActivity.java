@@ -1,11 +1,13 @@
 package com.spartans.grabon.maps;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -35,11 +37,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 import com.spartans.grabon.R;
 import com.spartans.grabon.interfaces.FileDataStatus;
+import com.spartans.grabon.item.ItemActivity;
 import com.spartans.grabon.model.Item;
-import com.spartans.grabon.model.MapItem;
+import com.spartans.grabon.utils.DateUtilities;
 import com.spartans.grabon.utils.Singleton;
 
 import java.util.ArrayList;
@@ -51,14 +56,14 @@ import mehdi.sakout.fancybuttons.FancyButton;
  * Author : Sudha Amarnath on 2020-02-19
  */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final int PERMISSION_CODE = 99;
     private static final int LOCATION_REQUEST = 500;
     private GoogleMap mMap;
     private View mapView;
     private GoogleApiClient mGoogleApiClient;
-    private ClusterManager<MapItem> mClusterManager;
+    //private ClusterManager<MapItem> mClusterManager;
     private ArrayList<Item> itemsList = new ArrayList<>();
     private FirebaseUser user;
     private FirebaseAuth auth;
@@ -67,6 +72,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FancyButton pickupItems;
     private static boolean showAllItems = true;
     private static MarkerOptions markerOptions;
+    private ClusterManager<StringClusterItem> mClusterManager;
+    public static String markerColor = "HUE_VIOLET";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +107,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMap.clear();
                 mClusterManager.clearItems();
                 showAllItems = true;
+                markerColor = "HUE_VIOLET";
                 mapFragment.getMapAsync(new OnMapReadyCallback() {
                     @Override
                     public void onMapReady(GoogleMap googleMap) {
@@ -117,6 +125,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMap.clear();
                 mClusterManager.clearItems();
                 showAllItems = false;
+                markerColor = "HUE_RED";
                 mapFragment.getMapAsync(new OnMapReadyCallback() {
                     @Override
                     public void onMapReady(GoogleMap googleMap) {
@@ -189,6 +198,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         rlp.setMargins(30, 0, 0, 40);
 
         mClusterManager = new ClusterManager<>(this, mMap);
+
+        final CustomClusterRenderer renderer = new CustomClusterRenderer(this, mMap, mClusterManager);
+
+        mClusterManager.setRenderer(renderer);
+
+        mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<StringClusterItem>() {
+            @Override
+            public boolean onClusterClick(Cluster<StringClusterItem> cluster) {
+                return false;
+            }
+        });
+
+        mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<StringClusterItem>() {
+            @Override
+            public boolean onClusterItemClick(StringClusterItem stringClusterItem) {
+                return false;
+            }
+        });
+
+        mClusterManager.getMarkerCollection()
+                .setInfoWindowAdapter(new CustomInfoViewAdapter(LayoutInflater.from(this)));
+
+        mClusterManager.setOnClusterItemInfoWindowClickListener(
+                new ClusterManager.OnClusterItemInfoWindowClickListener<StringClusterItem>() {
+                    @Override public void onClusterItemInfoWindowClick(StringClusterItem stringClusterItem) {
+                        int itemIndex = stringClusterItem.itemIndex;
+                        Item item = itemsList.get(itemIndex);
+                        Intent itemPage = new Intent(MapsActivity.this, ItemActivity.class);
+                        itemPage.putExtra("itemid", item.getItemID());
+                        itemPage.putExtra("selleruid",item.getItemSellerUID());
+                        itemPage.putExtra("itemname",item.getItemName());
+                        itemPage.putExtra("itemdesc", item.getItemDescription());
+                        itemPage.putExtra("itemprice", item.getItemPrice());
+                        itemPage.putExtra("itemimage", item.getItemImage());
+                        itemPage.putExtra("itemimagelist", item.getItemImageList());
+                        itemPage.putExtra("itemaddress", item.getItemAddress());
+                        itemPage.putExtra("itemcategory", item.getItemCategory());
+                        itemPage.putExtra("itemordered", item.isItemOrdered());
+                        itemPage.putExtra("itemlatitude", item.getLatitude());
+                        itemPage.putExtra("itemlongitude", item.getLongitude());
+                        startActivity(itemPage);
+                    }
+                });
+
+        mMap.setInfoWindowAdapter(mClusterManager.getMarkerManager());
         mMap.setOnCameraIdleListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
         mMap.setOnInfoWindowClickListener(mClusterManager);
@@ -238,10 +292,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         }
                                         item.setItemPrice(price.floatValue());
                                         item.setItemImageList(imgs);
+                                        item.setItemAddress((String) myMap.get("itemaddress"));
                                         item.setLatitude((String) myMap.get("itemlatitude"));
                                         item.setLongitude((String) myMap.get("itemlongitude"));
                                         item.setItemOrdered((boolean) myMap.get("itemordered"));
                                         item.setItemPicked((boolean) myMap.get("itempicked"));
+                                        String itemCreateTime = "";
+                                        if (myMap.get("itemcreatetime") == null) {
+                                            itemCreateTime = "1586590726600";
+                                        } else {
+                                            itemCreateTime = myMap.get("itemcreatetime").toString();
+                                        }
+                                        item.setItemCreateTime(itemCreateTime);
                                         String itembuyerid = "";
                                         if (myMap.get("itembuyerid") != null) {
                                             itembuyerid = (String) myMap.get("itembuyerid");
@@ -280,19 +342,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     boolean itemordered = item.isItemOrdered();
                     double itemlat = Double.parseDouble(item.getLatitude());
                     double itemlon = Double.parseDouble(item.getLongitude());
+                    final LatLng latLng = new LatLng(itemlat, itemlon);
                     if (allItems) {
                         if (itemordered) {
                             if (userid.equals(itembuyerid)) {
-                                mClusterManager.addItem(new MapItem(itemlat, itemlon, itemname, "Price: $" + String.valueOf(itemprice)));
+                                mClusterManager.addItem(new StringClusterItem(
+                                        "Item Name: " + itemname
+                                        +"\n" + "Price: $"
+                                        + String.valueOf(itemprice)
+                                        + "\n" + "Click for Item details"
+                                        , latLng, i));
                             }
                         } else {
-                            mClusterManager.addItem(new MapItem(itemlat, itemlon, itemname, "Price: $" + String.valueOf(itemprice)));
+                            mClusterManager.addItem(new StringClusterItem(
+                                    "Item Name: " + itemname
+                                    +"\n" + "Price: $"
+                                    + String.valueOf(itemprice)
+                                    + "\n" + "Click for Item details"
+                                    , latLng, i));
                         }
                         Log.v("allitems", item.getItemName());
                     } else {
                         if (itemordered && userid.equals(itembuyerid)) {
+                            String itemCreateTime = item.getItemCreateTime();
+                            String itemPickupTime = new DateUtilities().getPostTimeInMillis(itemCreateTime,7);
+                            itemPickupTime = new DateUtilities().getDateAndTime(itemPickupTime);
                             Log.v("pickupitems", item.getItemName() + "buyer:" + itembuyerid);
-                            mClusterManager.addItem(new MapItem(itemlat, itemlon, itemname, "Price: $" + String.valueOf(itemprice)));
+                            mClusterManager.addItem(new StringClusterItem(
+                                    "Item Name: " + itemname
+                                    +"\n" + "Price: $"
+                                    + String.valueOf(itemprice)
+                                    + "\n" + "Pickup By: "
+                                    + itemPickupTime
+                                    + "\n" + "Click for Item details"
+                                    , latLng, i));
                         }
                     }
 
@@ -325,8 +408,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
             markerOptions = new MarkerOptions();
             markerOptions.position(latLng);
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
-            markerOptions.title("Current Location");
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+            markerOptions.title("Your Location");
             markerOptions.draggable(true);
             mMap.addMarker(markerOptions);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
@@ -343,6 +426,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Toast.makeText(this, "Please check internet", Toast.LENGTH_SHORT).show();
 
+    }
+
+    static class StringClusterItem implements ClusterItem {
+
+        final String title;
+        //final String snippet;
+        final LatLng latLng;
+        int itemIndex = 0;
+
+        public StringClusterItem(String title, LatLng latLng, int itemIndex) {
+            this.itemIndex = itemIndex;
+            this.title = title;
+            this.latLng = latLng;
+            //this.snippet = snippet;
+        }
+
+        @Override
+        public String getTitle() {
+            return title;
+        }
+
+        @Override
+        public String getSnippet() {
+            return null;
+        }
+
+        @Override public LatLng getPosition() {
+            return latLng;
+        }
     }
 
 
