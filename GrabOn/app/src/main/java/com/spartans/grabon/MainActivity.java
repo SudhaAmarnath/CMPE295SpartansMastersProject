@@ -671,23 +671,24 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if(task.isSuccessful()) {
-                            distance = Integer.parseInt(task.getResult().get("distance").toString());
-                            priceMin = Integer.parseInt(task.getResult().get("priceMin").toString());
-                            priceMax = Integer.parseInt(task.getResult().get("priceMax").toString());
-                            grabon = (boolean) task.getResult().get("grabon");
-                            ebay = (boolean) task.getResult().get("ebay");
-                            craigslist = (boolean) task.getResult().get("craigslist");
-                            numberItems = Integer.parseInt(task.getResult().get("numberItems").toString());
-                            userAddress = (String) task.getResult().get("userAddress");
-                            userCity = (String) task.getResult().get("userCity");
-                            userLatitude = (String) task.getResult().get("userLatitude");
-                            userLongitude = (String) task.getResult().get("userLongitude");
-                            userZipcode = (String) task.getResult().get("userZipcode");
-                            currentUserCity = (String) task.getResult().get("currentUserCity");
-                            currentUserLat = (String) task.getResult().get("currentUserLat");
-                            currentUserLon = (String) task.getResult().get("currentUserLon");
-                            currentUserZipcode = (String) task.getResult().get("currentUserZipcode");
-
+                            if (task.getResult().get("distance") != null) {
+                                distance = Integer.parseInt(task.getResult().get("distance").toString());
+                                priceMin = Integer.parseInt(task.getResult().get("priceMin").toString());
+                                priceMax = Integer.parseInt(task.getResult().get("priceMax").toString());
+                                grabon = (boolean) task.getResult().get("grabon");
+                                ebay = (boolean) task.getResult().get("ebay");
+                                craigslist = (boolean) task.getResult().get("craigslist");
+                                numberItems = Integer.parseInt(task.getResult().get("numberItems").toString());
+                                userAddress = (String) task.getResult().get("userAddress");
+                                userCity = (String) task.getResult().get("userCity");
+                                userLatitude = (String) task.getResult().get("userLatitude");
+                                userLongitude = (String) task.getResult().get("userLongitude");
+                                userZipcode = (String) task.getResult().get("userZipcode");
+                                currentUserCity = (String) task.getResult().get("currentUserCity");
+                                currentUserLat = (String) task.getResult().get("currentUserLat");
+                                currentUserLon = (String) task.getResult().get("currentUserLon");
+                                currentUserZipcode = (String) task.getResult().get("currentUserZipcode");
+                            }
                         }
                     }
                 });

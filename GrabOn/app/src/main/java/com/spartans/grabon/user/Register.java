@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -181,13 +182,19 @@ public class Register extends AppCompatActivity {
                                 }
                             });
 
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    registerProgressBar.setVisibility(View.GONE);
+                                    Log.d(TAG, "signInWithCredential:success");
+                                    Toast.makeText(Register.this, "User Registered and logged in successfully", Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                }
+                            }, 2000);
 
                             //saveProfileImgToStorage(uID);
-                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                            Toast.makeText(Register.this,"User Registered", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(Register.this, "Error ! " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                            registerProgressBar.setVisibility(View.GONE);
                         }
                     }
                 });

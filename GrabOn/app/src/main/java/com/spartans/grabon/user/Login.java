@@ -2,6 +2,7 @@ package com.spartans.grabon.user;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -208,12 +209,16 @@ public class Login extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            loginProgressBar.setVisibility(View.GONE);
-                            Log.d(TAG, "signInWithCredential:success");
-                            Toast.makeText(Login.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
-                            FirebaseUser user = auth.getCurrentUser();
                             AddUserToFirebaseDB();
-                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    loginProgressBar.setVisibility(View.GONE);
+                                    Log.d(TAG, "signInWithCredential:success");
+                                    Toast.makeText(Login.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                }
+                            }, 2000);
                         } else {
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(Login.this, "Authentication failed.",
@@ -233,12 +238,16 @@ public class Login extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            loginProgressBar.setVisibility(View.GONE);
-                            Log.d(TAG, "signInWithCredential:success");
-                            Toast.makeText(Login.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
-                            FirebaseUser user = auth.getCurrentUser();
                             AddUserToFirebaseDB();
-                            startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    loginProgressBar.setVisibility(View.GONE);
+                                    Log.d(TAG, "signInWithCredential:success");
+                                    Toast.makeText(Login.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                }
+                            }, 2000);
                         } else {
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(Login.this, "Authentication failed.",
@@ -293,9 +302,8 @@ public class Login extends AppCompatActivity {
                     }
                 });
 
-
-                DocumentReference documentReference2 = db.collection("preferences").document(uID);
-                Map<String, Object> dbpref = new HashMap<>();
+                final DocumentReference documentReference2 = db.collection("preferences").document(uID);
+                final Map<String, Object> dbpref = new HashMap<>();
                 dbpref.put("distance", 25);
                 dbpref.put("grabon", true);
                 dbpref.put("ebay", true);
@@ -312,26 +320,30 @@ public class Login extends AppCompatActivity {
                 dbpref.put("currentUserLon", "");
                 dbpref.put("currentUserCity", "");
                 dbpref.put("currentUserZipcode", "");
-
-                documentReference2.set(dbpref).addOnCompleteListener(new OnCompleteListener<Void>() {
+                documentReference2.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
-                            task.addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Log.d(TAG, "onSuccess: User Preferences is created for "+ uID);
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.d(TAG, "onFailure: User Preferences not created for "+ uID);
-                                }
-                            });
+                            DocumentSnapshot documentSnapshot2 = task.getResult();
+                            if (documentSnapshot2.exists()) {
+                                Log.d(TAG, "User Preferences is already added in db:" + uID);
+                            } else {
+                                documentReference2.set(dbpref).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "onSuccess: User Preferences is created for "+ uID);
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d(TAG, "onFailure: User Preferences not created for "+ uID);
+                                    }
+                                });
+                            }
                         }
+
                     }
                 });
-
             }
         }
     }
