@@ -40,6 +40,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -112,6 +113,24 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
     private static final String redirectURI = "Thirumalai_Namb-Thirumal-GrapOn-fgiiylk";
     private static final String scope = "https://api.ebay.com/oauth/api_scope";
 
+    private static String userZipcode = "";
+    private static String userCity = "";
+    private static String userAddress = "";
+    private static String userLatitude = "";
+    private static String userLongitude = "";
+    private static String currentUserLat = "";
+    private static String currentUserLon = "";
+    private static String currentUserZipcode = "";
+    private static String currentUserCity = "";
+
+    private static int distance = 25;
+    private static int priceMin=0;
+    private static int priceMax=2000;
+    private static boolean grabon = true;
+    private static boolean craigslist = true;
+    private static boolean ebay = true;
+    private static int numberItems = 15;
+
     private String applictionToken;
     List<ItemSummary> itemList;
 
@@ -133,7 +152,6 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
     private double userlat = 0;
     private double userlon = 0;
     private double usermiles = 0;
-    private String userZipcode = "";
 
     public static String category = "";
 
@@ -150,19 +168,23 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
         recyclerViewItems = findViewById(R.id.HomeActivityItemsList);
         recyclerViewItemCategories = findViewById(R.id.HomeActivityItemCategoriesList);
         db = Singleton.getDb();
+
+        firebaseAuth = FirebaseAuth.getInstance ();
+        loggedinUser = firebaseAuth.getCurrentUser();
+
+
+        if (loggedinUser == null) {
+            Log.e("Login", "Logged in user is null");
+        }
+
+        getPreferencesFromDb();
+
         final AutocompleteSupportFragment address;
         address = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.MainActivityLocation);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(null);
         getSupportActionBar().setSubtitle(null);
-
-        firebaseAuth = FirebaseAuth.getInstance ();
-        loggedinUser = firebaseAuth.getCurrentUser();
-
-        if (loggedinUser == null) {
-            Log.e("Login", "Logged in user is null");
-        }
 
         String apiKey = getString(R.string.google_maps_key);
         if (!Places.isInitialized()) {
@@ -640,4 +662,36 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
     public void processFinish(NodeList output) {
         craigslistItemsList = output;
     }
+
+    private void getPreferencesFromDb() {
+
+        db.collection("preferences").document(loggedinUser.getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful()) {
+                            distance = Integer.parseInt(task.getResult().get("distance").toString());
+                            priceMin = Integer.parseInt(task.getResult().get("priceMin").toString());
+                            priceMax = Integer.parseInt(task.getResult().get("priceMax").toString());
+                            grabon = (boolean) task.getResult().get("grabon");
+                            ebay = (boolean) task.getResult().get("ebay");
+                            craigslist = (boolean) task.getResult().get("craigslist");
+                            numberItems = Integer.parseInt(task.getResult().get("numberItems").toString());
+                            userAddress = (String) task.getResult().get("userAddress");
+                            userCity = (String) task.getResult().get("userCity");
+                            userLatitude = (String) task.getResult().get("userLatitude");
+                            userLongitude = (String) task.getResult().get("userLongitude");
+                            userZipcode = (String) task.getResult().get("userZipcode");
+                            currentUserCity = (String) task.getResult().get("currentUserCity");
+                            currentUserLat = (String) task.getResult().get("currentUserLat");
+                            currentUserLon = (String) task.getResult().get("currentUserLon");
+                            currentUserZipcode = (String) task.getResult().get("currentUserZipcode");
+
+                        }
+                    }
+                });
+
+    }
+
 }

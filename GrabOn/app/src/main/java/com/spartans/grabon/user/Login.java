@@ -292,6 +292,46 @@ public class Login extends AppCompatActivity {
 
                     }
                 });
+
+
+                DocumentReference documentReference2 = db.collection("preferences").document(uID);
+                Map<String, Object> dbpref = new HashMap<>();
+                dbpref.put("distance", 25);
+                dbpref.put("grabon", true);
+                dbpref.put("ebay", true);
+                dbpref.put("craigslist", true);
+                dbpref.put("priceMin", 0);
+                dbpref.put("priceMax", 2000);
+                dbpref.put("numberItems", 15);
+                dbpref.put("userAddress", "");
+                dbpref.put("userZipcode", "");
+                dbpref.put("userCity", "");
+                dbpref.put("userLatitude", "");
+                dbpref.put("userLongitude", "");
+                dbpref.put("currentUserLat", "");
+                dbpref.put("currentUserLon", "");
+                dbpref.put("currentUserCity", "");
+                dbpref.put("currentUserZipcode", "");
+
+                documentReference2.set(dbpref).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            task.addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d(TAG, "onSuccess: User Preferences is created for "+ uID);
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.d(TAG, "onFailure: User Preferences not created for "+ uID);
+                                }
+                            });
+                        }
+                    }
+                });
+
             }
         }
     }

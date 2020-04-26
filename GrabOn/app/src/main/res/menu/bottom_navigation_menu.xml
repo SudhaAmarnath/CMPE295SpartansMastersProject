@@ -28,24 +28,12 @@
             android:title="Posted Items" />
         <item
             android:id="@+id/nav07"
-            android:icon="@drawable/ic_logout"
-            android:title="Logout" />
+            android:icon="@drawable/ic_settings"
+            android:title="Preferences" />
         <item
             android:id="@+id/nav08"
-            android:icon="@drawable/ic_edit"
-            android:title="Placeholder 1" />
-        <item
-            android:id="@+id/nav09"
-            android:icon="@drawable/ic_event_available_black_24dp"
-            android:title="Placeholder 2" />
-        <item
-            android:id="@+id/nav10"
-            android:icon="@drawable/ic_forum_black_24dp"
-            android:title="Placeholder 3" />
-        <item
-            android:id="@+id/nav11"
-            android:icon="@drawable/ic_local_post_office_black_24dp"
-            android:title="Placeholder 4" />
+            android:icon="@drawable/ic_logout"
+            android:title="Logout" />
 
     </group>
 </menu>

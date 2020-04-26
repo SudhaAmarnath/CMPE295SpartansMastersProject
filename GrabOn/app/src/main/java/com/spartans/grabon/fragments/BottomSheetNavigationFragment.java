@@ -38,6 +38,7 @@ import com.spartans.grabon.maps.MapsActivity;
 import com.spartans.grabon.order.OrdersActivity;
 import com.spartans.grabon.user.Logout;
 import com.spartans.grabon.user.Profile;
+import com.spartans.grabon.user.Preferences;
 import com.spartans.grabon.utils.Singleton;
 
 public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
@@ -184,6 +185,10 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
                         startActivity(intent);
                         break;
                     case R.id.nav07:
+                        intent = new Intent(getActivity(), Preferences.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.nav08:
                         intent = new Intent(getActivity(), Logout.class);
                         startActivity(intent);
                         break;

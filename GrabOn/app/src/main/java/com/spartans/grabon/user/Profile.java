@@ -106,7 +106,6 @@ public class Profile extends AppCompatActivity {
         final String uID;
         final StorageReference profilePic;
 
-
         name = findViewById(R.id.profile_username);
         email = findViewById(R.id.Email);
         phone = findViewById(R.id.Phone);
@@ -126,7 +125,6 @@ public class Profile extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         storage = Singleton.getStorage();
         storageReference = storage.getReference();
-
 
         String apiKey = getString(R.string.google_maps_key);
         if (!Places.isInitialized()) {
