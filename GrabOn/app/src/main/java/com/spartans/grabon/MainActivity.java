@@ -628,9 +628,11 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                         searchRecycleViewAdapter = new ProductListAdapter(itemList, filteredList, craigslistItemsList);
                         searchRecycleView.setLayoutManager(searchRecycleViewLayoutManager);
                         searchRecycleView.setAdapter(searchRecycleViewAdapter);
-                        for (ItemSummary itemEbay : searchResponse.getItemSummaries()) {
-                            if (itemEbay != null) {
-                                itemList.add(itemEbay);
+                        if (!category.contains("Freebies")) {
+                            for (ItemSummary itemEbay : searchResponse.getItemSummaries()) {
+                                if (itemEbay != null) {
+                                    itemList.add(itemEbay);
+                                }
                             }
                         }
                         progressBar.setVisibility(View.GONE);
