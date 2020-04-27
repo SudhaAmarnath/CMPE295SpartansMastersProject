@@ -204,8 +204,12 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                         cityDistance.setVisibility(View.VISIBLE);
                         locationCity.setText(currentUserCity);
                         locationDistance.setText(String.valueOf(distance) + " Miles");
-                        userlat = Double.parseDouble(userLatitude);
-                        userlon = Double.parseDouble(userLongitude);
+                        if (!userLatitude.equals("")) {
+                            userlat = Double.parseDouble(userLatitude);
+                        }
+                        if(!userLongitude.equals("")) {
+                            userlon = Double.parseDouble(userLongitude);
+                        }
                         usermiles = distance;
                         refreshItems();
                     }
