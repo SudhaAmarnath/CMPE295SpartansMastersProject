@@ -20,6 +20,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -30,6 +31,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,6 +53,8 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import mehdi.sakout.fancybuttons.FancyButton;
+
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 /**
  * Author : Sudha Amarnath on 2020-02-19
@@ -74,6 +78,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static MarkerOptions markerOptions;
     private ClusterManager<StringClusterItem> mClusterManager;
     public static String markerColor = "HUE_VIOLET";
+    private FusedLocationProviderClient client;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -402,17 +408,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-        {
-            Location currentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-            markerOptions = new MarkerOptions();
-            markerOptions.position(latLng);
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-            markerOptions.title("Your Location");
-            markerOptions.draggable(true);
-            mMap.addMarker(markerOptions);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
+
+        requestPermission();
+        if(ActivityCompat.checkSelfPermission(MapsActivity.this, ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            client = LocationServices.getFusedLocationProviderClient(MapsActivity.this);
+            client.getLastLocation().addOnSuccessListener(MapsActivity.this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        markerOptions = new MarkerOptions();
+                        markerOptions.position(latLng);
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                        markerOptions.title("Your Location");
+                        markerOptions.draggable(true);
+                        mMap.addMarker(markerOptions);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
+                    }
+                }
+            });
         }
 
     }
@@ -426,6 +441,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Toast.makeText(this, "Please check internet", Toast.LENGTH_SHORT).show();
 
+    }
+
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 1);
     }
 
     static class StringClusterItem implements ClusterItem {

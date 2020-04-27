@@ -281,6 +281,9 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
             }
         });
 
+        searchRecycleView = findViewById(R.id.searchRecycleView);
+
+
     }
 
     private void displayCategories () {
@@ -573,7 +576,6 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                     public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
                         SearchResponse searchResponse = response.body();
                         itemList.clear();
-                        searchRecycleView = findViewById(R.id.searchRecycleView);
                         searchRecycleView.setVisibility(View.VISIBLE);
                         searchRecycleView.setHasFixedSize(true);
                         searchRecycleViewLayoutManager = new LinearLayoutManager(getApplicationContext());
