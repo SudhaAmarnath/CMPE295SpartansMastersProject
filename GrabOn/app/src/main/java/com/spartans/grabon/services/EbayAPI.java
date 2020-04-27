@@ -78,7 +78,9 @@ public class EbayAPI {
         );
 
         @GET("/buy/browse/v1/item_summary/search")
-        Call<SearchResponse> getSearchResult(@Header("Authorization") String token, @Query("q") String keyword, @Query("limit") int limit);
+        Call<SearchResponse> getSearchResultByQuery(@Header("Authorization") String token, @Query("q") String keyword, @Query("limit") int limit);
 
+        @GET("/buy/browse/v1/item_summary/search")
+        Call<SearchResponse> getSearchResultByCategory(@Header("Authorization") String token, @Query("category_ids") String keyword, @Query("limit") int limit);
     }
 }
