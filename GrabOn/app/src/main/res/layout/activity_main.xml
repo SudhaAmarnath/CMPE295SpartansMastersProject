@@ -39,57 +39,58 @@
         android:id="@+id/LinearLayout1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
-        android:layout_marginLeft="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
+        android:visibility="gone"
         android:orientation="horizontal">
 
-        <LinearLayout
-            android:id="@+id/LinearLayout2"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:orientation="horizontal">
-
             <TextView
-                android:id="@+id/nearbyText"
-                android:layout_width="30dp"
+                android:id="@+id/nearbyTextCity"
+                android:layout_width="75dp"
                 android:layout_height="match_parent"
                 android:fontFamily="@font/helvetica"
-                android:text="In: "
+                android:text="Location: "
                 android:gravity="center"
                 android:textColor="@color/colorPrimaryDark"
-                android:textSize="16dp"
+                android:textSize="18dp"
                 android:textStyle="bold" />
 
-            <fragment
+            <TextView
                 android:id="@+id/MainActivityLocation"
-                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-                android:layout_width="280dp"
-                app:layout_constraintStart_toStartOf="@id/nearbyText"
+                android:layout_width="150dp"
                 android:layout_height="match_parent"
-                android:background="@color/transparent"
                 android:fontFamily="@font/helvetica"
-                android:text=""
                 android:gravity="center"
-                android:textColor="#000000"
-                android:textSize="16dp" />
+                android:text="Sunnyvale "
+                android:textColor="@color/black"
+                android:textSize="18dp"
+                android:textStyle="bold" />
 
-            <Spinner
-                android:id="@+id/MainActivityDistance"
-                app:layout_constraintStart_toStartOf="@id/MainActivityLocation"
-                android:layout_width="fill_parent"
+            <TextView
+                android:id="@+id/nearbyTextDistance"
+                android:layout_width="60dp"
                 android:layout_height="match_parent"
                 android:fontFamily="@font/helvetica"
-                android:prompt="@string/distance_prompt"
-                android:entries="@array/distance"
+                android:text="Within: "
                 android:gravity="center"
-                android:textColor="#000000"
-                android:textSize="16dp" />
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/MainActivityDistance"
+                android:layout_width="75dp"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/helvetica"
+                android:gravity="center"
+                android:text="25 Miles"
+                android:textColor="@color/black"
+                android:textSize="18dp"
+                android:textStyle="bold" />
 
         </LinearLayout>
-
-    </LinearLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/MainItemPullToRefresh"

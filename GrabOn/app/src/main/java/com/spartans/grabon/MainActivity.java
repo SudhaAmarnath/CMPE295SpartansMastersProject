@@ -1,20 +1,19 @@
 package com.spartans.grabon;
 
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
-import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,15 +24,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -66,12 +59,9 @@ import com.spartans.grabon.utils.Singleton;
 
 import org.w3c.dom.NodeList;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import io.kommunicate.KmConversationBuilder;
@@ -151,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
     PlacesClient placesClient;
     private double userlat = 0;
     private double userlon = 0;
-    private double usermiles = 0;
+    private double usermiles = 25;
 
     public static String category = "";
 
@@ -172,76 +162,64 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
         firebaseAuth = FirebaseAuth.getInstance ();
         loggedinUser = firebaseAuth.getCurrentUser();
 
-
         if (loggedinUser == null) {
             Log.e("Login", "Logged in user is null");
         }
-
-        getPreferencesFromDb();
-
-        final AutocompleteSupportFragment address;
-        address = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.MainActivityLocation);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(null);
         getSupportActionBar().setSubtitle(null);
 
-        String apiKey = getString(R.string.google_maps_key);
-        if (!Places.isInitialized()) {
-            Places.initialize(MainActivity.this, apiKey);
+        final LinearLayout cityDistance = findViewById(R.id.LinearLayout1);
+        final TextView locationCity = findViewById(R.id.MainActivityLocation);
+        final TextView locationDistance = findViewById(R.id.MainActivityDistance);
+
+        getPreferencesFromDb();
+
+        Log.v("run", "currentUserCity:" + currentUserCity + "userCity:" + userCity);
+
+        if (userCity.equals("") == false) {
+            cityDistance.setVisibility(View.VISIBLE);
+            locationCity.setText(userCity);
+            locationDistance.setText(String.valueOf(distance) + " Miles");
+            userlat = Double.parseDouble(userLatitude);
+            userlon = Double.parseDouble(userLongitude);
+            usermiles = distance;
+        } else {
+            if (currentUserCity.equals("") == false) {
+                cityDistance.setVisibility(View.VISIBLE);
+                locationCity.setText(currentUserCity);
+                locationDistance.setText(String.valueOf(distance) + " Miles");
+                userlat = Double.parseDouble(userLatitude);
+                userlon = Double.parseDouble(userLongitude);
+                usermiles = distance;
+            }
         }
-        placesClient = Places.createClient(this);
-        address.setPlaceFields(Arrays.asList(Place.Field.ID,
-                Place.Field.NAME,
-                Place.Field.LAT_LNG,
-                Place.Field.ADDRESS
-        ));
-
-        address.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void onPlaceSelected(@NonNull Place place) {
-                Log.v("search", place.getLatLng().toString());
-                Log.v("search", place.getAddress());
-                Log.v("search", place.getName());
-                final LatLng latLng = place.getLatLng();
-                userlat = latLng.latitude;
-                userlon = latLng.longitude;
-
-                Geocoder geocoder = new Geocoder(MainActivity.this, Locale.ENGLISH);
-                try {
-                    List<Address> addresses = geocoder.getFromLocation(userlat, userlon, 1);
-                    if (addresses != null && addresses.size() > 0) {
-                        if(addresses.get(0).getPostalCode()!=null){
-                            userZipcode = addresses.get(0).getPostalCode();
-                        }
+            public void run() {
+                Log.v("run", "currentUserCity:" + currentUserCity + "userCity:" + userCity);
+                if (userCity.equals("")) {
+                    if (currentUserCity.equals("") == false) {
+                        cityDistance.setVisibility(View.VISIBLE);
+                        locationCity.setText(currentUserCity);
+                        locationDistance.setText(String.valueOf(distance) + " Miles");
+                        userlat = Double.parseDouble(userLatitude);
+                        userlon = Double.parseDouble(userLongitude);
+                        usermiles = distance;
+                        refreshItems();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onError(@NonNull Status status) {
-
-            }
-        });
-
-        Spinner distance = (Spinner) findViewById(R.id.MainActivityDistance);
-        distance.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Object miles = parent.getItemAtPosition(position);
-                if (miles.toString().equals("mi")) {
-                    usermiles =  10000;
                 } else {
-                    usermiles = Double.parseDouble(miles.toString());
+                    cityDistance.setVisibility(View.VISIBLE);
+                    locationCity.setText(userCity);
+                    locationDistance.setText(String.valueOf(distance) + " Miles");
+                    userlat = Double.parseDouble(userLatitude);
+                    userlon = Double.parseDouble(userLongitude);
+                    usermiles = distance;
+                    refreshItems();
                 }
             }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+        }, 4000);
 
         //Context context;
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),
@@ -350,9 +328,9 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
 
                                 double lat = Double.parseDouble(itemlat);
                                 double lon = Double.parseDouble(itemlon);
-                                double distance = 0.0;
+                                double curdistance = 0.0;
                                 if (userlat != 0 && userlon != 0) {
-                                    distance = new DistanceCalculator().distance(userlat, userlon,
+                                    curdistance = new DistanceCalculator().distance(userlat, userlon,
                                             lat, lon, 'M');
                                 }
                                 Double price = 0.0;
@@ -364,7 +342,7 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                                     price = ((Long) myMap.get("itemprice")).doubleValue();
                                 }
                                 if (!(boolean) myMap.get("itemordered")
-                                        && distance <= usermiles
+                                        && curdistance <= usermiles
                                         && (category.equals("") || category.equals(itemcategory) || (category.equals("Freebies") && price == 0))) {
 
                                     for (Map.Entry<String, Object> entry : myMap.entrySet()) {
@@ -454,14 +432,13 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
             public boolean onQueryTextSubmit(String query) {
                 recyclerViewItems.setVisibility(View.GONE);
                 pullToRefresh.setEnabled(false);
-
                 //execute the async task
-                String distance = Double.toString(usermiles);
+                String curdistance = Double.toString(usermiles);
                 String postalCode = userZipcode;
                 String queryURL = "https://sfbay.craigslist.org/search/sss?format=rss&query=";
                 queryURL = queryURL + query;
-                if(distance != "" && postalCode != "") {
-                    queryURL = queryURL + "&search_distance=" + distance + "&postal=" + postalCode;
+                if(curdistance != "" && postalCode != "") {
+                    queryURL = queryURL + "&search_distance=" + curdistance + "&postal=" + postalCode;
                 }
                 String[] urlToRssFeed = {queryURL};
                 new RetrieveFeedTask(MainActivity.this).execute(urlToRssFeed);
@@ -693,6 +670,15 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                     }
                 });
 
+    }
+
+    private void refreshItems() {
+        itemAdapter = null;
+        itemsList = new ArrayList<>();
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
+        recyclerViewItems.setLayoutManager(gridLayoutManager);
+        recyclerViewItems.setNestedScrollingEnabled(false);
+        displayItems();
     }
 
 }

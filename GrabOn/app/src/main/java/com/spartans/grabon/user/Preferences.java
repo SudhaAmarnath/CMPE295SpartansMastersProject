@@ -1,5 +1,6 @@
 package com.spartans.grabon.user;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -39,6 +40,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.spartans.grabon.MainActivity;
 import com.spartans.grabon.R;
 import com.spartans.grabon.utils.Singleton;
 
@@ -334,7 +336,13 @@ public class Preferences extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     updatePreferences();
-                                    Toast.makeText(Preferences.this,"Preferences successfully reset",Toast.LENGTH_SHORT).show();
+                                    new Handler().postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(Preferences.this,"Preferences successfully reset",Toast.LENGTH_SHORT).show();
+                                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                        }
+                                    }, 2000);
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
@@ -380,8 +388,13 @@ public class Preferences extends AppCompatActivity {
                             task.addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    Toast.makeText(Preferences.this,"Preferences successfully saved",Toast.LENGTH_SHORT).show();
-                                }
+                                    new Handler().postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(Preferences.this,"Preferences saved successfully",Toast.LENGTH_SHORT).show();
+                                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                        }
+                                    }, 2000);                                }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
