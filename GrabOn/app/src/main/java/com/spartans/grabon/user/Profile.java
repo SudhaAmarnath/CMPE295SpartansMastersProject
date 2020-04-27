@@ -33,6 +33,7 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.common.base.Strings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -381,10 +382,13 @@ public class Profile extends AppCompatActivity {
 
     public static boolean isValidAddress() {
 
+        if (Strings.isNullOrEmpty(Profile.country) || Strings.isNullOrEmpty(Profile.feature)) {
+            return false;
+        }
         if (Profile.country.equals("United States") || Profile.country.equals("Canada")) {
             if (!Profile.edittxtaddrline.startsWith(Profile.feature)
-                    || Profile.feature.equals(null) || Profile.street.equals(null)
-                    || Profile.city.equals(null) || Profile.pincode.equals(null)) {
+                    || Strings.isNullOrEmpty(Profile.feature) || Strings.isNullOrEmpty(Profile.street)
+                    || Strings.isNullOrEmpty(Profile.city) || Strings.isNullOrEmpty(Profile.pincode)) {
                 return false;
             } else {
                 return true;
