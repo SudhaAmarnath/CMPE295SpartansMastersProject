@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -85,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
     private RecyclerView recyclerViewItemCategories;
     private SwipeRefreshLayout pullToRefresh;
     private FirebaseFirestore db;
+    private ProgressBar progressBar;
 
     private ArrayList<Item> itemsList = new ArrayList<>();
     private ItemAdapter itemAdapter;
@@ -144,6 +146,33 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
     private double usermiles = 25;
 
     public static String category = "";
+    /*
+     *   Appliance = 20710
+     *   Automobiles = 6024
+     *   Electronics = 58058
+     *   Fashion = 1059
+     *   Furniture = 3197
+     *   Home Garden = 159912
+     *   Movies & Music = 11232
+     *   Office = 58271
+     *   Sports = 20863
+     *   Toys & Games= 2540
+     */
+    private static Map<String, String> CategoryKeywordToCategoryIdMap = new HashMap<>();
+    static {
+        CategoryKeywordToCategoryIdMap.put("Appliances", "20710");
+        CategoryKeywordToCategoryIdMap.put("Automobiles", "6024");
+        CategoryKeywordToCategoryIdMap.put("Electronics", "58058");
+        CategoryKeywordToCategoryIdMap.put("Fashion", "1059");
+        CategoryKeywordToCategoryIdMap.put("Furniture", "3197");
+        CategoryKeywordToCategoryIdMap.put("Home & Garden", "159912");
+        CategoryKeywordToCategoryIdMap.put("Movies & Music", "11232");
+        CategoryKeywordToCategoryIdMap.put("Office", "58271");
+        CategoryKeywordToCategoryIdMap.put("Sports", "20863");
+        CategoryKeywordToCategoryIdMap.put("Toys & Games", "2540");
+        CategoryKeywordToCategoryIdMap.put("Other","172008");
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +184,8 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
 
         conversationId = "";
         toolbar = findViewById(R.id.toolbar);
+        progressBar = (ProgressBar) findViewById(R.id.searchProgressBar);
+        progressBar.setVisibility(View.GONE);
         recyclerViewItems = findViewById(R.id.HomeActivityItemsList);
         recyclerViewItemCategories = findViewById(R.id.HomeActivityItemCategoriesList);
         db = Singleton.getDb();
@@ -302,9 +333,14 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                     if (category == itemCategory.getCategoryName()) {
                         Log.v("category", "unselect:" + category);
                         category = "";
+                        searchRecycleView.setVisibility(View.GONE);
+                        recyclerViewItems.setVisibility(View.VISIBLE);
                     } else {
                         category = itemCategory.getCategoryName();
                         Log.v("category", "select:" + category);
+                        recyclerViewItems.setVisibility(View.GONE);
+                        progressBar.setVisibility(View.VISIBLE);
+                        getSearchResultFromThirdParty( category, false);
                     }
 
                     itemAdapter = null;
@@ -448,17 +484,8 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
             public boolean onQueryTextSubmit(String query) {
                 recyclerViewItems.setVisibility(View.GONE);
                 pullToRefresh.setEnabled(false);
-                //execute the async task
-                String curdistance = Double.toString(usermiles);
-                String postalCode = userZipcode;
-                String queryURL = "https://sfbay.craigslist.org/search/sss?format=rss&query=";
-                queryURL = queryURL + query;
-                if(curdistance != "" && postalCode != "") {
-                    queryURL = queryURL + "&search_distance=" + curdistance + "&postal=" + postalCode;
-                }
-                String[] urlToRssFeed = {queryURL};
-                new RetrieveFeedTask(MainActivity.this).execute(urlToRssFeed);
-                getSearchResultFromEbay(query);
+                progressBar.setVisibility(View.VISIBLE);
+                getSearchResultFromThirdParty(query, true);
                 return false;
             }
 
@@ -472,6 +499,7 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
             @Override
             public boolean onClose() {
                 recyclerViewItems.setVisibility(View.VISIBLE);
+                if (searchRecycleView != null)
                 searchRecycleView.setVisibility(View.GONE);
                 pullToRefresh.setEnabled(true);
                 return false;
@@ -559,7 +587,8 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
         }
     }
 
-    private List<ItemSummary> getSearchResultFromEbay(final String query) {
+    private List<ItemSummary> getSearchResultFromThirdParty(final String query, final boolean searchByQuery) {
+        searchInCraigsList(query);
         Call<ApplicationToken> call = EbayAPI.getClientTokenService().getApplicationToken(basicAuthToken, "client_credentials",
                 EbayAPI.RuName, EbayAPI.APPLICATION_ACCESS_TOKEN_SCOPE);
         call.enqueue(new Callback<ApplicationToken>() {
@@ -567,7 +596,12 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
             public void onResponse(Call<ApplicationToken> call, Response<ApplicationToken> response) {
                 applictionToken = response.body().getAccess_token();
                 String authorization = "Bearer " + applictionToken;
-                Call<SearchResponse> callComputer = EbayAPI.getService().getSearchResult(authorization, query, 15);
+                Call<SearchResponse> callComputer = null;
+                if (searchByQuery) {
+                    callComputer = EbayAPI.getService().getSearchResultByQuery(authorization, query, 15);
+                } else {
+                    callComputer = EbayAPI.getService().getSearchResultByCategory(authorization, CategoryKeywordToCategoryIdMap.get(query), 15);
+                }
                 callComputer.enqueue(new Callback<SearchResponse>() {
                     @Override
                     public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
@@ -578,7 +612,17 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                         searchRecycleView.setHasFixedSize(true);
                         searchRecycleViewLayoutManager = new LinearLayoutManager(getApplicationContext());
                         Log.v("itemsList","items"+itemsList);
-                        ArrayList<Item> filteredList = searchGrabOnItemsByQuery(itemsList, query);
+                        ArrayList<Item> filteredList = null;
+                        if (itemsList.isEmpty()) {
+                            Log.v(TAG, "itemsList is empty: " + itemsList);
+                            displayItems();
+                            Log.v(TAG, "itemsList is: " + itemsList);
+                        }
+                        if (searchByQuery) {
+                            filteredList = searchGrabOnItemsByQuery(itemsList, query);
+                        } else {
+                            filteredList = searchGrabOnItemsByCategory(itemsList, query);
+                        }
                         searchRecycleViewAdapter = new ProductListAdapter(itemList, filteredList, craigslistItemsList);
                         searchRecycleView.setLayoutManager(searchRecycleViewLayoutManager);
                         searchRecycleView.setAdapter(searchRecycleViewAdapter);
@@ -587,7 +631,7 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                                 itemList.add(itemEbay);
                             }
                         }
-
+                        progressBar.setVisibility(View.GONE);
                         searchRecycleViewAdapter.setOnItemClickListener(new ProductListAdapter.OnItemClickListener() {
                             @Override
                             public void OnItemClickListener(int position) {
@@ -643,9 +687,22 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
     }
 
     private ArrayList<Item> searchGrabOnItemsByQuery(ArrayList<Item> itemsList, final String query) {
+        Log.v(TAG, "searchGrabOnItemsByQuery called with itemsList: " + itemsList);
+        Log.v(TAG, "searchGrabOnItemsByQuery called with query: " + query);
         ArrayList<Item> filteredItems = new ArrayList<>();
         for (Item item : itemsList) {
             if (item.getItemName().toLowerCase().contains(query.toLowerCase()))
+                filteredItems.add(item);
+        }
+        return filteredItems;
+    }
+
+    private ArrayList<Item> searchGrabOnItemsByCategory(ArrayList<Item> itemsList, final String query) {
+        Log.v(TAG, "searchGrabOnItemsByCategory called with itemsList: " + itemsList);
+        Log.v(TAG, "searchGrabOnItemsByCategory called with query: " + query);
+        ArrayList<Item> filteredItems = new ArrayList<>();
+        for (Item item : itemsList) {
+            if (item.getItemCategory().toLowerCase().contains(query.toLowerCase()))
                 filteredItems.add(item);
         }
         return filteredItems;
@@ -695,6 +752,19 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
         recyclerViewItems.setLayoutManager(gridLayoutManager);
         recyclerViewItems.setNestedScrollingEnabled(false);
         displayItems();
+    }
+
+    private void searchInCraigsList(String query) {
+        //execute the async task
+        String curdistance = Double.toString(usermiles);
+        String postalCode = userZipcode;
+        String queryURL = "https://sfbay.craigslist.org/search/sss?format=rss&query=";
+        queryURL = queryURL + query;
+        if(curdistance != "" && postalCode != "") {
+            queryURL = queryURL + "&search_distance=" + curdistance + "&postal=" + postalCode;
+        }
+        String[] urlToRssFeed = {queryURL};
+        new RetrieveFeedTask(MainActivity.this).execute(urlToRssFeed);
     }
 
 }
