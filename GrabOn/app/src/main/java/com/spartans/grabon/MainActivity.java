@@ -617,9 +617,9 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                 applictionToken = response.body().getAccess_token();
                 String authorization = "Bearer " + applictionToken;
                 Call<SearchResponse> callComputer = null;
-                if (searchByQuery && ebayEnabled) {
+                if (searchByQuery) {
                     callComputer = EbayAPI.getService().getSearchResultByQuery(authorization, query, numberOfItems);
-                } else if (!searchByQuery && ebayEnabled) {
+                } else if (!searchByQuery) {
                     callComputer = EbayAPI.getService().getSearchResultByCategory(authorization, CategoryKeywordToCategoryIdMap.get(query), numberOfItems);
                 }
                 callComputer.enqueue(new Callback<SearchResponse>() {
@@ -645,7 +645,7 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                         searchRecycleViewAdapter = new ProductListAdapter(itemList, filteredList, craigslistItemsList, numberOfItems);
                         searchRecycleView.setLayoutManager(searchRecycleViewLayoutManager);
                         searchRecycleView.setAdapter(searchRecycleViewAdapter);
-                        if (!category.contains("Freebies")) {
+                        if (!category.contains("Freebies") && ebayEnabled) {
                             for (ItemSummary itemEbay : searchResponse.getItemSummaries()) {
                                 if (itemEbay != null) {
                                     itemList.add(itemEbay);
