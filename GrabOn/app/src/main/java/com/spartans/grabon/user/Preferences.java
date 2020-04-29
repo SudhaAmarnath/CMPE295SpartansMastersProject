@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -389,12 +388,6 @@ public class Preferences extends AppCompatActivity {
                                         public void run() {
                                             Toast.makeText(Preferences.this,"Preferences saved successfully",Toast.LENGTH_SHORT).show();
                                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                            intent.putExtra("PreferenceGrabon",grabon);
-                                            intent.putExtra("PreferenceEbay",ebay);
-                                            intent.putExtra("PreferenceCraigslist",craigslist);
-                                            intent.putExtra("PreferredNumberOfItems",numberItems);
-                                            intent.putExtra("PreferenceMinimumPrice",priceMin);
-                                            intent.putExtra("PreferenceMaximumPrice",priceMax);
                                             startActivity(intent);
                                         }
                                     }, 2000);                                }

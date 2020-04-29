@@ -64,7 +64,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import io.kommunicate.KmConversationBuilder;
 import io.kommunicate.KmConversationHelper;
@@ -146,12 +145,9 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
     private double userlon = 0;
     private double usermiles = 25;
 
-    boolean preferenceGrabon;
-    boolean preferenceEbay;
-    boolean preferenceCraigslist;
-    Integer preferredNumberOfItems;
-    Integer preferenceMinimumPrice;
-    Integer preferenceMaximumPrice;
+    private LinearLayout cityDistance;
+    private TextView locationCity;
+    private TextView locationDistance;
 
     public static String category = "";
     /*
@@ -209,9 +205,9 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
         getSupportActionBar().setTitle(null);
         getSupportActionBar().setSubtitle(null);
 
-        final LinearLayout cityDistance = findViewById(R.id.LinearLayout1);
-        final TextView locationCity = findViewById(R.id.MainActivityLocation);
-        final TextView locationDistance = findViewById(R.id.MainActivityDistance);
+        cityDistance = findViewById(R.id.LinearLayout1);
+        locationCity = findViewById(R.id.MainActivityLocation);
+        locationDistance = findViewById(R.id.MainActivityDistance);
 
         getPreferencesFromDb();
 
@@ -242,39 +238,7 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                 usermiles = distance;
             }
         }
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Log.v("run", "currentUserCity:" + currentUserCity + "userCity:" + userCity);
-                if (userCity.equals("")) {
-                    if (currentUserCity.equals("") == false) {
-                        cityDistance.setVisibility(View.VISIBLE);
-                        locationCity.setText(currentUserCity);
-                        locationDistance.setText(String.valueOf(distance) + " Miles");
-                        if (!userLatitude.equals("")) {
-                            userlat = Double.parseDouble(userLatitude);
-                        }
-                        if(!userLongitude.equals("")) {
-                            userlon = Double.parseDouble(userLongitude);
-                        }
-                        usermiles = distance;
-                        refreshItems();
-                    }
-                } else {
-                    cityDistance.setVisibility(View.VISIBLE);
-                    locationCity.setText(userCity);
-                    locationDistance.setText(String.valueOf(distance) + " Miles");
-                    if (!userLatitude.equals("")) {
-                        userlat = Double.parseDouble(userLatitude);
-                    }
-                    if(!userLongitude.equals("")) {
-                        userlon = Double.parseDouble(userLongitude);
-                    }
-                    usermiles = distance;
-                    refreshItems();
-                }
-            }
-        }, 4000);
+        postRefresh();
 
         //Context context;
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),
@@ -344,6 +308,7 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                     if (category == itemCategory.getCategoryName()) {
                         Log.v("category", "unselect:" + category);
                         category = "";
+                        pullToRefresh.setEnabled(true);
                         searchRecycleView.setVisibility(View.GONE);
                         recyclerViewItems.setVisibility(View.VISIBLE);
                     } else {
@@ -351,8 +316,9 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                         Log.v("category", "select:" + category);
                         recyclerViewItems.setVisibility(View.GONE);
                         progressBar.setVisibility(View.VISIBLE);
-                        getSearchResultFromThirdParty( category, false, preferenceEbay, preferenceCraigslist,
-                                preferredNumberOfItems, preferenceMinimumPrice, preferenceMaximumPrice);
+                        pullToRefresh.setEnabled(false);
+                        getSearchResultFromThirdParty( category, false, ebay, craigslist,
+                                numberItems, priceMin, priceMax);
                     }
 
                     itemAdapter = null;
@@ -407,6 +373,7 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                                 }
                                 if (!(boolean) myMap.get("itemordered")
                                         && curdistance <= usermiles
+                                        && (price >= priceMin && price <= priceMax)
                                         && (category.equals("") || category.equals(itemcategory) || (category.equals("Freebies") && price == 0))) {
 
                                     for (Map.Entry<String, Object> entry : myMap.entrySet()) {
@@ -492,24 +459,15 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
         searchView = (SearchView) item.getActionView();
         SearchView searchView = (SearchView) item.getActionView();
         Intent intent = getIntent();
-        preferenceGrabon = intent.getBooleanExtra("PreferenceGrabon", true);
-        preferenceEbay = intent.getBooleanExtra("PreferenceEbay", true);
-        preferenceCraigslist = intent.getBooleanExtra("PreferenceCraigslist", true);
-        preferredNumberOfItems = intent.getIntExtra("PreferredNumberOfItems", 15);
-        preferenceMinimumPrice = intent.getIntExtra("PreferenceMinimumPrice", 50);
-        preferenceMaximumPrice = intent.getIntExtra("PreferenceMaximumPrice", 2000);
-        Log.v(TAG, "preferenceGrabon: " + preferenceGrabon);
-        Log.v(TAG, "preferenceEbay: " + preferenceEbay);
-        Log.v(TAG, "preferenceCraigslist: " + preferenceCraigslist);
-        Log.v(TAG, "preferredNumberOfItems: " + preferredNumberOfItems);
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
             @Override
             public boolean onQueryTextSubmit(String query) {
                 recyclerViewItems.setVisibility(View.GONE);
                 pullToRefresh.setEnabled(false);
                 progressBar.setVisibility(View.VISIBLE);
-                getSearchResultFromThirdParty(query, true, preferenceEbay, preferenceCraigslist,
-                        preferredNumberOfItems, preferenceMinimumPrice, preferenceMaximumPrice);
+                getSearchResultFromThirdParty(query, true, ebay, craigslist,
+                        numberItems, priceMin, priceMax);
                 return false;
             }
 
@@ -799,6 +757,42 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
         Log.v(TAG, "queryURL: " + queryURL);
         String[] urlToRssFeed = {queryURL};
         new RetrieveFeedTask(MainActivity.this).execute(urlToRssFeed);
+    }
+
+    private void postRefresh() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.v("run", "currentUserCity:" + currentUserCity + "userCity:" + userCity);
+                if (userCity.equals("")) {
+                    if (currentUserCity.equals("") == false) {
+                        cityDistance.setVisibility(View.VISIBLE);
+                        locationCity.setText(currentUserCity);
+                        locationDistance.setText(String.valueOf(distance) + " Miles");
+                        if (!userLatitude.equals("")) {
+                            userlat = Double.parseDouble(userLatitude);
+                        }
+                        if(!userLongitude.equals("")) {
+                            userlon = Double.parseDouble(userLongitude);
+                        }
+                        usermiles = distance;
+                        refreshItems();
+                    }
+                } else {
+                    cityDistance.setVisibility(View.VISIBLE);
+                    locationCity.setText(userCity);
+                    locationDistance.setText(String.valueOf(distance) + " Miles");
+                    if (!userLatitude.equals("")) {
+                        userlat = Double.parseDouble(userLatitude);
+                    }
+                    if(!userLongitude.equals("")) {
+                        userlon = Double.parseDouble(userLongitude);
+                    }
+                    usermiles = distance;
+                    refreshItems();
+                }
+            }
+        }, 4000);
     }
 
 }
