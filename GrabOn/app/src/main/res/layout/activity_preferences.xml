@@ -190,10 +190,10 @@
                     android:textSize="18dp"
                     android:textStyle="bold" />
 
-                <CheckBox
+                <Switch
                     android:id="@+id/PrefereceGrabon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="157dp"
+                    android:layout_height="38dp"
                     android:background="@color/transparent"
                     android:checked="true"
                     android:fontFamily="@font/helvetica"
@@ -201,10 +201,10 @@
                     android:textSize="18dp"
                     android:textStyle="bold" />
 
-                <CheckBox
+                <Switch
                     android:id="@+id/PreferenceEbay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="157dp"
+                    android:layout_height="38dp"
                     android:background="@color/transparent"
                     android:checked="true"
                     android:fontFamily="@font/helvetica"
@@ -212,10 +212,10 @@
                     android:textSize="18dp"
                     android:textStyle="bold" />
 
-                <CheckBox
+                <Switch
                     android:id="@+id/PreferenceCraigslist"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="157dp"
+                    android:layout_height="38dp"
                     android:background="@color/transparent"
                     android:checked="true"
                     android:fontFamily="@font/helvetica"

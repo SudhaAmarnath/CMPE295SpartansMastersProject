@@ -66,12 +66,12 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         }
     }
 
-    public ProductListAdapter(List<ItemSummary> itemSummariesList, List<Item> grabOnItems, NodeList craigslistItems) {
+    public ProductListAdapter(List<ItemSummary> itemSummariesList, List<Item> grabOnItems, NodeList craigslistItems, int numberOfItemsFromPreference) {
         if (grabOnItems != null)
             convertGrabOnToEbayFormat(itemSummariesList, grabOnItems);
 
         if (craigslistItems != null)
-            convertCraigslistToEbayFormat(itemSummariesList, craigslistItems);
+            convertCraigslistToEbayFormat(itemSummariesList, craigslistItems, numberOfItemsFromPreference);
 
         itemSummaries = itemSummariesList;
     }
@@ -134,10 +134,10 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         }
     }
 
-    private void convertCraigslistToEbayFormat(List<ItemSummary> itemSummariesList, NodeList nodeList) {
+    private void convertCraigslistToEbayFormat(List<ItemSummary> itemSummariesList, NodeList nodeList, int numberOfItemsFromPreference) {
         Log.v("convert","convertCraigslistToEbayFormat called");
 
-        int numberOfItems = nodeList.getLength() > 15 ? 15 : nodeList.getLength();
+        int numberOfItems = nodeList.getLength() > numberOfItemsFromPreference ? numberOfItemsFromPreference : nodeList.getLength();
         for (int i = 0; i < numberOfItems; i++) {
 
             Node node = nodeList.item(i);

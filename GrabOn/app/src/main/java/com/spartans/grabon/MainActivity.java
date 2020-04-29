@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import io.kommunicate.KmConversationBuilder;
 import io.kommunicate.KmConversationHelper;
@@ -144,6 +145,11 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
     private double userlat = 0;
     private double userlon = 0;
     private double usermiles = 25;
+
+    boolean preferenceGrabon;
+    boolean preferenceEbay;
+    boolean preferenceCraigslist;
+    Integer preferredNumberOfItems;
 
     public static String category = "";
     /*
@@ -343,7 +349,7 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                         Log.v("category", "select:" + category);
                         recyclerViewItems.setVisibility(View.GONE);
                         progressBar.setVisibility(View.VISIBLE);
-                        getSearchResultFromThirdParty( category, false);
+                        getSearchResultFromThirdParty( category, false, preferenceEbay, preferenceCraigslist, preferredNumberOfItems);
                     }
 
                     itemAdapter = null;
@@ -482,13 +488,23 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
         final MenuItem item = menu.findItem(R.id.menuSearch);
         searchView = (SearchView) item.getActionView();
         SearchView searchView = (SearchView) item.getActionView();
+        Intent intent = getIntent();
+        preferenceGrabon = intent.getBooleanExtra("PreferenceGrabon", true);
+        preferenceEbay = intent.getBooleanExtra("PreferenceEbay", true);
+        preferenceCraigslist = intent.getBooleanExtra("PreferenceCraigslist", true);
+        preferredNumberOfItems = intent.getIntExtra("PreferredNumberOfItems", 15);
+
+        Log.v(TAG, "preferenceGrabon: " + preferenceGrabon);
+        Log.v(TAG, "preferenceEbay: " + preferenceEbay);
+        Log.v(TAG, "preferenceCraigslist: " + preferenceCraigslist);
+        Log.v(TAG, "preferredNumberOfItems: " + preferredNumberOfItems);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
             @Override
             public boolean onQueryTextSubmit(String query) {
                 recyclerViewItems.setVisibility(View.GONE);
                 pullToRefresh.setEnabled(false);
                 progressBar.setVisibility(View.VISIBLE);
-                getSearchResultFromThirdParty(query, true);
+                getSearchResultFromThirdParty(query, true, preferenceEbay, preferenceCraigslist, preferredNumberOfItems);
                 return false;
             }
 
@@ -590,7 +606,8 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
         }
     }
 
-    private List<ItemSummary> getSearchResultFromThirdParty(final String query, final boolean searchByQuery) {
+    private List<ItemSummary> getSearchResultFromThirdParty(final String query, final boolean searchByQuery, final boolean ebayEnabled, final boolean craigslistEnabled, final int numberOfItems) {
+        if (craigslistEnabled)
         searchInCraigsList(query);
         Call<ApplicationToken> call = EbayAPI.getClientTokenService().getApplicationToken(basicAuthToken, "client_credentials",
                 EbayAPI.RuName, EbayAPI.APPLICATION_ACCESS_TOKEN_SCOPE);
@@ -600,10 +617,10 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                 applictionToken = response.body().getAccess_token();
                 String authorization = "Bearer " + applictionToken;
                 Call<SearchResponse> callComputer = null;
-                if (searchByQuery) {
-                    callComputer = EbayAPI.getService().getSearchResultByQuery(authorization, query, 15);
-                } else {
-                    callComputer = EbayAPI.getService().getSearchResultByCategory(authorization, CategoryKeywordToCategoryIdMap.get(query), 15);
+                if (searchByQuery && ebayEnabled) {
+                    callComputer = EbayAPI.getService().getSearchResultByQuery(authorization, query, numberOfItems);
+                } else if (!searchByQuery && ebayEnabled) {
+                    callComputer = EbayAPI.getService().getSearchResultByCategory(authorization, CategoryKeywordToCategoryIdMap.get(query), numberOfItems);
                 }
                 callComputer.enqueue(new Callback<SearchResponse>() {
                     @Override
@@ -621,11 +638,11 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                             Log.v(TAG, "itemsList is: " + itemsList);
                         }
                         if (searchByQuery) {
-                            filteredList = searchGrabOnItemsByQuery(itemsList, query);
+                            filteredList = searchGrabOnItemsByQuery(itemsList, query, numberOfItems);
                         } else {
-                            filteredList = searchGrabOnItemsByCategory(itemsList, query);
+                            filteredList = searchGrabOnItemsByCategory(itemsList, query, numberOfItems);
                         }
-                        searchRecycleViewAdapter = new ProductListAdapter(itemList, filteredList, craigslistItemsList);
+                        searchRecycleViewAdapter = new ProductListAdapter(itemList, filteredList, craigslistItemsList, numberOfItems);
                         searchRecycleView.setLayoutManager(searchRecycleViewLayoutManager);
                         searchRecycleView.setAdapter(searchRecycleViewAdapter);
                         if (!category.contains("Freebies")) {
@@ -690,24 +707,28 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
         startActivity(new Intent(browserIntent));
     }
 
-    private ArrayList<Item> searchGrabOnItemsByQuery(ArrayList<Item> itemsList, final String query) {
+    private ArrayList<Item> searchGrabOnItemsByQuery(ArrayList<Item> itemsList, final String query, int numberOfItems) {
         Log.v(TAG, "searchGrabOnItemsByQuery called with itemsList: " + itemsList);
         Log.v(TAG, "searchGrabOnItemsByQuery called with query: " + query);
         ArrayList<Item> filteredItems = new ArrayList<>();
         for (Item item : itemsList) {
             if (item.getItemName().toLowerCase().contains(query.toLowerCase()))
                 filteredItems.add(item);
+            if (filteredItems.size()==numberOfItems)
+                return filteredItems;
         }
         return filteredItems;
     }
 
-    private ArrayList<Item> searchGrabOnItemsByCategory(ArrayList<Item> itemsList, final String query) {
+    private ArrayList<Item> searchGrabOnItemsByCategory(ArrayList<Item> itemsList, final String query, int numberOfItems) {
         Log.v(TAG, "searchGrabOnItemsByCategory called with itemsList: " + itemsList);
         Log.v(TAG, "searchGrabOnItemsByCategory called with query: " + query);
         ArrayList<Item> filteredItems = new ArrayList<>();
         for (Item item : itemsList) {
             if (item.getItemCategory().toLowerCase().contains(query.toLowerCase()))
                 filteredItems.add(item);
+            if (filteredItems.size() == numberOfItems)
+                return filteredItems;
         }
         return filteredItems;
     }

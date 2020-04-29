@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.NumberPicker;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -86,9 +87,9 @@ public class Preferences extends AppCompatActivity {
     private AutocompleteSupportFragment address;
     private TextView prefereceDistanceText;
     private SeekBar seekBar;
-    private CheckBox grabonCheck;
-    private CheckBox ebayCheck;
-    private CheckBox craigslistCheck;
+    private Switch grabonCheck;
+    private Switch ebayCheck;
+    private Switch craigslistCheck;
     private CrystalRangeSeekbar rangeSeekbar;
     private TextView preferencePriceMin;
     private TextView preferencePriceMax;
@@ -231,20 +232,15 @@ public class Preferences extends AppCompatActivity {
 
         grabonCheck = findViewById(R.id.PrefereceGrabon);
         grabonCheck.setChecked(grabon);
-        grabonCheck.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                grabon = ((CheckBox) v).isChecked();
+        grabonCheck.setClickable(false);
 
-            }
-        });
 
         ebayCheck = findViewById(R.id.PreferenceEbay);
         ebayCheck.setChecked(ebay);
         ebayCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ebay = ((CheckBox) v).isChecked();
+                ebay = ((Switch) v).isChecked();
 
             }
         });
@@ -253,7 +249,7 @@ public class Preferences extends AppCompatActivity {
         craigslistCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                craigslist = ((CheckBox) v).isChecked();
+                craigslist = ((Switch) v).isChecked();
 
             }
         });
@@ -392,7 +388,12 @@ public class Preferences extends AppCompatActivity {
                                         @Override
                                         public void run() {
                                             Toast.makeText(Preferences.this,"Preferences saved successfully",Toast.LENGTH_SHORT).show();
-                                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                            intent.putExtra("PreferenceGrabon",grabon);
+                                            intent.putExtra("PreferenceEbay",ebay);
+                                            intent.putExtra("PreferenceCraigslist",craigslist);
+                                            intent.putExtra("PreferredNumberOfItems",numberItems);
+                                            startActivity(intent);
                                         }
                                     }, 2000);                                }
                             }).addOnFailureListener(new OnFailureListener() {
