@@ -150,6 +150,8 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
     boolean preferenceEbay;
     boolean preferenceCraigslist;
     Integer preferredNumberOfItems;
+    Integer preferenceMinimumPrice;
+    Integer preferenceMaximumPrice;
 
     public static String category = "";
     /*
@@ -349,7 +351,8 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                         Log.v("category", "select:" + category);
                         recyclerViewItems.setVisibility(View.GONE);
                         progressBar.setVisibility(View.VISIBLE);
-                        getSearchResultFromThirdParty( category, false, preferenceEbay, preferenceCraigslist, preferredNumberOfItems);
+                        getSearchResultFromThirdParty( category, false, preferenceEbay, preferenceCraigslist,
+                                preferredNumberOfItems, preferenceMinimumPrice, preferenceMaximumPrice);
                     }
 
                     itemAdapter = null;
@@ -493,7 +496,8 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
         preferenceEbay = intent.getBooleanExtra("PreferenceEbay", true);
         preferenceCraigslist = intent.getBooleanExtra("PreferenceCraigslist", true);
         preferredNumberOfItems = intent.getIntExtra("PreferredNumberOfItems", 15);
-
+        preferenceMinimumPrice = intent.getIntExtra("PreferenceMinimumPrice", 50);
+        preferenceMaximumPrice = intent.getIntExtra("PreferenceMaximumPrice", 2000);
         Log.v(TAG, "preferenceGrabon: " + preferenceGrabon);
         Log.v(TAG, "preferenceEbay: " + preferenceEbay);
         Log.v(TAG, "preferenceCraigslist: " + preferenceCraigslist);
@@ -504,7 +508,8 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                 recyclerViewItems.setVisibility(View.GONE);
                 pullToRefresh.setEnabled(false);
                 progressBar.setVisibility(View.VISIBLE);
-                getSearchResultFromThirdParty(query, true, preferenceEbay, preferenceCraigslist, preferredNumberOfItems);
+                getSearchResultFromThirdParty(query, true, preferenceEbay, preferenceCraigslist,
+                        preferredNumberOfItems, preferenceMinimumPrice, preferenceMaximumPrice);
                 return false;
             }
 
@@ -606,9 +611,12 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
         }
     }
 
-    private List<ItemSummary> getSearchResultFromThirdParty(final String query, final boolean searchByQuery, final boolean ebayEnabled, final boolean craigslistEnabled, final int numberOfItems) {
+    private List<ItemSummary> getSearchResultFromThirdParty(final String query, final boolean searchByQuery,
+                                                            final boolean ebayEnabled, final boolean craigslistEnabled,
+                                                            final int numberOfItems, final int minimumPrice, final int maximumPrice) {
         if (craigslistEnabled)
-        searchInCraigsList(query);
+        searchInCraigsList(query, minimumPrice, maximumPrice);
+        final String priceFilter = "price:["+minimumPrice +".."+maximumPrice+"],priceCurrency:USD";
         Call<ApplicationToken> call = EbayAPI.getClientTokenService().getApplicationToken(basicAuthToken, "client_credentials",
                 EbayAPI.RuName, EbayAPI.APPLICATION_ACCESS_TOKEN_SCOPE);
         call.enqueue(new Callback<ApplicationToken>() {
@@ -618,9 +626,9 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
                 String authorization = "Bearer " + applictionToken;
                 Call<SearchResponse> callComputer = null;
                 if (searchByQuery) {
-                    callComputer = EbayAPI.getService().getSearchResultByQuery(authorization, query, numberOfItems);
+                    callComputer = EbayAPI.getService().getSearchResultByQuery(authorization, query, numberOfItems, priceFilter);
                 } else if (!searchByQuery) {
-                    callComputer = EbayAPI.getService().getSearchResultByCategory(authorization, CategoryKeywordToCategoryIdMap.get(query), numberOfItems);
+                    callComputer = EbayAPI.getService().getSearchResultByCategory(authorization, CategoryKeywordToCategoryIdMap.get(query), numberOfItems, priceFilter);
                 }
                 callComputer.enqueue(new Callback<SearchResponse>() {
                     @Override
@@ -779,15 +787,16 @@ public class MainActivity extends AppCompatActivity implements RetrieveFeedTask.
         displayItems();
     }
 
-    private void searchInCraigsList(String query) {
+    private void searchInCraigsList(String query, int minimumPrice, int maximumPrice) {
         //execute the async task
         String curdistance = Double.toString(usermiles);
         String postalCode = userZipcode;
         String queryURL = "https://sfbay.craigslist.org/search/sss?format=rss&query=";
-        queryURL = queryURL + query;
+        queryURL = queryURL + query +"&min_price=" + minimumPrice + "&max_price=" + maximumPrice;
         if(curdistance != "" && postalCode != "") {
-            queryURL = queryURL + "&search_distance=" + curdistance + "&postal=" + postalCode;
+            queryURL = queryURL + "&search_distance=" + curdistance + "&postal=" + postalCode + "&min_price=" + minimumPrice + "&max_price=" + maximumPrice;
         }
+        Log.v(TAG, "queryURL: " + queryURL);
         String[] urlToRssFeed = {queryURL};
         new RetrieveFeedTask(MainActivity.this).execute(urlToRssFeed);
     }

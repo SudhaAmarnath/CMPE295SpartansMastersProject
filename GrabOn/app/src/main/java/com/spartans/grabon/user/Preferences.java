@@ -393,6 +393,8 @@ public class Preferences extends AppCompatActivity {
                                             intent.putExtra("PreferenceEbay",ebay);
                                             intent.putExtra("PreferenceCraigslist",craigslist);
                                             intent.putExtra("PreferredNumberOfItems",numberItems);
+                                            intent.putExtra("PreferenceMinimumPrice",priceMin);
+                                            intent.putExtra("PreferenceMaximumPrice",priceMax);
                                             startActivity(intent);
                                         }
                                     }, 2000);                                }
