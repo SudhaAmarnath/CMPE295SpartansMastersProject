@@ -212,6 +212,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<StringClusterItem>() {
             @Override
             public boolean onClusterClick(Cluster<StringClusterItem> cluster) {
+                Log.v("cluster", "Cluster clicked");
                 return false;
             }
         });
@@ -219,6 +220,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<StringClusterItem>() {
             @Override
             public boolean onClusterItemClick(StringClusterItem stringClusterItem) {
+                Log.v("cluster", "Cluster item clicked");
                 return false;
             }
         });
