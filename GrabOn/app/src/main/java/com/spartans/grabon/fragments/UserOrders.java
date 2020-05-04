@@ -144,7 +144,14 @@ public class UserOrders extends Fragment {
                                             mMap = orderItems.get(i);
                                             item.setItemName(mMap.get("itemName").toString());
                                             item.setItemID(mMap.get("itemID").toString());
-                                            Double price = (Double) mMap.get("itemPrice");
+                                            Double price = 0.0;
+                                            Object priceFromDB = mMap.get("itemPrice");
+                                            if (priceFromDB.getClass() == Double.class) {
+                                                price = (Double) mMap.get("itemPrice");
+                                            }
+                                            else if (priceFromDB.getClass() == Long.class) {
+                                                price = ((Long) mMap.get("itemPrice")).doubleValue();
+                                            }
                                             item.setItemPrice(price.floatValue());
                                             item.setItemDescription(mMap.get("itemDescription").toString());
                                             item.setItemImageList((ArrayList <String>) mMap.get("itemImageList"));
