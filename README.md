@@ -2,6 +2,8 @@
 
 “Grab On” Android Application is implemented using JAVA and deployed on Google PlayStore. The App uses FireBaseFirestore authentication, databases and for storage of the item images. Google Firebase APIs are used to communicate with the services provided by the Firebase. Google Places and Maps APIs are utilized to dynamically show the items on the Google Maps and can be used for further navigation using the built in Maps to pick up the item. Ebay and Craigslist services APIs are used to show up the eBay and Craigslist items along with the Grab on Items. With the Chatbot integration using Kommunicate APIs, the user can view/change the items with the text messages/options. PayPal Payment Gateway is integrated to handle the item payments between the users for buying the Grab On items.
 
+## Project Video Link
+https://www.youtube.com/watch?v=qY7GRZZnWaQ&feature=youtu.be
 
 ## High Level Architecture
 
